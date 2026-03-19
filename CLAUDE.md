@@ -8,7 +8,8 @@
 kino-kot/
 ├── apps/
 │   ├── web/          # Next.js 15 (App Router)
-│   └── api/          # Nest.js (позже)
+│   └── api/          # NestJS (REST API)
+├── docker-compose.yml # MongoDB
 ├── package.json      # npm workspaces
 └── CLAUDE.md
 ```
@@ -17,17 +18,31 @@ kino-kot/
 
 - **Frontend**: React 19 + Next.js 15 (App Router), TypeScript
 - **Стили**: SCSS Modules с BEM-именованием
-- **Backend** (позже): Node.js + Nest.js
-- **БД** (позже): MongoDB
-- **API фильмов** (позже): TMDB + Kinopoisk API
+- **Backend**: Node.js + NestJS, TypeScript
+- **БД**: MongoDB 7 (через Docker Compose)
+- **API фильмов**: TMDB API (авто-сид при пустой БД)
 - **Монорепо**: npm workspaces
 
 ## Команды
 
 ```bash
-npm run dev --workspace=web    # Dev-сервер (http://localhost:3000)
-npm run build --workspace=web  # Production-билд
+docker compose up -d                   # Запустить MongoDB
+npm run dev:api                        # NestJS API (http://localhost:3001)
+npm run dev:web                        # Next.js (http://localhost:3000)
+npm run build --workspace=web          # Production-билд фронтенда
 ```
+
+## Env-файлы
+
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT` (шаблон: `.env.example`)
+- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`
+
+## Backend (apps/api/)
+
+- **Глобальный префикс**: `/api`
+- **CORS**: разрешён `http://localhost:3000`
+- **MoviesModule**: схема Movie (Mongoose), TMDB-сервис, авто-сид, `GET /api/movies`
+- Авто-сид: при старте, если БД пуста, загружает популярные фильмы из TMDB
 
 ## Правила стилей
 
@@ -42,13 +57,18 @@ npm run build --workspace=web  # Production-билд
 - **Header** — логотип, навигация, поиск, кнопка "Войти"
 - **HeroBanner** — заголовок + CTA + изображение кота
 - **CategoryCards** — сетка карточек категорий (заглушки)
-- **MovieSection** — секция с заголовком + "Смотреть все" (переиспользуемая)
-- **MovieCard** — карточка фильма (заглушка)
+- **MovieSection** — секция с заголовком + "Смотреть все" (переиспользуемая, принимает опциональный `movies`)
+- **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **Footer** — логотип, копирайт, навигация
+
+## Страницы
+
+- `/` — главная (скелетоны)
+- `/films` — популярные фильмы с реальными данными из API
 
 ## Особенности конфигурации
 
-- `next.config.ts`: webpack override для `getLocalIdent` — возвращает чистое BEM-имя для `.module.scss`, оригинальное поведение для `next/font` и прочего
+- `next.config.ts`: webpack override для `getLocalIdent` + `images.remotePatterns` для `image.tmdb.org`
 - Шрифт Inter (latin + cyrillic) через `next/font/google`
 - Ассеты: `public/images/logo.svg`, `public/images/main-banner.webp`
 - npm install требует `--cache /tmp/npm-cache` из-за проблем с правами в дефолтном кеше

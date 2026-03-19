@@ -1,11 +1,13 @@
 import MovieCard from '../MovieCard/MovieCard';
 import styles from './MovieSection.module.scss';
+import type { Movie } from '@/types/movie';
 
 interface MovieSectionProps {
   title: string;
+  movies?: Movie[];
 }
 
-export default function MovieSection({ title }: MovieSectionProps) {
+export default function MovieSection({ title, movies }: MovieSectionProps) {
   return (
     <section className={styles['movies']}>
       <div className={styles['movies__wrap']}>
@@ -19,9 +21,19 @@ export default function MovieSection({ title }: MovieSectionProps) {
           </a>
         </div>
         <div className={styles['movies__grid']}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <MovieCard key={i} />
-          ))}
+          {movies
+            ? movies.map((movie) => (
+                <MovieCard
+                  key={movie._id}
+                  title={movie.title}
+                  posterPath={movie.posterPath}
+                  voteAverage={movie.voteAverage}
+                  releaseDate={movie.releaseDate}
+                />
+              ))
+            : Array.from({ length: 5 }).map((_, i) => (
+                <MovieCard key={i} />
+              ))}
         </div>
       </div>
     </section>

@@ -6,7 +6,8 @@
       "Bash(yes \"no\")",
       "Bash(npx create-next-app@latest apps/web --typescript --src-dir --app --no-tailwind --no-eslint --no-turbopack --no-import-alias --use-npm)",
       "Bash(pkill -f \"next dev\")",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
