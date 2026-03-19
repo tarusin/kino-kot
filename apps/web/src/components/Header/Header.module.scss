@@ -1,0 +1,90 @@
+@use '../../styles/variables' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $color-bg;
+  border-bottom: 1px solid $color-gray;
+
+  &__wrap {
+    @include container;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    gap: 32px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 24px;
+
+    @media (max-width: $breakpoint-md) {
+      display: none;
+    }
+  }
+
+  &__link {
+    font-size: 14px;
+    color: $color-text;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+  }
+
+  &__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    @media (max-width: $breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+  }
+
+  &__search-input {
+    width: 180px;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid $color-gray-dark;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__login-btn {
+    @include gradient-button;
+    padding: 8px 24px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}

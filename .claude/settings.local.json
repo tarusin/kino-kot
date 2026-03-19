@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/admin/Desktop/*.webp /Users/admin/Desktop/*.svg)",
+      "Bash(git init:*)",
+      "Bash(yes \"no\")",
+      "Bash(npx create-next-app@latest apps/web --typescript --src-dir --app --no-tailwind --no-eslint --no-turbopack --no-import-alias --use-npm)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}

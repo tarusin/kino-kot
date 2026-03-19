@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+
+.hero {
+  padding: 40px 0 60px;
+
+  &__wrap {
+    @include container;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+
+    @media (max-width: $breakpoint-md) {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 32px;
+    color: $color-text;
+
+    @media (max-width: $breakpoint-md) {
+      font-size: 28px;
+    }
+  }
+
+  &__cta {
+    @include gradient-button;
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+
+  &__media {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &__image {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+  }
+}

@@ -1,0 +1,54 @@
+@use '../../styles/variables' as *;
+
+.movies {
+  padding: 40px 0;
+
+  &__wrap {
+    @include container;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__more {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-primary;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+
+    @media (max-width: $breakpoint-lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: $breakpoint-md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}

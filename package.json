@@ -1,0 +1,7 @@
+{
+  "name": "kino-kot",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
+}
