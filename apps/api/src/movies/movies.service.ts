@@ -25,9 +25,13 @@ export class MoviesService implements OnModuleInit {
 
   async seed() {
     try {
-      const movies = await this.tmdbService.fetchPopularMovies();
-      await this.movieModel.insertMany(movies);
-      this.logger.log(`Seeded ${movies.length} movies`);
+      const [popular, topRated] = await Promise.all([
+        this.tmdbService.fetchMovies('popular'),
+        this.tmdbService.fetchMovies('top_rated'),
+      ]);
+      const allMovies = [...popular, ...topRated];
+      await this.movieModel.insertMany(allMovies);
+      this.logger.log(`Seeded ${allMovies.length} movies (${popular.length} popular + ${topRated.length} top_rated)`);
     } catch (error) {
       this.logger.error('Failed to seed movies from TMDB', error);
     }
@@ -35,5 +39,9 @@ export class MoviesService implements OnModuleInit {
 
   async findAll(): Promise<Movie[]> {
     return this.movieModel.find().limit(20).exec();
+  }
+
+  async findByCategory(category: string): Promise<Movie[]> {
+    return this.movieModel.find({ category }).limit(20).exec();
   }
 }

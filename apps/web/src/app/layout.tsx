@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Montserrat_Alternates } from 'next/font/google';
 import './globals.scss';
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] });
+const montserrat = Montserrat_Alternates({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin', 'cyrillic'],
+});
 
 export const metadata: Metadata = {
   title: 'КиноКот — фильмы, сериалы, отзывы',
@@ -16,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+      <body className={montserrat.className}>{children}</body>
     </html>
   );
 }

@@ -41,8 +41,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 - **Глобальный префикс**: `/api`
 - **CORS**: разрешён `http://localhost:3000`
-- **MoviesModule**: схема Movie (Mongoose), TMDB-сервис, авто-сид, `GET /api/movies`
-- Авто-сид: при старте, если БД пуста, загружает популярные фильмы из TMDB
+- **MoviesModule**: схема Movie (Mongoose, поле `category` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид
+- **Эндпоинты**: `GET /api/movies`, `GET /api/movies/popular`, `GET /api/movies/top-rated`
+- Авто-сид: при старте, если БД пуста, загружает popular + top_rated фильмы из TMDB (~40 шт.)
 
 ## Правила стилей
 
@@ -57,18 +58,19 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Header** — логотип, навигация, поиск, кнопка "Войти"
 - **HeroBanner** — заголовок + CTA + изображение кота
 - **CategoryCards** — сетка карточек категорий (заглушки)
+- **MovieSlider** — client-компонент, горизонтальный слайдер с навигацией стрелками (props: `title`, `movies?`)
 - **MovieSection** — секция с заголовком + "Смотреть все" (переиспользуемая, принимает опциональный `movies`)
 - **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **Footer** — логотип, копирайт, навигация
 
 ## Страницы
 
-- `/` — главная (скелетоны)
+- `/` — главная (async серверный компонент, два слайдера: "Топ фильмов" и "Популярные" с данными из API)
 - `/films` — популярные фильмы с реальными данными из API
 
 ## Особенности конфигурации
 
 - `next.config.ts`: webpack override для `getLocalIdent` + `images.remotePatterns` для `image.tmdb.org`
-- Шрифт Inter (latin + cyrillic) через `next/font/google`
+- Шрифт Montserrat Alternates (weights: 400, 500, 600, 700; latin + cyrillic) через `next/font/google`
 - Ассеты: `public/images/logo.svg`, `public/images/main-banner.webp`
 - npm install требует `--cache /tmp/npm-cache` из-за проблем с правами в дефолтном кеше

@@ -1,0 +1,91 @@
+@use '../../styles/variables' as *;
+
+.movie-slider {
+  padding: 40px 0;
+
+  &__wrap {
+    @include container;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid $color-gray-dark;
+    background: $color-bg;
+    color: $color-text;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
+  &__more {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-primary;
+    margin-left: 8px;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__item {
+    flex: 0 0 calc((100% - 4 * 20px) / 5);
+    scroll-snap-align: start;
+
+    @media (max-width: $breakpoint-lg) {
+      flex: 0 0 calc((100% - 3 * 20px) / 4);
+    }
+
+    @media (max-width: $breakpoint-md) {
+      flex: 0 0 calc((100% - 2 * 20px) / 3);
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      flex: 0 0 calc((100% - 1 * 20px) / 2);
+    }
+  }
+}

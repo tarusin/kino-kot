@@ -5,8 +5,11 @@ export type MovieDocument = HydratedDocument<Movie>;
 
 @Schema()
 export class Movie {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   tmdbId: number;
+
+  @Prop({ required: true })
+  category: string;
 
   @Prop({ required: true })
   title: string;
@@ -28,3 +31,4 @@ export class Movie {
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);
+MovieSchema.index({ tmdbId: 1, category: 1 }, { unique: true });
