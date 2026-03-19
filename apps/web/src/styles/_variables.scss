@@ -1,3 +1,10 @@
+@use 'sass:math';
+
+// Rem conversion
+@function rem($px) {
+  @return math.div($px, 16) * 1rem;
+}
+
 // Colors
 $color-primary: #FF3B2F;
 $color-primary-end: #FF5F2D;
@@ -18,21 +25,25 @@ $breakpoint-lg: 1024px;
 $breakpoint-xl: 1280px;
 
 // Layout
-$container-max-width: 1200px;
-$container-padding: 20px;
+$container-max-width: rem(1200);
+$container-padding: rem(20);
 
 // Mixins
 @mixin container {
   max-width: $container-max-width;
   margin: 0 auto;
-  padding: 0 $container-padding;
+  padding: 0 rem(16);
+
+  @media (min-width: $breakpoint-sm) {
+    padding: 0 $container-padding;
+  }
 }
 
 @mixin gradient-button {
   background: $color-gradient;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: rem(8);
   cursor: pointer;
   font-weight: 600;
   transition: opacity 0.2s;

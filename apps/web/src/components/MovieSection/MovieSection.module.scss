@@ -1,7 +1,7 @@
 @use '../../styles/variables' as *;
 
 .movies {
-  padding: 40px 0;
+  padding: rem(40) 0;
 
   &__wrap {
     @include container;
@@ -11,20 +11,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: rem(24);
   }
 
   &__title {
-    font-size: 24px;
+    font-size: rem(18);
     font-weight: 700;
     color: $color-text;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(24);
+    }
   }
 
   &__more {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 14px;
+    gap: rem(4);
+    font-size: rem(14);
     font-weight: 500;
     color: $color-primary;
     transition: opacity 0.2s;
@@ -36,19 +40,19 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: rem(12);
 
-    @media (max-width: $breakpoint-lg) {
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(20);
+    }
+
+    @media (min-width: $breakpoint-md) {
       grid-template-columns: repeat(4, 1fr);
     }
 
-    @media (max-width: $breakpoint-md) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    @media (max-width: $breakpoint-sm) {
-      grid-template-columns: repeat(2, 1fr);
+    @media (min-width: $breakpoint-lg) {
+      grid-template-columns: repeat(5, 1fr);
     }
   }
 }

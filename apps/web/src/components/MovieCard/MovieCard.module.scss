@@ -3,12 +3,12 @@
 .card {
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: rem(12);
   overflow: hidden;
   transition: transform 0.2s;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(rem(-4));
   }
 
   &__poster {
@@ -16,7 +16,7 @@
     width: 100%;
     aspect-ratio: 2 / 3;
     background: $color-gray;
-    border-radius: 12px;
+    border-radius: rem(12);
     overflow: hidden;
 
     img {
@@ -26,49 +26,61 @@
 
   &__rating {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: rem(8);
+    right: rem(8);
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
-    font-size: 12px;
+    font-size: rem(12);
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: rem(2) rem(6);
+    border-radius: rem(4);
     z-index: 1;
   }
 
   &__info {
-    padding: 12px 0 0;
+    padding: rem(8) 0 0;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(12) 0 0;
+    }
   }
 
   &__title {
-    font-size: 14px;
+    font-size: rem(12);
     font-weight: 600;
     color: $color-text;
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(14);
+    }
   }
 
   &__meta {
-    font-size: 12px;
+    font-size: rem(11);
     color: $color-text-secondary;
-    margin: 4px 0 0;
+    margin: rem(4) 0 0;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(12);
+    }
   }
 
   &__line1 {
-    height: 14px;
+    height: rem(14);
     width: 80%;
     background: $color-gray;
-    border-radius: 4px;
-    margin-bottom: 6px;
+    border-radius: rem(4);
+    margin-bottom: rem(6);
   }
 
   &__line2 {
-    height: 12px;
+    height: rem(12);
     width: 50%;
     background: $color-gray;
-    border-radius: 4px;
+    border-radius: rem(4);
   }
 }

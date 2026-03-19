@@ -1,7 +1,11 @@
 @use '../../styles/variables' as *;
 
 .movie-slider {
-  padding: 40px 0;
+  padding: rem(24) 0;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: rem(40) 0;
+  }
 
   &__wrap {
     @include container;
@@ -11,48 +15,56 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: rem(24);
   }
 
   &__title {
-    font-size: 24px;
+    font-size: rem(18);
     font-weight: 700;
     color: $color-text;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(24);
+    }
   }
 
   &__controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid $color-gray-dark;
-    background: $color-bg;
-    color: $color-text;
-    cursor: pointer;
-    transition: all 0.2s;
+    display: none;
 
-    &:hover {
-      border-color: $color-primary;
-      color: $color-primary;
+    @media (min-width: $breakpoint-sm) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: rem(36);
+      height: rem(36);
+      border-radius: 50%;
+      border: 1px solid $color-gray-dark;
+      background: $color-bg;
+      color: $color-text;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: $color-primary;
+        color: $color-primary;
+      }
     }
   }
 
   &__more {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 14px;
+    gap: rem(4);
+    font-size: rem(14);
     font-weight: 500;
     color: $color-primary;
-    margin-left: 8px;
+    margin-left: rem(8);
     transition: opacity 0.2s;
 
     &:hover {
@@ -62,30 +74,35 @@
 
   &__track {
     display: flex;
-    gap: 20px;
+    gap: rem(12);
     overflow-x: auto;
     scrollbar-width: none;
     scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
     }
+
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(20);
+    }
   }
 
   &__item {
-    flex: 0 0 calc((100% - 4 * 20px) / 5);
+    flex: 0 0 calc((100% - 2 * #{rem(12)}) / 3);
     scroll-snap-align: start;
 
-    @media (max-width: $breakpoint-lg) {
-      flex: 0 0 calc((100% - 3 * 20px) / 4);
+    @media (min-width: $breakpoint-sm) {
+      flex: 0 0 calc((100% - 2 * #{rem(20)}) / 3);
     }
 
-    @media (max-width: $breakpoint-md) {
-      flex: 0 0 calc((100% - 2 * 20px) / 3);
+    @media (min-width: $breakpoint-md) {
+      flex: 0 0 calc((100% - 3 * #{rem(20)}) / 4);
     }
 
-    @media (max-width: $breakpoint-sm) {
-      flex: 0 0 calc((100% - 1 * 20px) / 2);
+    @media (min-width: $breakpoint-lg) {
+      flex: 0 0 calc((100% - 4 * #{rem(20)}) / 5);
     }
   }
 }

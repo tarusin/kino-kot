@@ -1,7 +1,7 @@
 @use '../../styles/variables' as *;
 
 .categories {
-  padding: 20px 0 40px;
+  padding: rem(20) 0 rem(40);
 
   &__wrap {
     @include container;
@@ -9,35 +9,44 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: rem(12);
 
-    @media (max-width: $breakpoint-md) {
-      grid-template-columns: repeat(2, 1fr);
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(20);
     }
 
-    @media (max-width: $breakpoint-sm) {
-      grid-template-columns: 1fr;
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
   &__card {
     display: flex;
     align-items: flex-end;
-    padding: 20px;
-    height: 120px;
+    padding: rem(16);
+    height: rem(100);
     background: $color-gray;
-    border-radius: 12px;
+    border-radius: rem(12);
     transition: transform 0.2s;
 
+    @media (min-width: $breakpoint-sm) {
+      height: rem(120);
+      padding: rem(20);
+    }
+
     &:hover {
-      transform: translateY(-2px);
+      transform: translateY(rem(-2));
     }
   }
 
   &__label {
-    font-size: 16px;
+    font-size: rem(14);
     font-weight: 600;
     color: $color-text;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(16);
+    }
   }
 }

@@ -11,8 +11,13 @@
     @include container;
     display: flex;
     align-items: center;
-    height: 64px;
-    gap: 32px;
+    height: rem(56);
+    gap: rem(12);
+
+    @media (min-width: $breakpoint-sm) {
+      height: rem(64);
+      gap: rem(32);
+    }
   }
 
   &__logo {
@@ -22,16 +27,16 @@
   }
 
   &__nav {
-    display: flex;
-    gap: 24px;
+    display: none;
 
-    @media (max-width: $breakpoint-md) {
-      display: none;
+    @media (min-width: $breakpoint-md) {
+      display: flex;
+      gap: rem(24);
     }
   }
 
   &__link {
-    font-size: 14px;
+    font-size: rem(14);
     color: $color-text;
     transition: color 0.2s;
 
@@ -43,32 +48,32 @@
   &__actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: rem(16);
     margin-left: auto;
   }
 
   &__search {
-    position: relative;
-    display: flex;
-    align-items: center;
+    display: none;
 
-    @media (max-width: $breakpoint-sm) {
-      display: none;
+    @media (min-width: $breakpoint-sm) {
+      position: relative;
+      display: flex;
+      align-items: center;
     }
   }
 
   &__search-icon {
     position: absolute;
-    left: 12px;
+    left: rem(12);
     pointer-events: none;
   }
 
   &__search-input {
-    width: 180px;
-    padding: 8px 12px 8px 36px;
+    width: rem(180);
+    padding: rem(8) rem(12) rem(8) rem(36);
     border: 1px solid $color-gray-dark;
-    border-radius: 8px;
-    font-size: 14px;
+    border-radius: rem(8);
+    font-size: rem(14);
     outline: none;
     transition: border-color 0.2s;
 
@@ -83,8 +88,13 @@
 
   &__login-btn {
     @include gradient-button;
-    padding: 8px 24px;
-    font-size: 14px;
+    padding: rem(8) rem(16);
+    font-size: rem(13);
     white-space: nowrap;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(8) rem(24);
+      font-size: rem(14);
+    }
   }
 }

@@ -52,6 +52,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 - Это достигается кастомным `getLocalIdent` в `next.config.ts`
 - Блок = имя компонента в kebab-case, элемент через `__`, модификатор через `--`
 - SCSS-переменные и миксины в `src/styles/_variables.scss`
+- **Mobile-first**: медиа-запросы только через `min-width` (база = мобильные стили, расширяем вверх)
+- **rem-единицы**: использовать функцию `rem($px)` из `_variables.scss` для всех размеров (font-size, padding, gap, width и т.д.)
+- **Исключения для rem**: `0`, `%`, `border-width` (оставлять в px), breakpoints (в px), `aspect-ratio`, `z-index`, `opacity`, transition duration
 
 ## Компоненты (apps/web/src/components/)
 

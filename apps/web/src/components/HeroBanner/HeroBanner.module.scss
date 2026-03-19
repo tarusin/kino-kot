@@ -1,17 +1,27 @@
 @use '../../styles/variables' as *;
 
 .hero {
-  padding: 40px 0 60px;
+  padding: rem(24) 0 rem(40);
+
+  @media (min-width: $breakpoint-sm) {
+    padding: rem(40) 0 rem(60);
+  }
 
   &__wrap {
     @include container;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 40px;
+    text-align: center;
+    gap: rem(24);
 
-    @media (max-width: $breakpoint-md) {
-      flex-direction: column;
-      text-align: center;
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(40);
+    }
+
+    @media (min-width: $breakpoint-md) {
+      flex-direction: row;
+      text-align: left;
     }
   }
 
@@ -21,21 +31,31 @@
   }
 
   &__title {
-    font-size: 36px;
+    font-size: rem(22);
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 32px;
+    margin-bottom: rem(20);
     color: $color-text;
 
-    @media (max-width: $breakpoint-md) {
-      font-size: 28px;
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(28);
+    }
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(36);
+      margin-bottom: rem(32);
     }
   }
 
   &__cta {
     @include gradient-button;
-    padding: 14px 32px;
-    font-size: 16px;
+    padding: rem(12) rem(24);
+    font-size: rem(14);
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(14) rem(32);
+      font-size: rem(16);
+    }
   }
 
   &__media {
@@ -47,9 +67,9 @@
 
   &__image {
     width: 100%;
-    max-width: 480px;
+    max-width: rem(480);
     height: auto;
-    border-radius: 16px;
+    border-radius: rem(16);
     object-fit: cover;
   }
 }

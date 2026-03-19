@@ -3,8 +3,8 @@
 .footer {
   background: $color-text;
   color: white;
-  padding: 40px 0;
-  margin-top: 60px;
+  padding: rem(40) 0;
+  margin-top: rem(60);
 
   &__wrap {
     @include container;
@@ -12,14 +12,16 @@
 
   &__top {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
+    gap: rem(12);
+    text-align: center;
+    margin-bottom: rem(24);
 
-    @media (max-width: $breakpoint-sm) {
-      flex-direction: column;
-      gap: 12px;
-      text-align: center;
+    @media (min-width: $breakpoint-sm) {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
     }
   }
 
@@ -33,17 +35,18 @@
   }
 
   &__copyright {
-    font-size: 13px;
+    font-size: rem(13);
     color: rgba(255, 255, 255, 0.6);
   }
 
   &__nav {
     display: flex;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: rem(16);
     justify-content: center;
 
     a {
-      font-size: 13px;
+      font-size: rem(13);
       color: rgba(255, 255, 255, 0.6);
       transition: color 0.2s;
 
@@ -52,9 +55,8 @@
       }
     }
 
-    @media (max-width: $breakpoint-sm) {
-      flex-wrap: wrap;
-      gap: 16px;
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(24);
     }
   }
 }
