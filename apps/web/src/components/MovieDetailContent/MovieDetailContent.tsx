@@ -17,6 +17,9 @@ interface ReviewData {
   rating: number;
   text: string;
   createdAt: string;
+  likesCount: number;
+  dislikesCount: number;
+  userReaction: 'like' | 'dislike' | null;
 }
 
 interface MovieDetailContentProps {
@@ -54,7 +57,9 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 
   const fetchReviews = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/reviews/movie/${movie._id}`);
+      const res = await fetch(`${API_URL}/reviews/movie/${movie._id}`, {
+        credentials: 'include',
+      });
       if (res.ok) {
         setReviews(await res.json());
       }
@@ -272,10 +277,14 @@ function ReviewsTab({
           {reviews.map((review) => (
             <ReviewCard
               key={review._id}
+              reviewId={review._id}
               userName={review.userName}
               rating={review.rating}
               text={review.text}
               createdAt={review.createdAt}
+              likesCount={review.likesCount}
+              dislikesCount={review.dislikesCount}
+              userReaction={review.userReaction}
             />
           ))}
         </div>

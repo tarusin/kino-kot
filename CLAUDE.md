@@ -47,8 +47,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
 - **Эндпоинты фильмов**: `GET /api/movies`, `GET /api/movies/popular`, `GET /api/movies/top-rated`
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
-- **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId)
-- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/movie/:movieId` (публичный)
+- **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
+- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
+- **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
 - Авто-сид: при старте, если БД пуста, загружает popular + top_rated фильмы из TMDB (~40 шт.)
 
 ## Правила стилей
@@ -73,7 +74,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **MovieSection** — секция с заголовком + "Смотреть все" (переиспользуемая, принимает опциональный `movies`)
 - **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
-- **ReviewCard** — карточка отзыва: аватар, имя, дата, лапки-рейтинг, текст
+- **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Footer** — логотип, копирайт, навигация
 
 ## Страницы

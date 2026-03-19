@@ -18,7 +18,8 @@
       "Bash(curl -s http://localhost:3000/films/69bbf8666b1b85b4d114f8dd)",
       "Bash(pkill -f \"nest start\")",
       "Bash(ls:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx --cache /tmp/npm-cache tsc --noEmit --project apps/web/tsconfig.json)"
     ]
   }
 }
