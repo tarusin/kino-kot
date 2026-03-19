@@ -103,37 +103,72 @@
   }
 
   &__user {
+    position: relative;
+  }
+
+  &__avatar {
+    width: rem(40);
+    height: rem(40);
+    border-radius: 50%;
+    background: #2c5581;
+    color: #fff;
     display: flex;
     align-items: center;
-    gap: rem(12);
-  }
-
-  &__user-name {
+    justify-content: center;
     font-size: rem(14);
-    font-weight: 500;
-    color: $color-text;
-    display: none;
-
-    @media (min-width: $breakpoint-sm) {
-      display: inline;
-    }
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
   }
 
-  &__logout-btn {
-    background: none;
-    border: 1px solid $color-gray-dark;
-    border-radius: rem(8);
-    padding: rem(8) rem(16);
-    font-size: rem(13);
+  &__dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: rem(180);
+    padding-top: rem(8);
+    z-index: 10;
+  }
+
+  &__dropdown-menu {
+    background: #fff;
+    border-radius: rem(12);
+    box-shadow: 0 rem(4) rem(24) rgba(0, 0, 0, 0.12);
+    padding: rem(8) 0;
+  }
+
+  &__user:hover &__dropdown {
+    display: block;
+  }
+
+  &__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+    width: 100%;
+    padding: rem(10) rem(16);
+    font-size: rem(15);
     font-family: $font-family;
-    color: $color-text-secondary;
+    color: $color-text;
+    background: none;
+    border: none;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color 0.15s;
 
     &:hover {
-      border-color: $color-primary;
-      color: $color-primary;
+      background-color: rgba(0, 0, 0, 0.04);
     }
+
+    &--danger {
+      color: #e74a70;
+    }
+  }
+
+  &__dropdown-divider {
+    height: 1px;
+    background: $color-gray;
+    margin: rem(4) 0;
   }
 }

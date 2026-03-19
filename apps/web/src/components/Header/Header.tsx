@@ -5,6 +5,15 @@ import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Header.module.scss';
 
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join('');
+}
+
 export default function Header() {
   const { user, loading, logout } = useAuth();
 
@@ -35,10 +44,25 @@ export default function Header() {
           {!loading && (
             user ? (
               <div className={styles['header__user']}>
-                <span className={styles['header__user-name']}>{user.name}</span>
-                <button className={styles['header__logout-btn']} onClick={logout}>
-                  Выйти
-                </button>
+                <div className={styles['header__avatar']}>
+                  {getInitials(user.name)}
+                </div>
+                <div className={styles['header__dropdown']}>
+                  <div className={styles['header__dropdown-menu']}>
+                    <Link href="/profile" className={styles['header__dropdown-item']}>
+                      <Image src="/icons/profile.svg" alt="" width={20} height={20} />
+                      Профиль
+                    </Link>
+                    <div className={styles['header__dropdown-divider']} />
+                    <button
+                      className={`${styles['header__dropdown-item']} ${styles['header__dropdown-item--danger']}`}
+                      onClick={logout}
+                    >
+                      <Image src="/icons/logout.svg" alt="" width={20} height={20} />
+                      Выход
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <Link href="/login" className={styles['header__login-btn']}>
