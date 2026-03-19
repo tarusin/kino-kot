@@ -9,7 +9,14 @@
       "Bash(npm run:*)",
       "Bash(npm install:*)",
       "Bash(docker compose:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx --cache /tmp/npm-cache tsc --noEmit --project apps/api/tsconfig.json)",
+      "Bash(curl -s http://localhost:3001/api/movies/69bbf8666b1b85b4d114f8dd)",
+      "Bash(python3 -c \":*)",
+      "Bash(curl -s http://localhost:3001/api/movies/popular)",
+      "Bash(python3 -c \"import sys,json; m=json.load\\(sys.stdin\\); print\\(m[0][''''_id''''], m[0][''''title'''']\\)\")",
+      "Bash(curl -s http://localhost:3000/films/69bbf8666b1b85b4d114f8dd)",
+      "Bash(pkill -f \"nest start\")"
     ]
   }
 }

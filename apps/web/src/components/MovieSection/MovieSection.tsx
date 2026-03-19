@@ -25,6 +25,7 @@ export default function MovieSection({ title, movies }: MovieSectionProps) {
             ? movies.map((movie) => (
                 <MovieCard
                   key={movie._id}
+                  id={movie._id}
                   title={movie.title}
                   posterPath={movie.posterPath}
                   voteAverage={movie.voteAverage}

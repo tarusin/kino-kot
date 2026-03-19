@@ -64,6 +64,7 @@ export default function MovieSlider({ title, movies }: MovieSliderProps) {
             ? movies.map((movie) => (
                 <div key={movie._id} className={styles['movie-slider__item']}>
                   <MovieCard
+                    id={movie._id}
                     title={movie.title}
                     posterPath={movie.posterPath}
                     voteAverage={movie.voteAverage}

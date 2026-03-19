@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 
 interface TmdbMovie {
@@ -15,8 +15,64 @@ interface TmdbResponse {
   results: TmdbMovie[];
 }
 
+export interface TmdbGenre {
+  id: number;
+  name: string;
+}
+
+interface TmdbMovieDetails {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string;
+  backdrop_path: string;
+  vote_average: number;
+  release_date: string;
+  runtime: number | null;
+  genres: TmdbGenre[];
+}
+
+interface TmdbCastMember {
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+}
+
+interface TmdbCrewMember {
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+}
+
+interface TmdbCreditsResponse {
+  cast: TmdbCastMember[];
+  crew: TmdbCrewMember[];
+}
+
+interface TmdbVideo {
+  key: string;
+  site: string;
+  type: string;
+  iso_639_1: string;
+}
+
+interface TmdbVideosResponse {
+  results: TmdbVideo[];
+}
+
+interface TmdbImage {
+  file_path: string;
+}
+
+interface TmdbImagesResponse {
+  backdrops: TmdbImage[];
+}
+
 @Injectable()
 export class TmdbService {
+  private readonly logger = new Logger(TmdbService.name);
   private readonly baseUrl = 'https://api.themoviedb.org/3';
 
   async fetchMovies(category: 'popular' | 'top_rated'): Promise<
@@ -53,5 +109,66 @@ export class TmdbService {
       releaseDate: movie.release_date,
       genres: [],
     }));
+  }
+
+  async fetchMovieDetails(tmdbId: number): Promise<TmdbMovieDetails> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const { data } = await axios.get<TmdbMovieDetails>(
+      `${this.baseUrl}/movie/${tmdbId}`,
+      { params: { api_key: apiKey, language: 'ru-RU' } },
+    );
+    return data;
+  }
+
+  async fetchMovieCredits(
+    tmdbId: number,
+  ): Promise<{ cast: TmdbCastMember[]; crew: TmdbCrewMember[] }> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const { data } = await axios.get<TmdbCreditsResponse>(
+      `${this.baseUrl}/movie/${tmdbId}/credits`,
+      { params: { api_key: apiKey, language: 'ru-RU' } },
+    );
+    return {
+      cast: data.cast.slice(0, 15),
+      crew: data.crew.filter((c) =>
+        ['Director', 'Writer', 'Screenplay'].includes(c.job),
+      ),
+    };
+  }
+
+  async fetchMovieVideos(tmdbId: number): Promise<string | null> {
+    const apiKey = process.env.TMDB_API_KEY;
+
+    // Сначала ищем русский трейлер
+    const { data } = await axios.get<TmdbVideosResponse>(
+      `${this.baseUrl}/movie/${tmdbId}/videos`,
+      { params: { api_key: apiKey, language: 'ru-RU' } },
+    );
+
+    let trailer = data.results.find(
+      (v) => v.site === 'YouTube' && v.type === 'Trailer',
+    );
+
+    // Фоллбэк на английский
+    if (!trailer) {
+      const { data: enData } = await axios.get<TmdbVideosResponse>(
+        `${this.baseUrl}/movie/${tmdbId}/videos`,
+        { params: { api_key: apiKey, language: 'en-US' } },
+      );
+      trailer = enData.results.find(
+        (v) => v.site === 'YouTube' && v.type === 'Trailer',
+      );
+    }
+
+    return trailer?.key ?? null;
+  }
+
+  async fetchMovieImages(tmdbId: number): Promise<string[]> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const { data } = await axios.get<TmdbImagesResponse>(
+      `${this.baseUrl}/movie/${tmdbId}/images`,
+      { params: { api_key: apiKey } },
+    );
+    return data.backdrops.slice(0, 10).map((img) => img.file_path);
   }
 }

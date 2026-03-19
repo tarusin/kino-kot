@@ -1,14 +1,16 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './MovieCard.module.scss';
 
 interface MovieCardProps {
+  id?: string;
   title?: string;
   posterPath?: string;
   voteAverage?: number;
   releaseDate?: string;
 }
 
-export default function MovieCard({ title, posterPath, voteAverage, releaseDate }: MovieCardProps) {
+export default function MovieCard({ id, title, posterPath, voteAverage, releaseDate }: MovieCardProps) {
   if (!title) {
     return (
       <div className={styles['card']}>
@@ -26,7 +28,7 @@ export default function MovieCard({ title, posterPath, voteAverage, releaseDate 
     ? `https://image.tmdb.org/t/p/w500${posterPath}`
     : undefined;
 
-  return (
+  const content = (
     <div className={styles['card']}>
       <div className={styles['card__poster']}>
         {posterUrl && (
@@ -49,4 +51,10 @@ export default function MovieCard({ title, posterPath, voteAverage, releaseDate 
       </div>
     </div>
   );
+
+  if (id) {
+    return <Link href={`/films/${id}`} className={styles['card__link']}>{content}</Link>;
+  }
+
+  return content;
 }

@@ -1,6 +1,11 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Movie, MovieDocument } from './schemas/movie.schema.js';
 import { TmdbService } from './tmdb.service.js';
 
@@ -43,5 +48,75 @@ export class MoviesService implements OnModuleInit {
 
   async findByCategory(category: string): Promise<Movie[]> {
     return this.movieModel.find({ category }).limit(20).exec();
+  }
+
+  async findById(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new NotFoundException('Фильм не найден');
+    }
+
+    const movie = await this.movieModel.findById(id).exec();
+    if (!movie) {
+      throw new NotFoundException('Фильм не найден');
+    }
+
+    try {
+      const [details, credits, trailerKey, stills] = await Promise.all([
+        this.tmdbService.fetchMovieDetails(movie.tmdbId),
+        this.tmdbService.fetchMovieCredits(movie.tmdbId),
+        this.tmdbService.fetchMovieVideos(movie.tmdbId),
+        this.tmdbService.fetchMovieImages(movie.tmdbId),
+      ]);
+
+      return {
+        _id: movie._id,
+        tmdbId: movie.tmdbId,
+        category: movie.category,
+        title: movie.title,
+        overview: details.overview || movie.overview,
+        posterPath: movie.posterPath,
+        backdropPath: details.backdrop_path,
+        voteAverage: movie.voteAverage,
+        releaseDate: movie.releaseDate,
+        runtime: details.runtime,
+        genres: details.genres,
+        cast: credits.cast.map((c) => ({
+          name: c.name,
+          character: c.character,
+          profilePath: c.profile_path,
+        })),
+        crew: credits.crew.map((c) => ({
+          name: c.name,
+          job: c.job,
+          profilePath: c.profile_path,
+        })),
+        trailerKey,
+        stills,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch TMDB details for movie ${movie.tmdbId}`,
+        error,
+      );
+
+      // Возвращаем базовые данные без TMDB-обогащения
+      return {
+        _id: movie._id,
+        tmdbId: movie.tmdbId,
+        category: movie.category,
+        title: movie.title,
+        overview: movie.overview,
+        posterPath: movie.posterPath,
+        backdropPath: null,
+        voteAverage: movie.voteAverage,
+        releaseDate: movie.releaseDate,
+        runtime: null,
+        genres: [],
+        cast: [],
+        crew: [],
+        trailerKey: null,
+        stills: [],
+      };
+    }
   }
 }

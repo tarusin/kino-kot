@@ -1,0 +1,345 @@
+@use '../../styles/variables' as *;
+
+.movie-detail {
+  padding: rem(24) 0 rem(48);
+
+  &__container {
+    @include container;
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(32);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin-bottom: rem(20);
+
+    span:not(:last-child)::after {
+      content: '·';
+      margin-left: rem(12);
+    }
+  }
+
+  // Медиа-блок: постер + трейлер
+  &__media {
+    display: flex;
+    gap: rem(16);
+    margin-bottom: rem(20);
+
+    @media (min-width: $breakpoint-md) {
+      gap: rem(24);
+    }
+  }
+
+  &__poster {
+    position: relative;
+    flex-shrink: 0;
+    width: rem(140);
+    aspect-ratio: 2 / 3;
+    border-radius: rem(12);
+    overflow: hidden;
+    background: $color-gray;
+
+    img {
+      object-fit: cover;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(220);
+    }
+
+    @media (min-width: $breakpoint-lg) {
+      width: rem(280);
+    }
+  }
+
+  &__trailer {
+    flex: 1;
+    position: relative;
+    border-radius: rem(12);
+    overflow: hidden;
+    background: #000;
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  }
+
+  &__backdrop {
+    flex: 1;
+    position: relative;
+    border-radius: rem(12);
+    overflow: hidden;
+    background: $color-gray;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  // Жанры + рейтинги + кнопка
+  &__info-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: rem(16);
+    margin-bottom: rem(32);
+
+    @media (min-width: $breakpoint-md) {
+      gap: rem(24);
+    }
+  }
+
+  &__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(8);
+  }
+
+  &__genre {
+    display: inline-block;
+    padding: rem(4) rem(12);
+    font-size: rem(12);
+    font-weight: 500;
+    color: white;
+    background: $color-gradient;
+    border-radius: rem(20);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(13);
+      padding: rem(6) rem(14);
+    }
+  }
+
+  &__ratings {
+    display: flex;
+    align-items: center;
+    gap: rem(16);
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: rem(6);
+  }
+
+  &__rating-value {
+    font-size: rem(16);
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__review-btn {
+    @include gradient-button;
+    padding: rem(10) rem(24);
+    font-size: rem(14);
+    margin-left: auto;
+
+    @media (min-width: $breakpoint-md) {
+      padding: rem(12) rem(28);
+      font-size: rem(15);
+    }
+  }
+
+  // Вкладки
+  &__tabs {
+    scroll-margin-top: rem(80);
+  }
+
+  &__tab-bar {
+    display: flex;
+    gap: rem(4);
+    border-bottom: 1px solid $color-gray-dark;
+    margin-bottom: rem(24);
+    overflow-x: auto;
+  }
+
+  &__tab {
+    padding: rem(12) rem(16);
+    font-size: rem(13);
+    font-weight: 500;
+    color: $color-text-secondary;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+
+    &:hover {
+      color: $color-text;
+    }
+
+    &--active {
+      color: $color-primary;
+      border-bottom-color: $color-primary;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(14);
+      padding: rem(12) rem(20);
+    }
+  }
+
+  &__tab-content {
+    min-height: rem(200);
+  }
+}
+
+// Вкладка: Отзывы
+.reviews-tab {
+  &__auth-message {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin: 0 0 rem(20);
+  }
+
+  &__link {
+    color: $color-primary;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__empty {
+    font-size: rem(15);
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+// Вкладка: Описание
+.description-tab {
+  &__text {
+    font-size: rem(15);
+    line-height: 1.7;
+    color: $color-text;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(16);
+    }
+  }
+}
+
+// Вкладка: Актеры
+.cast-tab {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+  }
+
+  &__photo {
+    position: relative;
+    flex-shrink: 0;
+    width: rem(48);
+    height: rem(48);
+    border-radius: 50%;
+    overflow: hidden;
+    background: $color-gray;
+
+    img {
+      object-fit: cover;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(56);
+      height: rem(56);
+    }
+  }
+
+  &__placeholder {
+    width: 100%;
+    height: 100%;
+    background: $color-gray-dark;
+  }
+
+  &__info {
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: rem(14);
+    font-weight: 600;
+    color: $color-text;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(15);
+    }
+  }
+
+  &__role {
+    font-size: rem(12);
+    color: $color-text-secondary;
+    margin: rem(2) 0 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(13);
+    }
+  }
+
+  &__empty {
+    font-size: rem(15);
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+// Вкладка: Кадры
+.stills-tab {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: rem(12);
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &__item {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: rem(8);
+    overflow: hidden;
+    background: $color-gray;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  &__empty {
+    font-size: rem(15);
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
