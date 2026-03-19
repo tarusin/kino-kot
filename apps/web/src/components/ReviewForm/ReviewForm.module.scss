@@ -1,0 +1,119 @@
+@use '../../styles/variables' as *;
+
+.review-form {
+  margin-bottom: rem(32);
+
+  &__rating-row {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+    margin-bottom: rem(16);
+    flex-wrap: wrap;
+  }
+
+  &__avatar {
+    width: rem(48);
+    height: rem(48);
+    border-radius: 50%;
+    background: $color-text;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(20);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__paws {
+    display: flex;
+    gap: rem(2);
+  }
+
+  &__paw {
+    background: none;
+    border: none;
+    padding: rem(2);
+    cursor: pointer;
+    transition: transform 0.15s;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+  }
+
+  &__rating-label {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    white-space: nowrap;
+
+    strong {
+      font-size: rem(18);
+      font-weight: 700;
+      color: $color-text;
+    }
+  }
+
+  &__input-row {
+    display: flex;
+    gap: rem(12);
+    margin-bottom: rem(12);
+  }
+
+  &__textarea {
+    flex: 1;
+    padding: rem(12) rem(16);
+    font-size: rem(14);
+    font-family: inherit;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__submit {
+    @include gradient-button;
+    padding: rem(12) rem(28);
+    font-size: rem(14);
+    flex-shrink: 0;
+    align-self: flex-start;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__agreement {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    font-size: rem(13);
+    color: $color-text-secondary;
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: rem(16);
+      height: rem(16);
+      accent-color: $color-primary;
+    }
+  }
+
+  &__agreement-link {
+    color: $color-text-secondary;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-text;
+    }
+  }
+}

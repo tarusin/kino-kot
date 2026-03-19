@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface User {
   id: string;
@@ -49,6 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const data = await res.json();
     setUser(data.user);
+    toast.success('Вы вошли в аккаунт');
   };
 
   const register = async (name: string, email: string, password: string) => {
@@ -66,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const data = await res.json();
     setUser(data.user);
+    toast.success('Регистрация прошла успешно');
   };
 
   const logout = async () => {
@@ -74,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       credentials: 'include',
     });
     setUser(null);
+    toast.success('Вы вышли из аккаунта');
   };
 
   return (

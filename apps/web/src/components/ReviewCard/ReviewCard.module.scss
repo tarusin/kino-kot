@@ -1,0 +1,70 @@
+@use '../../styles/variables' as *;
+
+.review-card {
+  padding: rem(16) 0;
+  border-bottom: 1px solid $color-gray;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+    margin-bottom: rem(10);
+    flex-wrap: wrap;
+  }
+
+  &__avatar {
+    width: rem(36);
+    height: rem(36);
+    border-radius: 50%;
+    background: $color-text;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(14);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+  }
+
+  &__name {
+    font-size: rem(14);
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__date {
+    font-size: rem(12);
+    color: $color-text-secondary;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: rem(2);
+    margin-left: auto;
+  }
+
+  &__rating-value {
+    font-size: rem(13);
+    font-weight: 600;
+    color: $color-text;
+    margin-left: rem(6);
+  }
+
+  &__text {
+    font-size: rem(14);
+    line-height: 1.6;
+    color: $color-text;
+    margin: 0;
+  }
+}

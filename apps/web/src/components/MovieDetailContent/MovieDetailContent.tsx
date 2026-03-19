@@ -1,11 +1,23 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import ReviewForm from '@/components/ReviewForm/ReviewForm';
+import ReviewCard from '@/components/ReviewCard/ReviewCard';
 import type { MovieDetail } from '@/types/movie';
 import styles from './MovieDetailContent.module.scss';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+interface ReviewData {
+  _id: string;
+  userName: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+}
 
 interface MovieDetailContentProps {
   movie: MovieDetail;
@@ -14,7 +26,7 @@ interface MovieDetailContentProps {
 type TabKey = 'reviews' | 'description' | 'cast' | 'stills';
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'reviews', label: 'Об отзывах' },
+  { key: 'reviews', label: 'Отзывы' },
   { key: 'description', label: 'Описание' },
   { key: 'cast', label: 'Актеры и команда' },
   { key: 'stills', label: 'Кадры' },
@@ -35,8 +47,31 @@ function formatRuntime(minutes: number): string {
 
 export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('reviews');
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { user, loading } = useAuth();
+
+  const fetchReviews = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/reviews/movie/${movie._id}`);
+      if (res.ok) {
+        setReviews(await res.json());
+      }
+    } catch {
+      // ignore
+    } finally {
+      setReviewsLoading(false);
+    }
+  }, [movie._id]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  const userHasReview = user
+    ? reviews.some((r: any) => r.userId === user.id)
+    : false;
 
   const year = movie.releaseDate
     ? new Date(movie.releaseDate).getFullYear()
@@ -134,12 +169,14 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
             </div>
           </div>
 
-          <button
-            className={styles['movie-detail__review-btn']}
-            onClick={handleReviewClick}
-          >
-            Оставить отзыв
-          </button>
+          {!userHasReview && (
+            <button
+              className={styles['movie-detail__review-btn']}
+              onClick={handleReviewClick}
+            >
+              Оставить отзыв
+            </button>
+          )}
         </div>
 
         {/* Вкладки */}
@@ -162,7 +199,15 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 
           <div className={styles['movie-detail__tab-content']}>
             {activeTab === 'reviews' && (
-              <ReviewsTab user={user} loading={loading} />
+              <ReviewsTab
+                user={user}
+                loading={loading}
+                movieId={movie._id}
+                reviews={reviews}
+                reviewsLoading={reviewsLoading}
+                userHasReview={userHasReview}
+                onReviewSubmitted={fetchReviews}
+              />
             )}
             {activeTab === 'description' && (
               <DescriptionTab overview={movie.overview} />
@@ -183,18 +228,32 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 function ReviewsTab({
   user,
   loading,
+  movieId,
+  reviews,
+  reviewsLoading,
+  userHasReview,
+  onReviewSubmitted,
 }: {
   user: { id: string; name: string; email: string } | null;
   loading: boolean;
+  movieId: string;
+  reviews: ReviewData[];
+  reviewsLoading: boolean;
+  userHasReview: boolean;
+  onReviewSubmitted: () => void;
 }) {
   if (loading) return null;
 
   return (
     <div className={styles['reviews-tab']}>
       {user ? (
-        <p className={styles['reviews-tab__auth-message']}>
-          {user.name}, вы можете оставить отзыв
-        </p>
+        !userHasReview && (
+          <ReviewForm
+            movieId={movieId}
+            user={user}
+            onReviewSubmitted={onReviewSubmitted}
+          />
+        )
       ) : (
         <p className={styles['reviews-tab__auth-message']}>
           Чтобы оставить отзыв, вам нужно{' '}
@@ -203,7 +262,24 @@ function ReviewsTab({
           </Link>
         </p>
       )}
-      <p className={styles['reviews-tab__empty']}>Отзывов пока нет</p>
+
+      {reviewsLoading ? (
+        <p className={styles['reviews-tab__empty']}>Загрузка отзывов...</p>
+      ) : reviews.length === 0 ? (
+        <p className={styles['reviews-tab__empty']}>Отзывов пока нет</p>
+      ) : (
+        <div className={styles['reviews-tab__list']}>
+          {reviews.map((review) => (
+            <ReviewCard
+              key={review._id}
+              userName={review.userName}
+              rating={review.rating}
+              text={review.text}
+              createdAt={review.createdAt}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

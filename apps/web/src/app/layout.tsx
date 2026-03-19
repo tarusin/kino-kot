@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Montserrat_Alternates } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '../context/AuthContext';
 import './globals.scss';
 
@@ -21,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={montserrat.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <Toaster position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

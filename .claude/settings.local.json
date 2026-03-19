@@ -16,7 +16,9 @@
       "Bash(curl -s http://localhost:3001/api/movies/popular)",
       "Bash(python3 -c \"import sys,json; m=json.load\\(sys.stdin\\); print\\(m[0][''''_id''''], m[0][''''title'''']\\)\")",
       "Bash(curl -s http://localhost:3000/films/69bbf8666b1b85b4d114f8dd)",
-      "Bash(pkill -f \"nest start\")"
+      "Bash(pkill -f \"nest start\")",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
