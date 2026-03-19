@@ -8,7 +8,8 @@
       "Bash(pkill -f \"next dev\")",
       "Bash(npm run:*)",
       "Bash(npm install:*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "Bash(node:*)"
     ]
   }
 }

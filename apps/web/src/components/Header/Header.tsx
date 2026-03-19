@@ -1,7 +1,13 @@
+'use client';
+
 import Image from 'next/image';
+import Link from 'next/link';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Header.module.scss';
 
 export default function Header() {
+  const { user, loading, logout } = useAuth();
+
   return (
     <header className={styles['header']}>
       <div className={styles['header__wrap']}>
@@ -26,7 +32,20 @@ export default function Header() {
               className={styles['header__search-input']}
             />
           </div>
-          <button className={styles['header__login-btn']}>Войти</button>
+          {!loading && (
+            user ? (
+              <div className={styles['header__user']}>
+                <span className={styles['header__user-name']}>{user.name}</span>
+                <button className={styles['header__logout-btn']} onClick={logout}>
+                  Выйти
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className={styles['header__login-btn']}>
+                Войти
+              </Link>
+            )
+          )}
         </div>
       </div>
     </header>

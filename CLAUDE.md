@@ -34,15 +34,19 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Env-файлы
 
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT` (шаблон: `.env.example`)
-- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET` (шаблон: `.env.example`)
+- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
 
 ## Backend (apps/api/)
 
 - **Глобальный префикс**: `/api`
-- **CORS**: разрешён `http://localhost:3000`
+- **CORS**: разрешён `http://localhost:3000` с `credentials: true`
+- **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
 - **MoviesModule**: схема Movie (Mongoose, поле `category` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид
-- **Эндпоинты**: `GET /api/movies`, `GET /api/movies/popular`, `GET /api/movies/top-rated`
+- **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService
+- **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
+- **Эндпоинты фильмов**: `GET /api/movies`, `GET /api/movies/popular`, `GET /api/movies/top-rated`
+- **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
 - Авто-сид: при старте, если БД пуста, загружает popular + top_rated фильмы из TMDB (~40 шт.)
 
 ## Правила стилей
@@ -58,7 +62,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Компоненты (apps/web/src/components/)
 
-- **Header** — логотип, навигация, поиск, кнопка "Войти"
+- **Header** — client-компонент, логотип, навигация, поиск, кнопка "Войти"/"Выйти" (зависит от авторизации)
+- **AuthForm** — переиспользуемая обёртка для форм авторизации (карточка, заголовок, submit, footer-ссылка)
+- **FormInput** — поле ввода с иконкой слева, toggle видимости пароля, состояние ошибки
 - **HeroBanner** — заголовок + CTA + изображение кота
 - **CategoryCards** — сетка карточек категорий (заглушки)
 - **MovieSlider** — client-компонент, горизонтальный слайдер с навигацией стрелками (props: `title`, `movies?`)
@@ -70,6 +76,15 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 - `/` — главная (async серверный компонент, два слайдера: "Топ фильмов" и "Популярные" с данными из API)
 - `/films` — популярные фильмы с реальными данными из API
+- `/login` — страница входа (client component, AuthForm + FormInput)
+- `/register` — страница регистрации (client component, AuthForm + FormInput)
+
+## Авторизация
+
+- **AuthContext** (`apps/web/src/context/AuthContext.tsx`) — React Context с `AuthProvider`, хук `useAuth()`
+- Состояние: `user`, `loading`, методы `login()`, `register()`, `logout()`
+- Токены хранятся в httpOnly cookies (access_token + refresh_token), отправляются через `credentials: 'include'`
+- При монтировании AuthProvider вызывает `GET /api/auth/me` для восстановления сессии
 
 ## Особенности конфигурации
 

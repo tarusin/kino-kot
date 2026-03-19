@@ -1,0 +1,65 @@
+@use '../../styles/variables' as *;
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6);
+
+  &__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: $color-primary;
+    }
+
+    &--error {
+      border-color: $color-primary;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    left: rem(14);
+    color: $color-text-secondary;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    padding: rem(12) rem(12) rem(12) rem(44);
+    border: none;
+    border-radius: rem(8);
+    font-size: rem(14);
+    font-family: $font-family;
+    outline: none;
+    background: transparent;
+    color: $color-text;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+  }
+
+  &__toggle {
+    position: absolute;
+    left: rem(14);
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: $color-text-secondary;
+  }
+
+  &__error {
+    font-size: rem(12);
+    color: $color-primary;
+    padding-left: rem(4);
+  }
+}

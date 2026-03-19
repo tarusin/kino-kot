@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Montserrat_Alternates } from 'next/font/google';
+import { AuthProvider } from '../context/AuthContext';
 import './globals.scss';
 
 const montserrat = Montserrat_Alternates({
@@ -19,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
