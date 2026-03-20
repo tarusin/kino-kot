@@ -51,12 +51,6 @@ export default function MovieSlider({ title, movies }: MovieSliderProps) {
                 <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            <a href="#" className={styles['movie-slider__more']}>
-              Смотреть все
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
           </div>
         </div>
         <div className={styles['movie-slider__track']} ref={trackRef}>

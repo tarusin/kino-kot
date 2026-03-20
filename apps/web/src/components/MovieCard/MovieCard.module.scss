@@ -4,11 +4,13 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  height: 100%;
 }
 
 .card {
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border: 1px solid $color-gray-dark;
   border-radius: rem(12);
@@ -18,7 +20,6 @@
 
   &:hover {
     transform: translateY(rem(-4));
-    box-shadow: 0 rem(6) rem(16) rgba(0, 0, 0, 0.12);
   }
 
   &__poster {
@@ -64,6 +65,7 @@
   }
 
   &__info {
+    flex-grow: 1;
     padding: rem(8) rem(10);
 
     @media (min-width: $breakpoint-sm) {
