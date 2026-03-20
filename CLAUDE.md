@@ -43,7 +43,8 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **CORS**: разрешён `http://localhost:3000` с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
 - **MoviesModule**: схема Movie (Mongoose, поле `category` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид
-- **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService
+- **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
+- **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
 - **Эндпоинты фильмов**: `GET /api/movies`, `GET /api/movies/popular`, `GET /api/movies/top-rated`
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
@@ -75,6 +76,8 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
+- **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
+- **EditProfileModal** — модалка редактирования профиля (имя, email, аватар-заглушка с инициалом, "Загрузить фото" — в разработке)
 - **Footer** — логотип, копирайт, навигация
 
 ## Страницы
@@ -83,11 +86,12 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/films` — популярные фильмы с реальными данными из API
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput)
+- `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования)
 
 ## Авторизация
 
 - **AuthContext** (`apps/web/src/context/AuthContext.tsx`) — React Context с `AuthProvider`, хук `useAuth()`
-- Состояние: `user`, `loading`, методы `login()`, `register()`, `logout()`
+- Состояние: `user`, `loading`, методы `login()`, `register()`, `logout()`, `updateUser()`
 - Токены хранятся в httpOnly cookies (access_token + refresh_token), отправляются через `credentials: 'include'`
 - При монтировании AuthProvider вызывает `GET /api/auth/me` для восстановления сессии
 - Toast-уведомления (react-hot-toast) при login/register/logout, `<Toaster>` в layout.tsx

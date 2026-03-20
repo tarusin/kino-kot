@@ -1,0 +1,67 @@
+@use '../../styles/variables' as *;
+
+.edit-profile {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+
+  &__avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(12);
+  }
+
+  &__avatar {
+    width: rem(80);
+    height: rem(80);
+    border-radius: 50%;
+    background: #1C2B5F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__initial {
+    font-size: rem(32);
+    font-weight: 700;
+    color: white;
+  }
+
+  &__upload {
+    display: flex;
+    align-items: center;
+    gap: rem(6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: rem(14);
+    font-family: $font-family;
+    font-weight: 500;
+    color: $color-primary;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__submit {
+    @include gradient-button;
+    width: 100%;
+    padding: rem(14);
+    font-size: rem(16);
+    font-family: $font-family;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

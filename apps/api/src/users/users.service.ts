@@ -22,4 +22,11 @@ export class UsersService {
   }): Promise<User> {
     return this.userModel.create(data);
   }
+
+  async updateProfile(
+    id: string,
+    data: { name?: string; email?: string },
+  ): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(id, data, { new: true });
+  }
 }

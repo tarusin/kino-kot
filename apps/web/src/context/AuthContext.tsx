@@ -15,6 +15,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (data: { name?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -80,8 +81,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.success('Вы вышли из аккаунта');
   };
 
+  const updateUser = async (data: { name?: string }) => {
+    const res = await fetch(`${API_URL}/users/profile`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Ошибка обновления профиля');
+    }
+
+    const result = await res.json();
+    setUser(result.user);
+    toast.success('Профиль обновлён');
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

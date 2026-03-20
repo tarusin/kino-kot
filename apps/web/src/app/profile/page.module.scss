@@ -1,0 +1,136 @@
+@use '../../styles/variables' as *;
+
+.profile {
+  padding: rem(24) 0 rem(48);
+  min-height: calc(100vh - 13rem);
+
+  &__container {
+    @include container;
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 rem(24);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(32);
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    gap: rem(8);
+    border-bottom: 1px solid $color-gray-dark;
+    margin-bottom: rem(32);
+    overflow-x: auto;
+  }
+
+  &__tab {
+    padding: rem(12) rem(16);
+    font-size: rem(14);
+    font-weight: 500;
+    font-family: $font-family;
+    color: $color-text-secondary;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+
+    &:hover {
+      color: $color-text;
+    }
+
+    &--active {
+      color: $color-primary;
+      border-bottom-color: $color-primary;
+    }
+  }
+
+  &__info {
+
+    @media (min-width: $breakpoint-md) {
+      align-items: flex-start;
+    }
+
+    &-top {
+      display: flex;
+      align-items: center;
+      gap: rem(24);
+      margin-bottom: rem(40);
+    }
+  }
+
+  &__avatar {
+    width: rem(96);
+    height: rem(96);
+    border-radius: 50%;
+    background: #2c5581;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(120);
+      height: rem(120);
+    }
+  }
+
+  &__initial {
+    font-size: rem(36);
+    font-weight: 700;
+    color: white;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(44);
+    }
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    width: 100%;
+    max-width: rem(400);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  &__label {
+    font-size: rem(12);
+    font-weight: 500;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: rem(16);
+    font-weight: 500;
+    color: $color-text;
+  }
+
+  &__edit-btn {
+    @include gradient-button;
+    padding: rem(12) rem(32);
+    font-size: rem(14);
+    font-family: $font-family;
+  }
+
+  &__stub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: rem(200);
+    color: $color-text-secondary;
+    font-size: rem(16);
+  }
+}
