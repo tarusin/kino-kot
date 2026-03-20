@@ -81,6 +81,57 @@ export class ReviewsService {
     };
   }
 
+  async findByUser(userId: string, page: number, limit: number) {
+    const userOid = new Types.ObjectId(userId);
+    const skip = (page - 1) * limit;
+
+    const result = await this.reviewModel.aggregate([
+      { $match: { userId: userOid } },
+      { $sort: { createdAt: -1 as const } },
+      {
+        $facet: {
+          metadata: [{ $count: 'total' }],
+          reviews: [
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: 'movies',
+                localField: 'movieId',
+                foreignField: '_id',
+                as: 'movie',
+              },
+            },
+            { $unwind: '$movie' },
+            {
+              $project: {
+                rating: 1,
+                text: 1,
+                userName: 1,
+                createdAt: 1,
+                movie: {
+                  _id: '$movie._id',
+                  title: '$movie.title',
+                  posterPath: '$movie.posterPath',
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    const { metadata, reviews } = result[0];
+    const total = metadata[0]?.total || 0;
+
+    return {
+      reviews,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async findByMovie(movieId: string, userId?: string) {
     const movieOid = new Types.ObjectId(movieId);
 

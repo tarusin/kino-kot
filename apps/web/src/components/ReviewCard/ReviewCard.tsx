@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
+import { getInitials } from '@/utils/getInitials';
 import styles from './ReviewCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -35,7 +36,7 @@ export default function ReviewCard({
   const [userReaction, setUserReaction] = useState(initialReaction);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const initial = userName[0]?.toUpperCase() || '?';
+  const initials = getInitials(userName);
   const date = new Date(createdAt).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
@@ -111,7 +112,7 @@ export default function ReviewCard({
   return (
     <div className={ styles['review-card'] }>
       <div className={ styles['review-card__left'] }>
-        <div className={ styles['review-card__avatar'] }>{ initial }</div>
+        <div className={ styles['review-card__avatar'] }>{ initials }</div>
         <div className={ styles['review-card__rating-badge'] }>
           <Image
             src="/icons/rating-paw-full.svg"

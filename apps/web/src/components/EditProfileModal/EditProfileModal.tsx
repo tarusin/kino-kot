@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import Modal from '@/components/Modal/Modal';
 import FormInput from '@/components/FormInput/FormInput';
 import { useAuth } from '@/context/AuthContext';
+import { getInitials } from '@/utils/getInitials';
 import styles from './EditProfileModal.module.scss';
 
 interface EditProfileModalProps {
@@ -50,14 +51,14 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
 
   if (!user) return null;
 
-  const initial = user.name.charAt(0).toUpperCase();
+  const initials = getInitials(user.name);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Редактирование профиля">
       <form className={styles['edit-profile']} onSubmit={handleSubmit}>
         <div className={styles['edit-profile__avatar-section']}>
           <div className={styles['edit-profile__avatar']}>
-            <span className={styles['edit-profile__initial']}>{initial}</span>
+            <span className={styles['edit-profile__initial']}>{initials}</span>
           </div>
           <button
             type="button"

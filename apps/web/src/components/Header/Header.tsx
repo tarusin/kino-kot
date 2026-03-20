@@ -3,16 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
+import { getInitials } from '@/utils/getInitials';
 import styles from './Header.module.scss';
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join('');
-}
 
 export default function Header() {
   const { user, loading, logout } = useAuth();

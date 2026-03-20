@@ -1,14 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import EditProfileModal from '@/components/EditProfileModal/EditProfileModal';
+import ProfileReviewCard from '@/components/ProfileReviewCard/ProfileReviewCard';
+import Pagination from '@/components/Pagination/Pagination';
 import { useAuth } from '@/context/AuthContext';
+import { getInitials } from '@/utils/getInitials';
 import styles from './page.module.scss';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
 type TabKey = 'info' | 'reviews';
+
+interface UserReview {
+  _id: string;
+  rating: number;
+  text: string;
+  userName: string;
+  createdAt: string;
+  movie: {
+    _id: string;
+    title: string;
+    posterPath: string | null;
+  };
+}
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'info', label: 'Личная информация' },
@@ -21,17 +39,46 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [reviews, setReviews] = useState<UserReview[]>([]);
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [reviewsTotalPages, setReviewsTotalPages] = useState(0);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  const fetchMyReviews = useCallback(async (page: number) => {
+    setReviewsLoading(true);
+    try {
+      const res = await fetch(`${ API_URL }/reviews/me?page=${ page }&limit=5`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data.reviews);
+        setReviewsTotalPages(data.totalPages);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setReviewsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
   }, [loading, user, router]);
 
+  useEffect(() => {
+    if (activeTab === 'reviews' && user) {
+      fetchMyReviews(reviewsPage);
+    }
+  }, [activeTab, reviewsPage, user, fetchMyReviews]);
+
   if (loading || !user) {
     return null;
   }
 
-  const initial = user.name.charAt(0).toUpperCase();
+  const initials = getInitials(user.name);
 
   return (
     <>
@@ -57,7 +104,7 @@ export default function ProfilePage() {
             <div className={ styles['profile__info'] }>
               <div className={ styles['profile__info-top'] }>
                 <div className={ styles['profile__avatar'] }>
-                  <span className={ styles['profile__initial'] }>{ initial }</span>
+                  <span className={ styles['profile__initial'] }>{ initials }</span>
                 </div>
 
                 <div className={ styles['profile__fields'] }>
@@ -83,8 +130,38 @@ export default function ProfilePage() {
           ) }
 
           { activeTab === 'reviews' && (
-            <div className={ styles['profile__stub'] }>
-              <p>Раздел в разработке</p>
+            <div className={ styles['profile__reviews'] }>
+              { reviewsLoading ? (
+                <div className={ styles['profile__reviews-loading'] }>
+                  <p>Загрузка отзывов...</p>
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className={ styles['profile__reviews-empty'] }>
+                  <p>У вас пока нет отзывов</p>
+                </div>
+              ) : (
+                <>
+                  { reviews.map((review) => (
+                    <ProfileReviewCard
+                      key={ review._id }
+                      movieTitle={ review.movie.title }
+                      moviePosterPath={ review.movie.posterPath }
+                      movieId={ review.movie._id }
+                      userName={ review.userName }
+                      rating={ review.rating }
+                      text={ review.text }
+                      createdAt={ review.createdAt }
+                    />
+                  )) }
+                  <div className={ styles['profile__reviews-pagination'] }>
+                    <Pagination
+                      currentPage={ reviewsPage }
+                      totalPages={ reviewsTotalPages }
+                      onPageChange={ setReviewsPage }
+                    />
+                  </div>
+                </>
+              ) }
             </div>
           ) }
         </div>

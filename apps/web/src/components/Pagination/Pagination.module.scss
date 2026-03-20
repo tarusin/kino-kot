@@ -1,0 +1,62 @@
+@use '../../styles/variables' as *;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem(4);
+
+  @media (min-width: $breakpoint-md) {
+    gap: rem(8);
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: rem(36);
+    height: rem(36);
+    padding: 0 rem(8);
+    border: none;
+    border-radius: rem(8);
+    background: none;
+    color: $color-text;
+    font-size: rem(14);
+    font-weight: 500;
+    font-family: $font-family;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+
+    &:hover:not(:disabled) {
+      background: $color-gray;
+    }
+
+    &:disabled {
+      color: $color-gray-dark;
+      cursor: default;
+    }
+
+    &--active {
+      background: $color-primary;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: $color-primary;
+      }
+    }
+
+    &--arrow {
+      color: $color-text-secondary;
+    }
+  }
+
+  &__ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: rem(36);
+    height: rem(36);
+    color: $color-text-secondary;
+    font-size: rem(14);
+  }
+}

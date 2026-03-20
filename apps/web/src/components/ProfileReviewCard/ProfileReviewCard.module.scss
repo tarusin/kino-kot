@@ -1,0 +1,148 @@
+@use '../../styles/variables' as *;
+
+.profile-review-card {
+  background: #FFFBF9;
+  box-shadow: 0 10px 60px 0 #0000001A;
+  padding: rem(16);
+  border-radius: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: rem(16);
+
+  @media (min-width: $breakpoint-md) {
+    padding: rem(24);
+    gap: rem(24);
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__poster-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  &__poster {
+    border-radius: rem(8);
+    object-fit: cover;
+    width: rem(90);
+    height: rem(135);
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(120);
+      height: rem(180);
+    }
+  }
+
+  &__poster-placeholder {
+    width: rem(90);
+    height: rem(135);
+    border-radius: rem(8);
+    background: $color-gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-secondary;
+    font-size: rem(12);
+    text-align: center;
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(120);
+      height: rem(180);
+    }
+  }
+
+  &__rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(6);
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+    border-radius: rem(12);
+    padding: rem(4) rem(10);
+    font-size: rem(13);
+    font-weight: 600;
+    margin-top: rem(8);
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+
+    &-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__movie-title {
+    font-size: rem(16);
+    font-weight: 600;
+    color: $color-text;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(18);
+    }
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__date {
+    font-size: rem(13);
+    color: $color-text-secondary;
+    margin-top: rem(4);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(14);
+    }
+  }
+
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    margin-top: rem(12);
+  }
+
+  &__avatar {
+    width: rem(32);
+    height: rem(32);
+    border-radius: 50%;
+    background: #2c5581;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(14);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: rem(14);
+    font-weight: 500;
+    color: $color-text;
+  }
+
+  &__text {
+    font-size: rem(14);
+    line-height: 1.5;
+    color: #10203199;
+    margin: rem(5) 0 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(16);
+    }
+  }
+}

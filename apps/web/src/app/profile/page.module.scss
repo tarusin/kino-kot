@@ -125,12 +125,27 @@
     font-family: $font-family;
   }
 
-  &__stub {
+  &__reviews {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+
+    @media (min-width: $breakpoint-md) {
+      gap: rem(24);
+    }
+  }
+
+  &__reviews-empty,
+  &__reviews-loading {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: rem(200);
     color: $color-text-secondary;
     font-size: rem(16);
+  }
+
+  &__reviews-pagination {
+    margin-top: rem(8);
   }
 }
