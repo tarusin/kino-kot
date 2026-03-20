@@ -60,7 +60,7 @@ export default function LoginPage() {
           <FormInput
             name="email"
             placeholder="Email"
-            icon="/images/icons/mail.svg"
+            icon="/icons/mail.svg"
             value={form.email}
             onChange={handleChange}
             error={errors.email}
@@ -69,7 +69,7 @@ export default function LoginPage() {
             type="password"
             name="password"
             placeholder="Пароль"
-            icon="/images/icons/eye-show.svg"
+            icon="/icons/eye-show.svg"
             value={form.password}
             onChange={handleChange}
             error={errors.password}

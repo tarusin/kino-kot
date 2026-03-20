@@ -12,6 +12,9 @@ const montserrat = Montserrat_Alternates({
 export const metadata: Metadata = {
   title: 'КиноКот — фильмы, сериалы, отзывы',
   description: 'КиноКот поможет вам определить вкус в фильмографии. Ищите фильмы, сериалы, мультфильмы и делитесь отзывами.',
+  icons: {
+    icon: '/images/favicon.ico',
+  },
 };
 
 export default function RootLayout({
