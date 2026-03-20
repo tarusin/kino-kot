@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MoviesService } from './movies.service.js';
 
 @Controller('movies')
@@ -13,6 +13,14 @@ export class MoviesController {
   @Get('top-rated')
   findTopRated() {
     return this.moviesService.findByCategory('top_rated');
+  }
+
+  @Get('search')
+  search(
+    @Query('query') query: string,
+    @Query('limit') limit: string = '5',
+  ) {
+    return this.moviesService.search(query, parseInt(limit, 10) || 5);
   }
 
   @Get(':id')

@@ -42,6 +42,18 @@ export class MoviesService implements OnModuleInit {
     }
   }
 
+  async search(query: string, limit: number): Promise<Movie[]> {
+    if (!query || query.length < 2) {
+      return [];
+    }
+
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return this.movieModel
+      .find({ title: { $regex: escaped, $options: 'i' } })
+      .limit(limit + 1)
+      .exec();
+  }
+
   async findAll(): Promise<Movie[]> {
     return this.movieModel.find().limit(20).exec();
   }
