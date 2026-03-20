@@ -62,11 +62,23 @@
     }
   }
 
-  &__search-icon {
+  &__search-icon-btn {
     position: absolute;
-    left: rem(12);
-    pointer-events: none;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(40);
+    height: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
     z-index: 1;
+    padding: 0;
+  }
+
+  &__search-icon {
+    pointer-events: none;
   }
 
   &__search-spinner {

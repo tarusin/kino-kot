@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getInitials } from '@/utils/getInitials';
@@ -13,6 +14,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Header() {
   const { user, loading, logout } = useAuth();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,11 +63,23 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const navigateToSearch = useCallback(() => {
+    if (searchQuery.trim().length >= 2) {
+      router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+      setIsOpen(false);
+      setSearchQuery('');
+      setResults([]);
+    }
+  }, [searchQuery, router]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsOpen(false);
     }
-  }, []);
+    if (e.key === 'Enter') {
+      navigateToSearch();
+    }
+  }, [navigateToSearch]);
 
   const handleResultClick = () => {
     setIsOpen(false);
@@ -102,9 +116,16 @@ export default function Header() {
             {isLoading ? (
               <span className={styles['header__search-spinner']} />
             ) : (
-              <svg className={styles['header__search-icon']} width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <button
+                type="button"
+                className={styles['header__search-icon-btn']}
+                onClick={navigateToSearch}
+                aria-label="Поиск"
+              >
+                <svg className={styles['header__search-icon']} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             )}
             <input
               type="text"
@@ -168,9 +189,13 @@ export default function Header() {
                       </Link>
                     ))}
                     {hasMore && (
-                      <a href="#" className={styles['header__search-all']}>
+                      <Link
+                        href={`/search?query=${encodeURIComponent(searchQuery)}`}
+                        className={styles['header__search-all']}
+                        onClick={handleResultClick}
+                      >
                         Все результаты
-                      </a>
+                      </Link>
                     )}
                   </>
                 ) : (

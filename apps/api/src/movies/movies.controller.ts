@@ -19,8 +19,13 @@ export class MoviesController {
   search(
     @Query('query') query: string,
     @Query('limit') limit: string = '5',
+    @Query('page') page?: string,
   ) {
-    return this.moviesService.search(query, parseInt(limit, 10) || 5);
+    const parsedLimit = parseInt(limit, 10) || 5;
+    if (page) {
+      return this.moviesService.searchPaginated(query, parsedLimit, parseInt(page, 10) || 1);
+    }
+    return this.moviesService.search(query, parsedLimit);
   }
 
   @Get(':id')

@@ -72,6 +72,53 @@ export class MoviesService implements OnModuleInit {
       .exec();
   }
 
+  async searchPaginated(
+    query: string,
+    limit: number,
+    page: number,
+  ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
+    if (!query || query.length < 2) {
+      return { movies: [], total: 0, page: 1, totalPages: 0 };
+    }
+
+    try {
+      const tmdbResults = await this.tmdbService.searchMovies(query);
+
+      if (tmdbResults.length > 0) {
+        await this.movieModel.bulkWrite(
+          tmdbResults.map((movie) => ({
+            updateOne: {
+              filter: { tmdbId: movie.tmdbId, category: 'search' },
+              update: { $set: movie },
+              upsert: true,
+            },
+          })),
+        );
+      }
+    } catch (error) {
+      this.logger.error('TMDB search failed, falling back to local search', error);
+    }
+
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const filter = { title: { $regex: escaped, $options: 'i' } };
+
+    const [movies, total] = await Promise.all([
+      this.movieModel
+        .find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec(),
+      this.movieModel.countDocuments(filter),
+    ]);
+
+    return {
+      movies,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async findAll(): Promise<Movie[]> {
     return this.movieModel.find().limit(20).exec();
   }

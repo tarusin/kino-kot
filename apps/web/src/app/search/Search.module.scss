@@ -1,0 +1,49 @@
+@use '../../styles/variables' as *;
+
+.search {
+  padding: rem(40) 0;
+
+  &__wrap {
+    @include container;
+  }
+
+  &__title {
+    font-size: rem(18);
+    font-weight: 700;
+    color: $color-text;
+    margin-bottom: rem(24);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(24);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: rem(12);
+
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(20);
+    }
+
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (min-width: $breakpoint-lg) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  &__pagination {
+    margin-top: rem(32);
+  }
+
+  &__empty {
+    font-size: rem(16);
+    color: $color-text-secondary;
+    text-align: center;
+    padding: rem(60) 0;
+  }
+}
