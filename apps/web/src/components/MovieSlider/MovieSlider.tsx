@@ -68,7 +68,9 @@ export default function MovieSlider({ title, movies }: MovieSliderProps) {
                     title={movie.title}
                     posterPath={movie.posterPath}
                     voteAverage={movie.voteAverage}
+                    kinoKotRating={movie.kinoKotRating}
                     releaseDate={movie.releaseDate}
+                    genre={movie.genres?.[0]}
                   />
                 </div>
               ))

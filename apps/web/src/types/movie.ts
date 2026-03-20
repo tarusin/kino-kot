@@ -7,6 +7,7 @@ export interface Movie {
   voteAverage: number;
   releaseDate: string;
   genres: string[];
+  kinoKotRating?: number;
 }
 
 export interface MovieDetail {

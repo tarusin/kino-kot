@@ -31,6 +31,13 @@ export class ReviewsController {
     return this.reviewsService.toggleReaction(req.user.id, dto);
   }
 
+  @Get('ratings')
+  getAverageRatings(@Query('movieIds') movieIds: string) {
+    const ids = movieIds ? movieIds.split(',').filter(Boolean) : [];
+    if (ids.length === 0) return {};
+    return this.reviewsService.getAverageRatings(ids);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   findByUser(@Req() req: any, @Query() query: PaginationQueryDto) {

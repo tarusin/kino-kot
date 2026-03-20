@@ -42,7 +42,19 @@ function SearchResults() {
       );
       if (!res.ok) throw new Error();
       const data: SearchResponse = await res.json();
-      setMovies(data.movies);
+      const movieIds = data.movies.map((m) => m._id).join(',');
+      let ratings: Record<string, number> = {};
+      if (movieIds) {
+        try {
+          const ratingsRes = await fetch(`${API_URL}/reviews/ratings?movieIds=${movieIds}`);
+          if (ratingsRes.ok) ratings = await ratingsRes.json();
+        } catch {}
+      }
+      const moviesWithRatings = data.movies.map((m) => ({
+        ...m,
+        kinoKotRating: ratings[m._id],
+      }));
+      setMovies(moviesWithRatings);
       setTotalPages(data.totalPages);
     } catch {
       setMovies([]);
@@ -90,7 +102,9 @@ function SearchResults() {
                   title={movie.title}
                   posterPath={movie.posterPath}
                   voteAverage={movie.voteAverage}
+                  kinoKotRating={movie.kinoKotRating}
                   releaseDate={movie.releaseDate}
+                  genre={movie.genres?.[0]}
                 />
               ))}
             </div>

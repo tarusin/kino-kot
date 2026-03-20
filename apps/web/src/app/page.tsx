@@ -27,11 +27,31 @@ async function getTopRatedMovies(): Promise<Movie[]> {
   }
 }
 
+async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
+  if (movieIds.length === 0) return {};
+  try {
+    const res = await fetch(`${API_URL}/reviews/ratings?movieIds=${movieIds.join(',')}`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return {};
+    return res.json();
+  } catch {
+    return {};
+  }
+}
+
+function mergeRatings(movies: Movie[], ratings: Record<string, number>): Movie[] {
+  return movies.map((m) => ({ ...m, kinoKotRating: ratings[m._id] }));
+}
+
 export default async function Home() {
   const [popular, topRated] = await Promise.all([
     getPopularMovies(),
     getTopRatedMovies(),
   ]);
+
+  const allIds = [...popular, ...topRated].map((m) => m._id);
+  const ratings = await getRatings(allIds);
 
   return (
     <>
@@ -39,8 +59,8 @@ export default async function Home() {
       <main>
         <HeroBanner />
         <CategoryCards />
-        <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? topRated : undefined} />
-        <MovieSlider title="Популярные" movies={popular.length > 0 ? popular : undefined} />
+        <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} />
+        <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} />
       </main>
       <Footer />
     </>

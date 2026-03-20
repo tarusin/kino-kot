@@ -7,10 +7,12 @@ interface MovieCardProps {
   title?: string;
   posterPath?: string;
   voteAverage?: number;
+  kinoKotRating?: number;
   releaseDate?: string;
+  genre?: string;
 }
 
-export default function MovieCard({ id, title, posterPath, voteAverage, releaseDate }: MovieCardProps) {
+export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotRating, releaseDate, genre }: MovieCardProps) {
   if (!title) {
     return (
       <div className={styles['card']}>
@@ -28,6 +30,8 @@ export default function MovieCard({ id, title, posterPath, voteAverage, releaseD
     ? `https://image.tmdb.org/t/p/w500${posterPath}`
     : undefined;
 
+  const meta = [year, genre].filter(Boolean).join(' | ');
+
   const content = (
     <div className={styles['card']}>
       <div className={styles['card__poster']}>
@@ -39,15 +43,24 @@ export default function MovieCard({ id, title, posterPath, voteAverage, releaseD
             sizes="(max-width: 576px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
           />
         )}
-        {voteAverage !== undefined && (
-          <span className={styles['card__rating']}>
-            {voteAverage.toFixed(1)}
-          </span>
-        )}
+        <div className={styles['card__ratings']}>
+          {kinoKotRating !== undefined && (
+            <span className={`${styles['card__rating']} ${styles['card__rating--kk']}`}>
+              <Image src="/icons/rating-kk-white.svg" alt="KinoKot" width={14} height={14} />
+              {kinoKotRating.toFixed(1)}
+            </span>
+          )}
+          {voteAverage !== undefined && (
+            <span className={`${styles['card__rating']} ${styles['card__rating--tmdb']}`}>
+              <Image src="/icons/rating-tmdb.svg" alt="TMDB" width={14} height={14} />
+              {voteAverage.toFixed(1)}
+            </span>
+          )}
+        </div>
       </div>
       <div className={styles['card__info']}>
         <p className={styles['card__title']}>{title}</p>
-        {year && <p className={styles['card__meta']}>{year}</p>}
+        {meta && <p className={styles['card__meta']}>{meta}</p>}
       </div>
     </div>
   );

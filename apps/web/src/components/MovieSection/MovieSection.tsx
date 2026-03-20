@@ -29,7 +29,9 @@ export default function MovieSection({ title, movies }: MovieSectionProps) {
                   title={movie.title}
                   posterPath={movie.posterPath}
                   voteAverage={movie.voteAverage}
+                  kinoKotRating={movie.kinoKotRating}
                   releaseDate={movie.releaseDate}
+                  genre={movie.genres?.[0]}
                 />
               ))
             : Array.from({ length: 5 }).map((_, i) => (

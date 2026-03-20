@@ -102,16 +102,16 @@ export class TmdbService {
     }[]
   > {
     const apiKey = process.env.TMDB_API_KEY;
-    const { data } = await axios.get<TmdbResponse>(
-      `${this.baseUrl}/movie/${category}`,
-      {
+    const [{ data }, genreMap] = await Promise.all([
+      axios.get<TmdbResponse>(`${this.baseUrl}/movie/${category}`, {
         params: {
           api_key: apiKey,
           language: 'ru-RU',
           page: 1,
         },
-      },
-    );
+      }),
+      this.getGenreMap(),
+    ]);
 
     return data.results.map((movie) => ({
       tmdbId: movie.id,
@@ -121,7 +121,9 @@ export class TmdbService {
       posterPath: movie.poster_path,
       voteAverage: movie.vote_average,
       releaseDate: movie.release_date,
-      genres: [],
+      genres: movie.genre_ids
+        .map((id) => genreMap.get(id))
+        .filter((name): name is string => !!name),
     }));
   }
 

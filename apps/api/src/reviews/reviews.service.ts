@@ -132,6 +132,21 @@ export class ReviewsService {
     };
   }
 
+  async getAverageRatings(movieIds: string[]): Promise<Record<string, number>> {
+    const objectIds = movieIds.map((id) => new Types.ObjectId(id));
+
+    const result = await this.reviewModel.aggregate([
+      { $match: { movieId: { $in: objectIds } } },
+      { $group: { _id: '$movieId', avg: { $avg: '$rating' } } },
+    ]);
+
+    const ratings: Record<string, number> = {};
+    for (const item of result) {
+      ratings[item._id.toString()] = Math.round(item.avg * 10) / 10;
+    }
+    return ratings;
+  }
+
   async findByMovie(movieId: string, userId?: string) {
     const movieOid = new Types.ObjectId(movieId);
 

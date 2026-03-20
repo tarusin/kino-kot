@@ -25,6 +25,37 @@ export class MoviesService implements OnModuleInit {
       await this.seed();
     } else {
       this.logger.log(`Found ${count} movies in database`);
+      await this.backfillGenres();
+    }
+  }
+
+  private async backfillGenres() {
+    const emptyGenresCount = await this.movieModel.countDocuments({
+      $or: [{ genres: { $size: 0 } }, { genres: { $exists: false } }],
+      category: { $in: ['popular', 'top_rated'] },
+    });
+
+    if (emptyGenresCount === 0) return;
+
+    this.logger.log(`Backfilling genres for ${emptyGenresCount} movies...`);
+    try {
+      const [popular, topRated] = await Promise.all([
+        this.tmdbService.fetchMovies('popular'),
+        this.tmdbService.fetchMovies('top_rated'),
+      ]);
+
+      const allMovies = [...popular, ...topRated];
+      await Promise.all(
+        allMovies.map((movie) =>
+          this.movieModel.updateOne(
+            { tmdbId: movie.tmdbId, category: movie.category },
+            { $set: { genres: movie.genres } },
+          ),
+        ),
+      );
+      this.logger.log('Genres backfill complete');
+    } catch (error) {
+      this.logger.error('Failed to backfill genres', error);
     }
   }
 
