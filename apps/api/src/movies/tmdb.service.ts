@@ -74,6 +74,20 @@ interface TmdbImagesResponse {
 export class TmdbService {
   private readonly logger = new Logger(TmdbService.name);
   private readonly baseUrl = 'https://api.themoviedb.org/3';
+  private genreMap: Map<number, string> | null = null;
+
+  private async getGenreMap(): Promise<Map<number, string>> {
+    if (this.genreMap) return this.genreMap;
+
+    const apiKey = process.env.TMDB_API_KEY;
+    const { data } = await axios.get<{ genres: { id: number; name: string }[] }>(
+      `${this.baseUrl}/genre/movie/list`,
+      { params: { api_key: apiKey, language: 'ru-RU' } },
+    );
+
+    this.genreMap = new Map(data.genres.map((g) => [g.id, g.name]));
+    return this.genreMap;
+  }
 
   async fetchMovies(category: 'popular' | 'top_rated'): Promise<
     {
@@ -108,6 +122,45 @@ export class TmdbService {
       voteAverage: movie.vote_average,
       releaseDate: movie.release_date,
       genres: [],
+    }));
+  }
+
+  async searchMovies(query: string): Promise<
+    {
+      tmdbId: number;
+      category: string;
+      title: string;
+      overview: string;
+      posterPath: string;
+      voteAverage: number;
+      releaseDate: string;
+      genres: string[];
+    }[]
+  > {
+    const apiKey = process.env.TMDB_API_KEY;
+    const [{ data }, genreMap] = await Promise.all([
+      axios.get<TmdbResponse>(`${this.baseUrl}/search/movie`, {
+        params: {
+          api_key: apiKey,
+          query,
+          language: 'ru-RU',
+          page: 1,
+        },
+      }),
+      this.getGenreMap(),
+    ]);
+
+    return data.results.map((movie) => ({
+      tmdbId: movie.id,
+      category: 'search',
+      title: movie.title,
+      overview: movie.overview,
+      posterPath: movie.poster_path,
+      voteAverage: movie.vote_average,
+      releaseDate: movie.release_date,
+      genres: movie.genre_ids
+        .map((id) => genreMap.get(id))
+        .filter((name): name is string => !!name),
     }));
   }
 

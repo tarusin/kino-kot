@@ -123,7 +123,8 @@
   &__search-dropdown {
     position: absolute;
     top: calc(100% + rem(8));
-    left: 0;
+    right: 0;
+    left: auto;
     min-width: rem(360);
     background: #fff;
     border-radius: rem(12);
@@ -200,6 +201,13 @@
     gap: rem(4);
     font-size: rem(12);
     color: $color-text-secondary;
+  }
+
+  &__search-empty {
+    padding: rem(20) rem(16);
+    text-align: center;
+    color: $color-text-secondary;
+    font-size: rem(14);
   }
 
   &__search-all {

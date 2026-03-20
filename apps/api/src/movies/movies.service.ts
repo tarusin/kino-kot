@@ -47,6 +47,24 @@ export class MoviesService implements OnModuleInit {
       return [];
     }
 
+    try {
+      const tmdbResults = await this.tmdbService.searchMovies(query);
+
+      if (tmdbResults.length > 0) {
+        await this.movieModel.bulkWrite(
+          tmdbResults.map((movie) => ({
+            updateOne: {
+              filter: { tmdbId: movie.tmdbId, category: 'search' },
+              update: { $set: movie },
+              upsert: true,
+            },
+          })),
+        );
+      }
+    } catch (error) {
+      this.logger.error('TMDB search failed, falling back to local search', error);
+    }
+
     const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return this.movieModel
       .find({ title: { $regex: escaped, $options: 'i' } })

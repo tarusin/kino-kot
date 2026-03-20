@@ -19,7 +19,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const debouncedQuery = useDebounce(searchQuery, 300);
+  const debouncedQuery = useDebounce(searchQuery, 600);
 
   useEffect(() => {
     if (debouncedQuery.length < 2) {
@@ -113,7 +113,7 @@ export default function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              onFocus={() => results.length > 0 && setIsOpen(true)}
+              onFocus={() => debouncedQuery.length >= 2 && setIsOpen(true)}
             />
             {searchQuery && (
               <button
@@ -125,50 +125,58 @@ export default function Header() {
               </button>
             )}
 
-            {isOpen && results.length > 0 && (
+            {isOpen && (
               <div className={styles['header__search-dropdown']}>
-                {results.map((movie) => (
-                  <Link
-                    key={movie._id}
-                    href={`/films/${movie._id}`}
-                    className={styles['header__search-result']}
-                    onClick={handleResultClick}
-                  >
-                    <div className={styles['header__search-poster']}>
-                      {movie.posterPath ? (
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w92${movie.posterPath}`}
-                          alt={movie.title}
-                          width={40}
-                          height={60}
-                        />
-                      ) : (
-                        <div className={styles['header__search-poster-placeholder']} />
-                      )}
-                    </div>
-                    <div className={styles['header__search-info']}>
-                      <span className={styles['header__search-title']}>{movie.title}</span>
-                      <span className={styles['header__search-meta']}>
-                        {formatYear(movie.releaseDate)}
-                        {movie.genres?.length > 0 && ` · ${formatGenres(movie.genres)}`}
-                      </span>
-                      <div className={styles['header__search-ratings']}>
-                        <span className={styles['header__search-rating']}>
-                          <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
-                          —
-                        </span>
-                        <span className={styles['header__search-rating']}>
-                          <Image src="/icons/rating-imdb.svg" alt="IMDB" width={16} height={16} />
-                          {movie.voteAverage?.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                {hasMore && (
-                  <a href="#" className={styles['header__search-all']}>
-                    Все результаты
-                  </a>
+                {results.length > 0 ? (
+                  <>
+                    {results.map((movie) => (
+                      <Link
+                        key={movie._id}
+                        href={`/films/${movie._id}`}
+                        className={styles['header__search-result']}
+                        onClick={handleResultClick}
+                      >
+                        <div className={styles['header__search-poster']}>
+                          {movie.posterPath ? (
+                            <Image
+                              src={`https://image.tmdb.org/t/p/w92${movie.posterPath}`}
+                              alt={movie.title}
+                              width={40}
+                              height={60}
+                            />
+                          ) : (
+                            <div className={styles['header__search-poster-placeholder']} />
+                          )}
+                        </div>
+                        <div className={styles['header__search-info']}>
+                          <span className={styles['header__search-title']}>{movie.title}</span>
+                          <span className={styles['header__search-meta']}>
+                            {formatYear(movie.releaseDate)}
+                            {movie.genres?.length > 0 && ` | ${formatGenres(movie.genres)}`}
+                          </span>
+                          <div className={styles['header__search-ratings']}>
+                            <span className={styles['header__search-rating']}>
+                              <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
+                              —
+                            </span>
+                            <span className={styles['header__search-rating']}>
+                              <Image src="/icons/rating-imdb.svg" alt="IMDB" width={16} height={16} />
+                              {movie.voteAverage?.toFixed(1)}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                    {hasMore && (
+                      <a href="#" className={styles['header__search-all']}>
+                        Все результаты
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <div className={styles['header__search-empty']}>
+                    Ничего не найдено
+                  </div>
                 )}
               </div>
             )}
