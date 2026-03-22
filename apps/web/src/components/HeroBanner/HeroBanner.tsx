@@ -1,25 +1,39 @@
-import Image from 'next/image';
 import styles from './HeroBanner.module.scss';
 
 export default function HeroBanner() {
   return (
     <section className={styles['hero']}>
       <div className={styles['hero__wrap']}>
-        <div className={styles['hero__content']}>
-          <h1 className={styles['hero__title']}>
-            КиноКот поможет вам определить вкус в фильмографии
-          </h1>
-          <button className={styles['hero__cta']}>Начать дискуссию</button>
-        </div>
-        <div className={styles['hero__media']}>
-          <Image
-            src="/images/main-banner.webp"
-            alt="КиноКот — кот с попкорном"
-            width={500}
-            height={500}
-            priority
-            className={styles['hero__image']}
-          />
+        <div className={styles['banner']}>
+          <div className={styles['banner-content']}>
+            <div className={styles['banner-content__title']}>
+              <p className={styles['title-text']}>
+                КиноКот поможет вам определить вкус в фильмографии
+              </p>
+              <span
+                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-top']}`}
+              />
+            </div>
+            <div className={styles['banner-content__details']}>
+              <button className={styles['banner-content__btn']}>
+                Хочу узнать
+              </button>
+              <span
+                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_left-bottom']}`}
+              />
+              <span
+                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-top']}`}
+              />
+            </div>
+            <div className={styles['banner-content__curve']}>
+              <span
+                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_left-top']}`}
+              />
+              <span
+                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-bottom']}`}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

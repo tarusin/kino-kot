@@ -102,7 +102,7 @@ export default function Header() {
     <header className={styles['header']}>
       <div className={styles['header__wrap']}>
         <a href="/" className={styles['header__logo']}>
-          <Image src="/images/logo.svg" alt="КиноКот" width={130} height={36} />
+          <Image src="/images/logo.svg" alt="КиноКот" width={162} height={44} />
         </a>
 
         <nav className={styles['header__nav']}>

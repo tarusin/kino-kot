@@ -22,7 +22,12 @@
       "Bash(npx --cache /tmp/npm-cache tsc --noEmit --project apps/web/tsconfig.json)",
       "Bash(curl:*)",
       "Bash(python3 -m json.tool)",
-      "Bash(kill 23272)"
+      "Bash(kill 23272)",
+      "mcp__figma-remote-mcp__get_screenshot",
+      "mcp__figma-remote-mcp__whoami",
+      "mcp__figma-remote-mcp__get_design_context",
+      "mcp__figma-remote-mcp__get_metadata",
+      "WebFetch(domain:kino-kot-app.onrender.com)"
     ]
   },
   "enabledPlugins": {
