@@ -9,6 +9,7 @@ interface TmdbMovie {
   vote_average: number;
   release_date: string;
   genre_ids: number[];
+  origin_country: string[];
 }
 
 interface TmdbResponse {
@@ -30,6 +31,7 @@ interface TmdbMovieDetails {
   release_date: string;
   runtime: number | null;
   genres: TmdbGenre[];
+  origin_country: string[];
 }
 
 interface TmdbCastMember {
@@ -99,6 +101,8 @@ export class TmdbService {
       voteAverage: number;
       releaseDate: string;
       genres: string[];
+      originCountries: string[];
+      releaseYear: number | undefined;
     }[]
   > {
     const apiKey = process.env.TMDB_API_KEY;
@@ -124,6 +128,10 @@ export class TmdbService {
       genres: movie.genre_ids
         .map((id) => genreMap.get(id))
         .filter((name): name is string => !!name),
+      originCountries: movie.origin_country || [],
+      releaseYear: movie.release_date
+        ? parseInt(movie.release_date.substring(0, 4), 10)
+        : undefined,
     }));
   }
 
@@ -137,6 +145,8 @@ export class TmdbService {
       voteAverage: number;
       releaseDate: string;
       genres: string[];
+      originCountries: string[];
+      releaseYear: number | undefined;
     }[]
   > {
     const apiKey = process.env.TMDB_API_KEY;
@@ -163,7 +173,20 @@ export class TmdbService {
       genres: movie.genre_ids
         .map((id) => genreMap.get(id))
         .filter((name): name is string => !!name),
+      originCountries: movie.origin_country || [],
+      releaseYear: movie.release_date
+        ? parseInt(movie.release_date.substring(0, 4), 10)
+        : undefined,
     }));
+  }
+
+  async fetchMovieCountries(tmdbId: number): Promise<string[]> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const { data } = await axios.get<TmdbMovieDetails>(
+      `${this.baseUrl}/movie/${tmdbId}`,
+      { params: { api_key: apiKey, language: 'ru-RU' } },
+    );
+    return data.origin_country || [];
   }
 
   async fetchMovieDetails(tmdbId: number): Promise<TmdbMovieDetails> {

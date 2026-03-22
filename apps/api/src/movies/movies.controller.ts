@@ -33,6 +33,16 @@ export class MoviesController {
     return this.moviesService.getGenres();
   }
 
+  @Get('countries')
+  getCountries() {
+    return this.moviesService.getCountries();
+  }
+
+  @Get('years')
+  getYears() {
+    return this.moviesService.getYears();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.moviesService.findById(id);
@@ -41,11 +51,15 @@ export class MoviesController {
   @Get()
   findAll(
     @Query('genre') genre?: string,
+    @Query('year') year?: string,
+    @Query('country') country?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     return this.moviesService.findAll(
       genre,
+      year ? parseInt(year, 10) || undefined : undefined,
+      country || undefined,
       page ? parseInt(page, 10) || 1 : 1,
       limit ? parseInt(limit, 10) || 10 : 10,
     );

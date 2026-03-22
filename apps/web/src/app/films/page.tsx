@@ -1,7 +1,7 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import MovieCard from '@/components/MovieCard/MovieCard';
-import GenreDropdown from '@/components/GenreDropdown/GenreDropdown';
+import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import FilmsPagination from './FilmsPagination';
 import styles from './films.module.scss';
 import type { Movie } from '@/types/movie';
@@ -23,15 +23,38 @@ async function getGenres(): Promise<string[]> {
   }
 }
 
+async function getYears(): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_URL}/movies/years`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const years: number[] = await res.json();
+    return years.map(String);
+  } catch {
+    return [];
+  }
+}
+
+async function getCountries(): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_URL}/movies/countries`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 async function getMovies(
   genre?: string,
+  year?: string,
+  country?: string,
   page = 1,
 ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
   try {
     const params = new URLSearchParams();
-    if (genre) {
-      params.set('genre', genre);
-    }
+    if (genre) params.set('genre', genre);
+    if (year) params.set('year', year);
+    if (country) params.set('country', country);
     params.set('page', String(page));
     params.set('limit', String(MOVIES_PER_PAGE));
 
@@ -68,12 +91,17 @@ async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 export default async function FilmsPage({
                                           searchParams,
                                         }: {
-  searchParams: Promise<{ genre?: string; page?: string }>;
+  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string }>;
 }) {
-  const { genre, page: pageParam } = await searchParams;
+  const { genre, year, country, page: pageParam } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
 
-  const [genres, data] = await Promise.all([getGenres(), getMovies(genre, currentPage)]);
+  const [genres, years, countries, data] = await Promise.all([
+    getGenres(),
+    getYears(),
+    getCountries(),
+    getMovies(genre, year, country, currentPage),
+  ]);
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
   const moviesWithRatings = data.movies.map((m) => ({
@@ -91,9 +119,13 @@ export default async function FilmsPage({
               <h2 className={ styles['films__title'] }>Фильмы</h2>
             </div>
             <div className="films__filters">
-              <GenreDropdown
-                genres={ genres }
-                selectedGenre={ genre || null }
+              <FilmsFilters
+                genres={genres}
+                years={years}
+                countries={countries}
+                appliedGenre={genre || null}
+                appliedYear={year || null}
+                appliedCountry={country || null}
               />
             </div>
             <div className={ styles['films__grid'] }>
@@ -114,6 +146,8 @@ export default async function FilmsPage({
               currentPage={ currentPage }
               totalPages={ data.totalPages }
               genre={ genre }
+              year={ year }
+              country={ country }
             />
           </div>
         </section>

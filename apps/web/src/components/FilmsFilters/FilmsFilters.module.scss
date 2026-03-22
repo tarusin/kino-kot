@@ -1,0 +1,48 @@
+@use '../../styles/variables' as *;
+
+.films-filters {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+
+  @media (min-width: $breakpoint-md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__dropdowns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(12);
+  }
+
+  &__actions {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__apply {
+    @include gradient-button;
+    padding: rem(8) rem(24);
+    font-family: $font-family;
+    font-size: rem(14);
+  }
+
+  &__clear {
+    padding: rem(8) rem(24);
+    background: transparent;
+    border: 1px solid $color-primary;
+    border-radius: rem(8);
+    color: $color-primary;
+    cursor: pointer;
+    font-family: $font-family;
+    font-size: rem(14);
+    font-weight: 600;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba($color-primary, 0.05);
+    }
+  }
+}

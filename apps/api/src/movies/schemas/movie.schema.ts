@@ -28,6 +28,12 @@ export class Movie {
 
   @Prop([String])
   genres: string[];
+
+  @Prop([String])
+  originCountries: string[];
+
+  @Prop()
+  releaseYear: number;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);

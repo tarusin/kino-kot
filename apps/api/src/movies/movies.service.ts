@@ -23,9 +23,11 @@ export class MoviesService implements OnModuleInit {
     if (count === 0) {
       this.logger.log('Database is empty, seeding movies from TMDB...');
       await this.seed();
+      await this.backfillCountriesAndYears();
     } else {
       this.logger.log(`Found ${count} movies in database`);
       await this.backfillGenres();
+      await this.backfillCountriesAndYears();
     }
   }
 
@@ -56,6 +58,69 @@ export class MoviesService implements OnModuleInit {
       this.logger.log('Genres backfill complete');
     } catch (error) {
       this.logger.error('Failed to backfill genres', error);
+    }
+  }
+
+  private async backfillCountriesAndYears() {
+    const needsBackfill = await this.movieModel.countDocuments({
+      $or: [
+        { originCountries: { $exists: false } },
+        { releaseYear: { $exists: false } },
+      ],
+      category: { $in: ['popular', 'top_rated'] },
+    });
+
+    if (needsBackfill === 0) return;
+
+    this.logger.log(
+      `Backfilling countries and years for ${needsBackfill} movies...`,
+    );
+    try {
+      // releaseYear can be computed from releaseDate locally
+      const moviesWithoutYear = await this.movieModel.find({
+        releaseYear: { $exists: false },
+        releaseDate: { $exists: true, $ne: '' },
+      });
+
+      if (moviesWithoutYear.length > 0) {
+        await Promise.all(
+          moviesWithoutYear.map((movie) => {
+            const year = parseInt(movie.releaseDate.substring(0, 4), 10);
+            return this.movieModel.updateOne(
+              { _id: movie._id },
+              { $set: { releaseYear: isNaN(year) ? null : year } },
+            );
+          }),
+        );
+      }
+
+      // originCountries need individual TMDB detail requests
+      const moviesWithoutCountries = await this.movieModel.find({
+        $or: [
+          { originCountries: { $exists: false } },
+          { originCountries: { $size: 0 } },
+        ],
+        category: { $in: ['popular', 'top_rated'] },
+      });
+
+      for (const movie of moviesWithoutCountries) {
+        try {
+          const countries =
+            await this.tmdbService.fetchMovieCountries(movie.tmdbId);
+          await this.movieModel.updateOne(
+            { _id: movie._id },
+            { $set: { originCountries: countries } },
+          );
+        } catch {
+          this.logger.warn(
+            `Failed to fetch countries for tmdbId ${movie.tmdbId}`,
+          );
+        }
+      }
+
+      this.logger.log('Countries and years backfill complete');
+    } catch (error) {
+      this.logger.error('Failed to backfill countries and years', error);
     }
   }
 
@@ -155,12 +220,28 @@ export class MoviesService implements OnModuleInit {
     return genres.sort();
   }
 
+  async getCountries(): Promise<string[]> {
+    const countries = await this.movieModel.distinct('originCountries');
+    return countries.filter((c) => !!c).sort();
+  }
+
+  async getYears(): Promise<number[]> {
+    const years = await this.movieModel.distinct('releaseYear');
+    return years.filter((y) => !!y).sort((a, b) => b - a);
+  }
+
   async findAll(
     genre?: string,
+    year?: number,
+    country?: string,
     page = 1,
     limit = 10,
   ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
-    const filter = genre ? { genres: genre } : {};
+    const filter: Record<string, unknown> = {};
+    if (genre) filter.genres = genre;
+    if (year) filter.releaseYear = year;
+    if (country) filter.originCountries = country;
+
     const [movies, total] = await Promise.all([
       this.movieModel
         .find(filter)

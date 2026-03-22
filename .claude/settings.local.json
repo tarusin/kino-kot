@@ -19,7 +19,10 @@
       "Bash(pkill -f \"nest start\")",
       "Bash(ls:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx --cache /tmp/npm-cache tsc --noEmit --project apps/web/tsconfig.json)"
+      "Bash(npx --cache /tmp/npm-cache tsc --noEmit --project apps/web/tsconfig.json)",
+      "Bash(curl:*)",
+      "Bash(python3 -m json.tool)",
+      "Bash(kill 23272)"
     ]
   }
 }
