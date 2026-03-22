@@ -1,0 +1,97 @@
+@use '../../styles/variables' as *;
+
+.reviews-marquee {
+  padding: rem(24) 0;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: rem(40) 0;
+  }
+
+  &__wrap {
+    @include container;
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: rem(16);
+  }
+
+  &__title {
+    font-size: rem(18);
+    font-weight: 700;
+    color: $color-text;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(24);
+    }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+  }
+
+  &__arrow {
+    display: none;
+
+    @media (min-width: $breakpoint-sm) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: rem(36);
+      height: rem(36);
+      border-radius: 50%;
+      border: 1px solid $color-gray-dark;
+      background: $color-bg;
+      color: $color-text;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: $color-primary;
+        color: $color-primary;
+      }
+    }
+  }
+
+  &__track {
+    display: flex;
+    gap: rem(16);
+    overflow-x: auto;
+    padding: rem(16) 0;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__item {
+    flex: 0 0 100%;
+    min-width: 0;
+    scroll-snap-align: start;
+
+    @media (min-width: $breakpoint-md) {
+      flex: 0 0 calc((100% - #{rem(16)}) / 2);
+    }
+
+    :global(.profile-review-card) {
+      box-shadow: none;
+      border: 1px solid #eee;
+    }
+
+    // Ограничиваем текст отзыва 3 строками
+    :global(.profile-review-card__text) {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+}

@@ -38,6 +38,11 @@ export class ReviewsController {
     return this.reviewsService.getAverageRatings(ids);
   }
 
+  @Get('latest')
+  findLatest(@Query('limit') limit?: string) {
+    return this.reviewsService.findLatest(limit ? parseInt(limit, 10) : 20);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   findByUser(@Req() req: any, @Query() query: PaginationQueryDto) {

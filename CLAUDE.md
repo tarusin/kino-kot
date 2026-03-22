@@ -49,7 +49,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
 - **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
-- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
+- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
 - Авто-сид: при старте, если БД пуста, загружает popular + top_rated фильмы из TMDB (~40 шт.)
 
@@ -81,11 +81,12 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
 - **EditProfileModal** — модалка редактирования профиля (имя, email, аватар-заглушка с инициалом, "Загрузить фото" — в разработке)
+- **ReviewsMarquee** — client-компонент, двухрядный авто-скроллящийся marquee с последними отзывами (CSS @keyframes, пауза при наведении), переиспользует ProfileReviewCard
 - **Footer** — логотип, копирайт, навигация
 
 ## Страницы
 
-- `/` — главная (async серверный компонент, два слайдера: "Топ фильмов" и "Популярные" с данными из API)
+- `/` — главная (async серверный компонент, marquee "Последние отзывы" + два слайдера: "Топ фильмов" и "Популярные" с данными из API)
 - `/films` — фильмы с табами списков (Популярные, Сейчас в кино, Лучшие, Скоро) + фильтры (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все параметры в URL
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput)

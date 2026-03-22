@@ -147,6 +147,35 @@ export class ReviewsService {
     return ratings;
   }
 
+  async findLatest(limit = 20) {
+    return this.reviewModel.aggregate([
+      { $sort: { createdAt: -1 as const } },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'movies',
+          localField: 'movieId',
+          foreignField: '_id',
+          as: 'movie',
+        },
+      },
+      { $unwind: '$movie' },
+      {
+        $project: {
+          rating: 1,
+          text: 1,
+          userName: 1,
+          createdAt: 1,
+          movie: {
+            _id: '$movie._id',
+            title: '$movie.title',
+            posterPath: '$movie.posterPath',
+          },
+        },
+      },
+    ]);
+  }
+
   async findByMovie(movieId: string, userId?: string) {
     const movieOid = new Types.ObjectId(movieId);
 
