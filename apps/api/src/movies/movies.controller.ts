@@ -55,6 +55,7 @@ export class MoviesController {
     @Query('country') country?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('list') list?: string,
   ) {
     return this.moviesService.findAll(
       genre,
@@ -62,6 +63,7 @@ export class MoviesController {
       country || undefined,
       page ? parseInt(page, 10) || 1 : 1,
       limit ? parseInt(limit, 10) || 10 : 10,
+      list || undefined,
     );
   }
 }

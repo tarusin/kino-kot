@@ -1,6 +1,7 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import MovieCard from '@/components/MovieCard/MovieCard';
+import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import FilmsPagination from './FilmsPagination';
 import styles from './films.module.scss';
@@ -49,9 +50,11 @@ async function getMovies(
   year?: string,
   country?: string,
   page = 1,
+  list?: string,
 ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
   try {
     const params = new URLSearchParams();
+    if (list) params.set('list', list);
     if (genre) params.set('genre', genre);
     if (year) params.set('year', year);
     if (country) params.set('country', country);
@@ -91,16 +94,17 @@ async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 export default async function FilmsPage({
                                           searchParams,
                                         }: {
-  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string }>;
+  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string; list?: string }>;
 }) {
-  const { genre, year, country, page: pageParam } = await searchParams;
+  const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
+  const activeList = list || 'popular';
 
   const [genres, years, countries, data] = await Promise.all([
     getGenres(),
     getYears(),
     getCountries(),
-    getMovies(genre, year, country, currentPage),
+    getMovies(genre, year, country, currentPage, activeList),
   ]);
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
@@ -118,6 +122,7 @@ export default async function FilmsPage({
             <div className={ styles['films__head'] }>
               <h2 className={ styles['films__title'] }>Фильмы</h2>
             </div>
+            <FilmsTabs activeTab={activeList} />
             <div className="films__filters">
               <FilmsFilters
                 genres={genres}
@@ -126,6 +131,7 @@ export default async function FilmsPage({
                 appliedGenre={genre || null}
                 appliedYear={year || null}
                 appliedCountry={country || null}
+                activeList={activeList}
               />
             </div>
             <div className={ styles['films__grid'] }>
@@ -148,6 +154,7 @@ export default async function FilmsPage({
               genre={ genre }
               year={ year }
               country={ country }
+              list={ list }
             />
           </div>
         </section>

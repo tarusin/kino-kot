@@ -13,6 +13,7 @@ interface FilmsFiltersProps {
   appliedGenre: string | null;
   appliedYear: string | null;
   appliedCountry: string | null;
+  activeList?: string;
 }
 
 export default function FilmsFilters({
@@ -22,6 +23,7 @@ export default function FilmsFilters({
   appliedGenre,
   appliedYear,
   appliedCountry,
+  activeList,
 }: FilmsFiltersProps) {
   const router = useRouter();
 
@@ -37,6 +39,7 @@ export default function FilmsFilters({
 
   function handleApply() {
     const params = new URLSearchParams();
+    if (activeList && activeList !== 'popular') params.set('list', activeList);
     if (pendingGenre) params.set('genre', pendingGenre);
     if (pendingYear) params.set('year', pendingYear);
     if (pendingCountry) params.set('country', pendingCountry);
@@ -48,7 +51,10 @@ export default function FilmsFilters({
     setPendingGenre(null);
     setPendingYear(null);
     setPendingCountry(null);
-    router.push('/films');
+    const params = new URLSearchParams();
+    if (activeList && activeList !== 'popular') params.set('list', activeList);
+    const qs = params.toString();
+    router.push(qs ? `/films?${qs}` : '/films');
   }
 
   const hasFilters = pendingGenre || pendingYear || pendingCountry;

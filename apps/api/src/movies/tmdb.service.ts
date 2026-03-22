@@ -91,7 +91,7 @@ export class TmdbService {
     return this.genreMap;
   }
 
-  async fetchMovies(category: 'popular' | 'top_rated'): Promise<
+  async fetchMovies(category: 'popular' | 'top_rated' | 'now_playing' | 'upcoming'): Promise<
     {
       tmdbId: number;
       category: string;

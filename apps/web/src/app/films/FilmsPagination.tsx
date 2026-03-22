@@ -8,10 +8,12 @@ interface FilmsPaginationProps {
   genre?: string;
   year?: string;
   country?: string;
+  list?: string;
 }
 
-function buildHref(page: number, genre?: string, year?: string, country?: string): string {
+function buildHref(page: number, genre?: string, year?: string, country?: string, list?: string): string {
   const params = new URLSearchParams();
+  if (list && list !== 'popular') params.set('list', list);
   if (genre) params.set('genre', genre);
   if (year) params.set('year', year);
   if (country) params.set('country', country);
@@ -20,12 +22,12 @@ function buildHref(page: number, genre?: string, year?: string, country?: string
   return qs ? `/films?${qs}` : '/films';
 }
 
-export default function FilmsPagination({ currentPage, totalPages, genre, year, country }: FilmsPaginationProps) {
+export default function FilmsPagination({ currentPage, totalPages, genre, year, country, list }: FilmsPaginationProps) {
   return (
     <Pagination
       currentPage={currentPage}
       totalPages={totalPages}
-      buildHref={(p) => buildHref(p, genre, year, country)}
+      buildHref={(p) => buildHref(p, genre, year, country, list)}
     />
   );
 }

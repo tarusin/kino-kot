@@ -26,27 +26,49 @@ export class MoviesService implements OnModuleInit {
       await this.backfillCountriesAndYears();
     } else {
       this.logger.log(`Found ${count} movies in database`);
+      await this.seedMissingCategories();
       await this.backfillGenres();
       await this.backfillCountriesAndYears();
+    }
+  }
+
+  private async seedMissingCategories() {
+    const categories = ['popular', 'top_rated', 'now_playing', 'upcoming'] as const;
+    for (const category of categories) {
+      const count = await this.movieModel.countDocuments({ category });
+      if (count === 0) {
+        this.logger.log(`Seeding missing category: ${category}`);
+        try {
+          const movies = await this.tmdbService.fetchMovies(category);
+          if (movies.length > 0) {
+            await this.movieModel.insertMany(movies, { ordered: false });
+            this.logger.log(`Seeded ${movies.length} ${category} movies`);
+          }
+        } catch (error) {
+          this.logger.error(`Failed to seed ${category}`, error);
+        }
+      }
     }
   }
 
   private async backfillGenres() {
     const emptyGenresCount = await this.movieModel.countDocuments({
       $or: [{ genres: { $size: 0 } }, { genres: { $exists: false } }],
-      category: { $in: ['popular', 'top_rated'] },
+      category: { $in: ['popular', 'top_rated', 'now_playing', 'upcoming'] },
     });
 
     if (emptyGenresCount === 0) return;
 
     this.logger.log(`Backfilling genres for ${emptyGenresCount} movies...`);
     try {
-      const [popular, topRated] = await Promise.all([
+      const [popular, topRated, nowPlaying, upcoming] = await Promise.all([
         this.tmdbService.fetchMovies('popular'),
         this.tmdbService.fetchMovies('top_rated'),
+        this.tmdbService.fetchMovies('now_playing'),
+        this.tmdbService.fetchMovies('upcoming'),
       ]);
 
-      const allMovies = [...popular, ...topRated];
+      const allMovies = [...popular, ...topRated, ...nowPlaying, ...upcoming];
       await Promise.all(
         allMovies.map((movie) =>
           this.movieModel.updateOne(
@@ -67,7 +89,7 @@ export class MoviesService implements OnModuleInit {
         { originCountries: { $exists: false } },
         { releaseYear: { $exists: false } },
       ],
-      category: { $in: ['popular', 'top_rated'] },
+      category: { $in: ['popular', 'top_rated', 'now_playing', 'upcoming'] },
     });
 
     if (needsBackfill === 0) return;
@@ -100,7 +122,7 @@ export class MoviesService implements OnModuleInit {
           { originCountries: { $exists: false } },
           { originCountries: { $size: 0 } },
         ],
-        category: { $in: ['popular', 'top_rated'] },
+        category: { $in: ['popular', 'top_rated', 'now_playing', 'upcoming'] },
       });
 
       for (const movie of moviesWithoutCountries) {
@@ -126,13 +148,17 @@ export class MoviesService implements OnModuleInit {
 
   async seed() {
     try {
-      const [popular, topRated] = await Promise.all([
+      const [popular, topRated, nowPlaying, upcoming] = await Promise.all([
         this.tmdbService.fetchMovies('popular'),
         this.tmdbService.fetchMovies('top_rated'),
+        this.tmdbService.fetchMovies('now_playing'),
+        this.tmdbService.fetchMovies('upcoming'),
       ]);
-      const allMovies = [...popular, ...topRated];
+      const allMovies = [...popular, ...topRated, ...nowPlaying, ...upcoming];
       await this.movieModel.insertMany(allMovies);
-      this.logger.log(`Seeded ${allMovies.length} movies (${popular.length} popular + ${topRated.length} top_rated)`);
+      this.logger.log(
+        `Seeded ${allMovies.length} movies (${popular.length} popular + ${topRated.length} top_rated + ${nowPlaying.length} now_playing + ${upcoming.length} upcoming)`,
+      );
     } catch (error) {
       this.logger.error('Failed to seed movies from TMDB', error);
     }
@@ -236,8 +262,10 @@ export class MoviesService implements OnModuleInit {
     country?: string,
     page = 1,
     limit = 10,
+    list?: string,
   ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
     const filter: Record<string, unknown> = {};
+    if (list) filter.category = list;
     if (genre) filter.genres = genre;
     if (year) filter.releaseYear = year;
     if (country) filter.originCountries = country;

@@ -42,11 +42,11 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Глобальный префикс**: `/api`
 - **CORS**: разрешён `http://localhost:3000` с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
-- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид, backfill genres/countries/years
+- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид 4 категорий (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
+- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
 - **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
 - **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
@@ -75,7 +75,8 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **MovieSection** — секция с заголовком (переиспользуемая, принимает опциональный `movies`)
 - **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **FilterDropdown** — generic дропдаун-фильтр (icon, label, options, selected, onSelect, displayMap), без навигации
-- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params
+- **FilmsTabs** — client-компонент, горизонтальные табы-кнопки для переключения списков фильмов (popular, now_playing, top_rated, upcoming), pill-стиль с градиентом на активном
+- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, сохраняет activeList
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
@@ -85,7 +86,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 ## Страницы
 
 - `/` — главная (async серверный компонент, два слайдера: "Топ фильмов" и "Популярные" с данными из API)
-- `/films` — фильмы с фильтрами (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все фильтры в URL
+- `/films` — фильмы с табами списков (Популярные, Сейчас в кино, Лучшие, Скоро) + фильтры (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все параметры в URL
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput)
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования)
