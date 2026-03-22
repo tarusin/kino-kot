@@ -150,8 +150,32 @@ export class MoviesService implements OnModuleInit {
     };
   }
 
-  async findAll(): Promise<Movie[]> {
-    return this.movieModel.find().limit(20).exec();
+  async getGenres(): Promise<string[]> {
+    const genres = await this.movieModel.distinct('genres');
+    return genres.sort();
+  }
+
+  async findAll(
+    genre?: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
+    const filter = genre ? { genres: genre } : {};
+    const [movies, total] = await Promise.all([
+      this.movieModel
+        .find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec(),
+      this.movieModel.countDocuments(filter),
+    ]);
+
+    return {
+      movies,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findByCategory(category: string): Promise<Movie[]> {

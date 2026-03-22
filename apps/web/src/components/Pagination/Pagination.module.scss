@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   gap: rem(4);
+  margin-top: rem(36);
 
   @media (min-width: $breakpoint-md) {
     gap: rem(8);

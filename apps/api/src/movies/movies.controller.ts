@@ -28,13 +28,26 @@ export class MoviesController {
     return this.moviesService.search(query, parsedLimit);
   }
 
+  @Get('genres')
+  getGenres() {
+    return this.moviesService.getGenres();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.moviesService.findById(id);
   }
 
   @Get()
-  findAll() {
-    return this.moviesService.findAll();
+  findAll(
+    @Query('genre') genre?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.moviesService.findAll(
+      genre,
+      page ? parseInt(page, 10) || 1 : 1,
+      limit ? parseInt(limit, 10) || 10 : 10,
+    );
   }
 }

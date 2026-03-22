@@ -1,0 +1,73 @@
+@use '../../styles/variables' as *;
+
+.genre-dropdown {
+  position: relative;
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    padding: rem(8) rem(16);
+    background: $color-bg;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(12);
+    cursor: pointer;
+    font-family: $font-family;
+    font-size: rem(14);
+    font-weight: 500;
+    color: $color-text;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $color-primary;
+    }
+
+    &--open {
+      border-color: $color-primary;
+    }
+  }
+
+  &__arrow {
+    transition: transform 0.2s;
+
+    &--rotated {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__list {
+    position: absolute;
+    top: calc(100% + rem(8));
+    left: 0;
+    z-index: 10;
+    min-width: rem(200);
+    max-height: rem(300);
+    overflow-y: auto;
+    background: $color-bg;
+    border-radius: rem(12);
+    box-shadow: 0 rem(4) rem(20) rgba(0, 0, 0, 0.12);
+    list-style: none;
+    padding: rem(8) 0;
+    margin: 0;
+  }
+
+  &__item {
+    padding: rem(10) rem(16);
+    font-size: rem(14);
+    font-weight: 500;
+    color: $color-text;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &:hover {
+      border-left-color: $color-primary;
+      background-color: $color-gray;
+    }
+
+    &--active {
+      color: $color-primary;
+      border-left-color: $color-primary;
+    }
+  }
+}
