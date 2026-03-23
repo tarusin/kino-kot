@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from './HeroBanner.module.scss';
 
 export default function HeroBanner() {
@@ -15,9 +16,9 @@ export default function HeroBanner() {
               />
             </div>
             <div className={styles['banner-content__details']}>
-              <button className={styles['banner-content__btn']}>
+              <Link href="/quiz" className={styles['banner-content__btn']}>
                 Хочу узнать
-              </button>
+              </Link>
               <span
                 className={`${styles['fake-border-radius']} ${styles['fake-border-radius_left-bottom']}`}
               />

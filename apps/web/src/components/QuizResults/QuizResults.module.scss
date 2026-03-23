@@ -1,0 +1,145 @@
+@use '../../styles/variables' as *;
+
+.quiz-results {
+  background: #fffbf9;
+  border-radius: rem(15);
+  box-shadow: 0 rem(10) rem(60) rgba(0, 0, 0, 0.1);
+  padding: rem(28) rem(20);
+  width: 100%;
+  max-width: rem(620);
+  margin: 0 auto;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: rem(36) rem(64);
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 600;
+    color: $color-text;
+    text-align: center;
+    line-height: 1.3;
+    margin: 0 0 rem(8);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(28);
+    }
+  }
+
+  &__description {
+    font-size: rem(14);
+    color: rgba($color-text, 0.6);
+    text-align: center;
+    line-height: 1.5;
+    margin: 0 0 rem(8);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(15);
+    }
+  }
+
+  &__subtitle {
+    font-size: rem(15);
+    color: rgba($color-text, 0.6);
+    text-align: center;
+    margin: 0 0 rem(28);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(16);
+      margin-bottom: rem(36);
+    }
+  }
+
+  &__movies {
+    display: flex;
+    flex-direction: column;
+    gap: rem(14);
+    margin-bottom: rem(28);
+
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(18);
+      margin-bottom: rem(36);
+    }
+  }
+
+  &__movie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: rem(14) rem(20);
+    background: $color-gray;
+    border-radius: rem(8);
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(16) rem(24);
+    }
+
+    &:hover {
+      background: darken($color-gray, 4%);
+    }
+  }
+
+  &__movie-name {
+    font-size: rem(16);
+    font-weight: 500;
+    color: rgba($color-text, 0.6);
+    line-height: 1.5;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(18);
+    }
+  }
+
+  &__movie-arrow {
+    flex-shrink: 0;
+    width: rem(24);
+    height: rem(24);
+    color: rgba($color-text, 0.4);
+  }
+
+  &__restart-btn {
+    @include gradient-button;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: rem(16) rem(24);
+    font-family: $font-family;
+    font-size: rem(16);
+    line-height: 1.4;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(18);
+    }
+  }
+
+  &__home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: rem(4);
+    margin-top: rem(20);
+    font-size: rem(16);
+    font-weight: 600;
+    color: $color-primary;
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(18);
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    svg {
+      width: rem(24);
+      height: rem(24);
+      color: $color-primary;
+    }
+  }
+}

@@ -1,0 +1,77 @@
+@use '../../styles/variables' as *;
+
+.quiz-card {
+  background: #fffbf9;
+  border-radius: rem(15);
+  box-shadow: 0 rem(10) rem(60) rgba(0, 0, 0, 0.1);
+  padding: rem(28) rem(20);
+  width: 100%;
+  max-width: rem(620);
+  margin: 0 auto;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: rem(36) rem(64);
+  }
+
+  &__question {
+    font-size: rem(22);
+    font-weight: 600;
+    color: $color-text;
+    text-align: center;
+    line-height: 1.3;
+    margin: 0 0 rem(28);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(28);
+      margin-bottom: rem(36);
+    }
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: rem(14);
+
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(18);
+    }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: rem(14) rem(20);
+    background: $color-gray;
+    border: 2px solid transparent;
+    border-radius: rem(8);
+    font-family: $font-family;
+    font-size: rem(16);
+    font-weight: 500;
+    color: rgba($color-text, 0.6);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(16) rem(24);
+      font-size: rem(18);
+    }
+
+    &:hover:not(:disabled) {
+      border-color: rgba($color-primary, 0.3);
+      background: rgba($color-primary, 0.03);
+    }
+
+    &--selected {
+      border-color: $color-primary;
+      background: rgba($color-primary, 0.05);
+      color: $color-text;
+    }
+
+    &:disabled:not(.quiz-card__option--selected) {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
