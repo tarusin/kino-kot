@@ -1,7 +1,6 @@
 import Header from '@/components/Header/Header';
 import HeroBanner from '@/components/HeroBanner/HeroBanner';
 import ReviewsMarquee from '@/components/ReviewsMarquee/ReviewsMarquee';
-import CategoryCards from '@/components/CategoryCards/CategoryCards';
 import MovieSlider from '@/components/MovieSlider/MovieSlider';
 import Footer from '@/components/Footer/Footer';
 import type { Movie } from '@/types/movie';
@@ -72,7 +71,6 @@ export default async function Home() {
       <main>
         <HeroBanner />
         {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} />}
-        <CategoryCards />
         <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} />
         <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} />
       </main>

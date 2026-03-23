@@ -12,6 +12,7 @@
     font-weight: 700;
     color: $color-text;
     margin: 0 0 rem(8);
+    flex: 1;
 
     @media (min-width: $breakpoint-md) {
       font-size: rem(32);
@@ -100,7 +101,6 @@
     flex-wrap: wrap;
     align-items: center;
     gap: rem(16);
-    margin-bottom: rem(32);
 
     @media (min-width: $breakpoint-md) {
       gap: rem(24);
@@ -111,6 +111,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: rem(8);
+    margin-bottom: rem(32);
   }
 
   &__genre {

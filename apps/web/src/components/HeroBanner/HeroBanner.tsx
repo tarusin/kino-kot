@@ -26,14 +26,14 @@ export default function HeroBanner() {
                 className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-top']}`}
               />
             </div>
-            <div className={styles['banner-content__curve']}>
+          </div>
+          <div className={styles['banner-content__curve']}>
               <span
                 className={`${styles['fake-border-radius']} ${styles['fake-border-radius_left-top']}`}
               />
-              <span
-                className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-bottom']}`}
-              />
-            </div>
+            <span
+              className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-bottom']}`}
+            />
           </div>
         </div>
       </div>

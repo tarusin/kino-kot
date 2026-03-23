@@ -22,11 +22,8 @@ export default function ProfileReviewCard({
                                             text,
                                             createdAt,
                                           }: ProfileReviewCardProps) {
-  const date = new Date(createdAt).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const d = new Date(createdAt);
+  const date = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 
   const initials = getInitials(userName);
 

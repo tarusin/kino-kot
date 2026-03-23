@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,6 +21,8 @@ export default function Header() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 600);
 
@@ -63,18 +66,38 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+      if (window.innerWidth >= 576) {
+        setIsMobileSearchOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
+
   const navigateToSearch = useCallback(() => {
     if (searchQuery.trim().length >= 2) {
       router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
       setIsOpen(false);
       setSearchQuery('');
       setResults([]);
+      setIsMobileSearchOpen(false);
     }
   }, [searchQuery, router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsOpen(false);
+      setIsMobileSearchOpen(false);
     }
     if (e.key === 'Enter') {
       navigateToSearch();
@@ -85,6 +108,7 @@ export default function Header() {
     setIsOpen(false);
     setSearchQuery('');
     setResults([]);
+    setIsMobileSearchOpen(false);
   };
 
   const handleClear = () => {
@@ -98,6 +122,66 @@ export default function Header() {
   const formatGenres = (genres: string[]) =>
     genres?.slice(0, 2).join(', ') || '';
 
+  const renderSearchResults = () => {
+    if (!isOpen) return null;
+
+    return results.length > 0 ? (
+      <>
+        {results.map((movie) => (
+          <Link
+            key={movie._id}
+            href={`/films/${movie._id}`}
+            className={styles['header__search-result']}
+            onClick={handleResultClick}
+          >
+            <div className={styles['header__search-poster']}>
+              {movie.posterPath ? (
+                <Image
+                  src={`https://image.tmdb.org/t/p/w92${movie.posterPath}`}
+                  alt={movie.title}
+                  width={40}
+                  height={60}
+                />
+              ) : (
+                <div className={styles['header__search-poster-placeholder']} />
+              )}
+            </div>
+            <div className={styles['header__search-info']}>
+              <span className={styles['header__search-title']}>{movie.title}</span>
+              <span className={styles['header__search-meta']}>
+                {formatYear(movie.releaseDate)}
+                {movie.genres?.length > 0 && ` | ${formatGenres(movie.genres)}`}
+              </span>
+              <div className={styles['header__search-ratings']}>
+                <span className={styles['header__search-rating']}>
+                  <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
+                  —
+                </span>
+                <span className={styles['header__search-rating']}>
+                  <Image src="/icons/rating-imdb.svg" alt="IMDB" width={16} height={16} />
+                  {movie.voteAverage?.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          </Link>
+        ))}
+        {hasMore && (
+          <Link
+            href={`/search?query=${encodeURIComponent(searchQuery)}`}
+            className={styles['header__search-all']}
+            onClick={handleResultClick}
+          >
+            Все результаты
+          </Link>
+        )}
+      </>
+    ) : (
+      <div className={styles['header__search-empty']}>
+        Ничего не найдено
+      </div>
+    );
+  };
+
   return (
     <header className={styles['header']}>
       <div className={styles['header__wrap']}>
@@ -105,13 +189,57 @@ export default function Header() {
           <Image src="/images/logo.svg" alt="КиноКот" width={162} height={44} />
         </a>
 
+        <button
+          className={styles['header__burger']}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Открыть меню"
+          type="button"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="#102031" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+
         <nav className={styles['header__nav']}>
           <a href="/films" className={styles['header__link']}>Фильмы</a>
           <a href="/series" className={styles['header__link']}>Сериалы</a>
           <a href="/cartoons" className={styles['header__link']}>Мультфильмы</a>
         </nav>
 
+        {isMobileMenuOpen && (
+          <>
+            <div className={styles['header__backdrop']} onClick={() => setIsMobileMenuOpen(false)} />
+            <div className={styles['header__mobile-menu']}>
+              <button
+                className={styles['header__mobile-close']}
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Закрыть меню"
+                type="button"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="#102031" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </button>
+              <a href="/films" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Фильмы</a>
+              <a href="/series" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Сериалы</a>
+              <a href="/cartoons" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Мультфильмы</a>
+            </div>
+          </>
+        )}
+
         <div className={styles['header__actions']}>
+
+          <button
+            className={styles['header__search-trigger']}
+            onClick={() => setIsMobileSearchOpen(true)}
+            aria-label="Поиск"
+            type="button"
+          >
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+              <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
           <div className={styles['header__search']} ref={searchRef}>
             {isLoading ? (
               <span className={styles['header__search-spinner']} />
@@ -148,61 +276,7 @@ export default function Header() {
 
             {isOpen && (
               <div className={styles['header__search-dropdown']}>
-                {results.length > 0 ? (
-                  <>
-                    {results.map((movie) => (
-                      <Link
-                        key={movie._id}
-                        href={`/films/${movie._id}`}
-                        className={styles['header__search-result']}
-                        onClick={handleResultClick}
-                      >
-                        <div className={styles['header__search-poster']}>
-                          {movie.posterPath ? (
-                            <Image
-                              src={`https://image.tmdb.org/t/p/w92${movie.posterPath}`}
-                              alt={movie.title}
-                              width={40}
-                              height={60}
-                            />
-                          ) : (
-                            <div className={styles['header__search-poster-placeholder']} />
-                          )}
-                        </div>
-                        <div className={styles['header__search-info']}>
-                          <span className={styles['header__search-title']}>{movie.title}</span>
-                          <span className={styles['header__search-meta']}>
-                            {formatYear(movie.releaseDate)}
-                            {movie.genres?.length > 0 && ` | ${formatGenres(movie.genres)}`}
-                          </span>
-                          <div className={styles['header__search-ratings']}>
-                            <span className={styles['header__search-rating']}>
-                              <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
-                              —
-                            </span>
-                            <span className={styles['header__search-rating']}>
-                              <Image src="/icons/rating-imdb.svg" alt="IMDB" width={16} height={16} />
-                              {movie.voteAverage?.toFixed(1)}
-                            </span>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                    {hasMore && (
-                      <Link
-                        href={`/search?query=${encodeURIComponent(searchQuery)}`}
-                        className={styles['header__search-all']}
-                        onClick={handleResultClick}
-                      >
-                        Все результаты
-                      </Link>
-                    )}
-                  </>
-                ) : (
-                  <div className={styles['header__search-empty']}>
-                    Ничего не найдено
-                  </div>
-                )}
+                {renderSearchResults()}
               </div>
             )}
           </div>
@@ -237,6 +311,40 @@ export default function Header() {
           )}
         </div>
       </div>
+
+      {isMobileSearchOpen && createPortal(
+        <div className={styles['header__mobile-search-overlay']}>
+          <div className={styles['header__mobile-search']}>
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+              <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Поиск"
+              className={styles['header__mobile-search-input']}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+            <button
+              className={styles['header__mobile-search-close']}
+              onClick={() => { setIsMobileSearchOpen(false); handleClear(); }}
+              type="button"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+          {isOpen && (
+            <div className={styles['header__mobile-search-results']}>
+              {renderSearchResults()}
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
     </header>
   );
 }

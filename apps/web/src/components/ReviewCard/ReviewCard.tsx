@@ -37,11 +37,8 @@ export default function ReviewCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initials = getInitials(userName);
-  const date = new Date(createdAt).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const d = new Date(createdAt);
+  const date = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 
   const handleReaction = async (type: 'like' | 'dislike') => {
     if (!user) {
