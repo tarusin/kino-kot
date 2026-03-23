@@ -1,61 +1,61 @@
 @use '../../styles/variables' as *;
 
 .footer {
-  background: $color-text;
-  color: white;
-  padding: rem(40) 0;
+  background: linear-gradient(154deg, #ebeef9 10.83%, #ebeef1 50.03%, #f6f1ef 89.24%);
+  padding: rem(24) 0;
 
   &__wrap {
     @include container;
-  }
-
-  &__top {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem(12);
-    text-align: center;
-    margin-bottom: rem(24);
+    gap: rem(24);
 
-    @media (min-width: $breakpoint-sm) {
+    @media (min-width: $breakpoint-md) {
       flex-direction: row;
       justify-content: space-between;
-      text-align: left;
+      align-items: center;
     }
   }
 
   &__logo {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
+  }
 
-    img {
-      filter: brightness(0) invert(1);
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      align-items: flex-end;
     }
   }
 
   &__copyright {
-    font-size: rem(13);
-    color: rgba(255, 255, 255, 0.6);
+    font-size: rem(16);
+    color: rgba($color-text, 0.6);
+    line-height: 1.5;
   }
 
   &__nav {
     display: flex;
     flex-wrap: wrap;
-    gap: rem(16);
+    gap: rem(18);
     justify-content: center;
 
     a {
-      font-size: rem(13);
-      color: rgba(255, 255, 255, 0.6);
+      font-size: rem(16);
+      color: rgba($color-text, 0.6);
+      line-height: 1.5;
       transition: color 0.2s;
 
       &:hover {
-        color: white;
+        color: $color-text;
       }
-    }
-
-    @media (min-width: $breakpoint-sm) {
-      gap: rem(24);
     }
   }
 }
