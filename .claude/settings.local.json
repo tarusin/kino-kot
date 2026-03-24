@@ -28,7 +28,8 @@
       "mcp__figma-remote-mcp__get_design_context",
       "mcp__figma-remote-mcp__get_metadata",
       "WebFetch(domain:kino-kot-app.onrender.com)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(lsof -ti:3001)"
     ]
   },
   "enabledPlugins": {

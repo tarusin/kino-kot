@@ -34,6 +34,9 @@ export class Movie {
 
   @Prop()
   releaseYear: number;
+
+  @Prop()
+  runtime: number;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);

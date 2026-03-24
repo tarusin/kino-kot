@@ -27,6 +27,12 @@
     padding: rem(8) rem(24);
     font-family: $font-family;
     font-size: rem(14);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   }
 
   &__clear {

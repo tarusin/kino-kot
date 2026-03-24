@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Movie, MovieDocument } from './schemas/movie.schema.js';
 import { TmdbService } from './tmdb.service.js';
+import { Review } from '../reviews/schemas/review.schema.js';
 
 @Injectable()
 export class MoviesService implements OnModuleInit {
@@ -15,6 +16,7 @@ export class MoviesService implements OnModuleInit {
 
   constructor(
     @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
+    @InjectModel(Review.name) private reviewModel: Model<Review>,
     private readonly tmdbService: TmdbService,
   ) {}
 
@@ -24,11 +26,13 @@ export class MoviesService implements OnModuleInit {
       this.logger.log('Database is empty, seeding movies from TMDB...');
       await this.seed();
       await this.backfillCountriesAndYears();
+      await this.backfillRuntime();
     } else {
       this.logger.log(`Found ${count} movies in database`);
       await this.seedMissingCategories();
       await this.backfillGenres();
       await this.backfillCountriesAndYears();
+      await this.backfillRuntime();
     }
   }
 
@@ -144,6 +148,119 @@ export class MoviesService implements OnModuleInit {
     } catch (error) {
       this.logger.error('Failed to backfill countries and years', error);
     }
+  }
+
+  private async backfillRuntime() {
+    const moviesWithoutRuntime = await this.movieModel.find({
+      $or: [{ runtime: { $exists: false } }, { runtime: null }],
+      category: { $in: ['popular', 'top_rated', 'now_playing', 'upcoming'] },
+    });
+
+    if (moviesWithoutRuntime.length === 0) return;
+
+    this.logger.log(
+      `Backfilling runtime for ${moviesWithoutRuntime.length} movies...`,
+    );
+
+    for (const movie of moviesWithoutRuntime) {
+      try {
+        const details = await this.tmdbService.fetchMovieDetails(movie.tmdbId);
+        if (details.runtime) {
+          await this.movieModel.updateOne(
+            { _id: movie._id },
+            { $set: { runtime: details.runtime } },
+          );
+        }
+      } catch {
+        this.logger.warn(
+          `Failed to fetch runtime for tmdbId ${movie.tmdbId}`,
+        );
+      }
+    }
+
+    this.logger.log('Runtime backfill complete');
+  }
+
+  async findFilmOfTheWeek() {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const MIN_REVIEWS = 3;
+
+    // Агрегация: средний рейтинг по отзывам за последние 7 дней, >= 3 отзывов
+    const weeklyTop = await this.reviewModel.aggregate([
+      { $match: { createdAt: { $gte: oneWeekAgo } } },
+      {
+        $group: {
+          _id: '$movieId',
+          avgRating: { $avg: '$rating' },
+          reviewCount: { $sum: 1 },
+        },
+      },
+      { $match: { reviewCount: { $gte: MIN_REVIEWS } } },
+      { $sort: { avgRating: -1, reviewCount: -1 } },
+      { $limit: 1 },
+    ]);
+
+    let movie: MovieDocument | null = null;
+    let kinoKotRating: number | null = null;
+
+    if (weeklyTop.length > 0) {
+      movie = await this.movieModel.findById(weeklyTop[0]._id).exec();
+      kinoKotRating = Math.round(weeklyTop[0].avgRating * 10) / 10;
+    }
+
+    // Fallback: лучший по voteAverage из top_rated
+    if (!movie) {
+      movie = await this.movieModel
+        .findOne({ category: 'top_rated' })
+        .sort({ voteAverage: -1 })
+        .exec();
+
+      if (movie) {
+        // Получаем средний рейтинг КиноКот для fallback-фильма
+        const ratingAgg = await this.reviewModel.aggregate([
+          { $match: { movieId: movie._id } },
+          { $group: { _id: null, avg: { $avg: '$rating' } } },
+        ]);
+        kinoKotRating =
+          ratingAgg.length > 0
+            ? Math.round(ratingAgg[0].avg * 10) / 10
+            : null;
+      }
+    }
+
+    if (!movie) return null;
+
+    // Подтягиваем backdrop и runtime из TMDB
+    let backdropPath: string | null = null;
+    let runtime: number | null = movie.runtime || null;
+
+    try {
+      const details = await this.tmdbService.fetchMovieDetails(movie.tmdbId);
+      backdropPath = details.backdrop_path;
+      if (!runtime) runtime = details.runtime;
+    } catch {
+      this.logger.warn(
+        `Failed to fetch TMDB details for film-of-the-week ${movie.tmdbId}`,
+      );
+    }
+
+    return {
+      _id: movie._id,
+      tmdbId: movie.tmdbId,
+      title: movie.title,
+      overview: movie.overview,
+      posterPath: movie.posterPath,
+      backdropPath,
+      voteAverage: movie.voteAverage,
+      releaseDate: movie.releaseDate,
+      releaseYear: movie.releaseYear,
+      runtime,
+      genres: movie.genres,
+      category: movie.category,
+      kinoKotRating,
+    };
   }
 
   async seed() {

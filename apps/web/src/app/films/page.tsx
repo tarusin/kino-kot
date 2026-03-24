@@ -1,11 +1,12 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import MovieCard from '@/components/MovieCard/MovieCard';
+import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import FilmsPagination from './FilmsPagination';
 import styles from './films.module.scss';
-import type { Movie } from '@/types/movie';
+import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const MOVIES_PER_PAGE = 10;
@@ -73,6 +74,18 @@ async function getMovies(
   }
 }
 
+async function getFilmOfTheWeek(): Promise<FilmOfTheWeekType | null> {
+  try {
+    const res = await fetch(`${API_URL}/movies/film-of-the-week`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 
   if (movieIds.length === 0) {
@@ -100,11 +113,12 @@ export default async function FilmsPage({
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
 
-  const [genres, years, countries, data] = await Promise.all([
+  const [genres, years, countries, data, filmOfTheWeek] = await Promise.all([
     getGenres(),
     getYears(),
     getCountries(),
     getMovies(genre, year, country, currentPage, activeList),
+    getFilmOfTheWeek(),
   ]);
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
@@ -119,6 +133,7 @@ export default async function FilmsPage({
       <main>
         <section className={ styles['films'] }>
           <div className={ styles['films__wrap'] }>
+            {filmOfTheWeek && <FilmOfTheWeek film={filmOfTheWeek} />}
             <div className={ styles['films__head'] }>
               <h2 className={ styles['films__title'] }>Фильмы</h2>
             </div>

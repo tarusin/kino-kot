@@ -42,11 +42,12 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Глобальный префикс**: `/api`
 - **CORS**: разрешён `http://localhost:3000` с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
-- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид 4 категорий (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years
+- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear`, `runtime` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид 4 категорий (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years/runtime
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
+- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
+- **Фильм недели** (`GET /api/movies/film-of-the-week`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные фильма + backdropPath + runtime + kinoKotRating
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
 - **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
 - **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
@@ -76,6 +77,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
 - **FilterDropdown** — generic дропдаун-фильтр (icon, label, options, selected, onSelect, displayMap), без навигации
 - **FilmsTabs** — client-компонент, горизонтальные табы-кнопки для переключения списков фильмов (popular, now_playing, top_rated, upcoming), pill-стиль с градиентом на активном
+- **FilmOfTheWeek** — серверный компонент, баннер «Фильм Недели» вверху /films: backdrop-изображение, белые блоки контента с fake-border-radius (как HeroBanner), бейдж, название, рейтинги КиноКот+TMDB, мета (категория|год|длительность), кнопка → /films/:id
 - **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, сохраняет activeList
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)

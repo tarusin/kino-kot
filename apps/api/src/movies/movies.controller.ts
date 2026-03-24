@@ -43,6 +43,11 @@ export class MoviesController {
     return this.moviesService.getYears();
   }
 
+  @Get('film-of-the-week')
+  getFilmOfTheWeek() {
+    return this.moviesService.findFilmOfTheWeek();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.moviesService.findById(id);

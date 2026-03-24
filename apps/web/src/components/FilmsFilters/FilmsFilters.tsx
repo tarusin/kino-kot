@@ -58,6 +58,10 @@ export default function FilmsFilters({
   }
 
   const hasFilters = pendingGenre || pendingYear || pendingCountry;
+  const hasChanges =
+    pendingGenre !== appliedGenre ||
+    pendingYear !== appliedYear ||
+    pendingCountry !== appliedCountry;
 
   return (
     <div className={styles['films-filters']}>
@@ -89,6 +93,7 @@ export default function FilmsFilters({
         <button
           className={styles['films-filters__apply']}
           onClick={handleApply}
+          disabled={!hasChanges}
           type="button"
         >
           Применить

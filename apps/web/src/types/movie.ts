@@ -10,6 +10,22 @@ export interface Movie {
   kinoKotRating?: number;
 }
 
+export interface FilmOfTheWeek {
+  _id: string;
+  tmdbId: number;
+  title: string;
+  overview: string;
+  posterPath: string;
+  backdropPath: string | null;
+  voteAverage: number;
+  releaseDate: string;
+  releaseYear: number;
+  runtime: number | null;
+  genres: string[];
+  category: string;
+  kinoKotRating: number | null;
+}
+
 export interface MovieDetail {
   _id: string;
   tmdbId: number;
