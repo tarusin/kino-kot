@@ -1,6 +1,6 @@
 @use '../../styles/variables' as *;
 
-.search {
+.cartoons {
   padding: rem(40) 0;
   min-height: calc(100vh - 10rem);
 
@@ -8,15 +8,25 @@
     @include container;
   }
 
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: rem(24);
+  }
+
   &__title {
     font-size: rem(18);
     font-weight: 700;
     color: $color-text;
-    margin-bottom: rem(24);
 
     @media (min-width: $breakpoint-sm) {
       font-size: rem(24);
     }
+  }
+
+  &__filters {
+    margin-bottom: rem(40);
   }
 
   &__grid {
@@ -39,12 +49,5 @@
 
   &__pagination {
     margin-top: rem(32);
-  }
-
-  &__empty {
-    font-size: rem(16);
-    color: $color-text-secondary;
-    text-align: center;
-    padding: rem(60) 0;
   }
 }

@@ -42,17 +42,18 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Глобальный префикс**: `/api`
 - **CORS**: разрешён `http://localhost:3000` с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
-- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear`, `runtime` + составной индекс `tmdbId+category`), TMDB-сервис, авто-сид 4 категорий (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years/runtime
+- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType` + составной индекс `tmdbId+category+mediaType`), TMDB-сервис, авто-сид фильмов (popular, top_rated, now_playing, upcoming), сериалов (popular, top_rated, on_the_air, airing_today), мультфильмов (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years/runtime
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week`, `GET /api/movies/genres`, `GET /api/movies/countries`, `GET /api/movies/years`
-- **Фильм недели** (`GET /api/movies/film-of-the-week`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные фильма + backdropPath + runtime + kinoKotRating
+- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=`, `GET /api/movies/years?mediaType=`
+- **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
+- **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
 - **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
 - **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
-- Авто-сид: при старте, если БД пуста, загружает popular + top_rated фильмы из TMDB (~40 шт.)
+- Авто-сид: при старте, если БД пуста, загружает фильмы, сериалы и мультфильмы из TMDB. Сериалы — через TMDB TV API (/tv/*), мультфильмы — через discover с жанром Animation
 
 ## Правила стилей
 
@@ -74,11 +75,11 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **CategoryCards** — сетка карточек категорий (заглушки)
 - **MovieSlider** — client-компонент, горизонтальный слайдер с навигацией стрелками (props: `title`, `movies?`)
 - **MovieSection** — секция с заголовком (переиспользуемая, принимает опциональный `movies`)
-- **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами)
+- **MovieCard** — карточка фильма (скелетон без пропсов, реальные данные с пропсами, props: `basePath` для ссылки)
 - **FilterDropdown** — generic дропдаун-фильтр (icon, label, options, selected, onSelect, displayMap), без навигации
-- **FilmsTabs** — client-компонент, горизонтальные табы-кнопки для переключения списков фильмов (popular, now_playing, top_rated, upcoming), pill-стиль с градиентом на активном
-- **FilmOfTheWeek** — серверный компонент, баннер «Фильм Недели» вверху /films: backdrop-изображение, белые блоки контента с fake-border-radius (как HeroBanner), бейдж, название, рейтинги КиноКот+TMDB, мета (категория|год|длительность), кнопка → /films/:id
-- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, сохраняет activeList
+- **FilmsTabs** — client-компонент, горизонтальные табы-кнопки для переключения списков (props: `activeTab`, `basePath`), pill-стиль с градиентом на активном. Наборы табов зависят от basePath: /films, /series, /cartoons
+- **FilmOfTheWeek** — серверный компонент, баннер «X Недели» (props: `badge`, `categoryLabel`, `basePath`): backdrop-изображение, белые блоки контента с fake-border-radius, рейтинги КиноКот+TMDB, мета, кнопка → basePath/:id
+- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, props: `basePath` для поддержки /series и /cartoons
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
@@ -96,7 +97,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 ## Страницы
 
 - `/` — главная (async серверный компонент, marquee "Последние отзывы" + два слайдера: "Топ фильмов" и "Популярные" с данными из API)
-- `/films` — фильмы с табами списков (Популярные, Сейчас в кино, Лучшие, Скоро) + фильтры (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все параметры в URL
+- `/films` — фильмы (mediaType=movie) с табами списков (Популярные, Сейчас в кино, Лучшие, Скоро) + фильтры (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все параметры в URL
+- `/series` — сериалы (mediaType=series) по образу /films, табы: Популярные, Лучшие, Сейчас на экранах, Сегодня в эфире
+- `/cartoons` — мультфильмы (mediaType=cartoon) по образу /films, табы: Популярные, Лучшие, Сейчас в кино, Скоро
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput)
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования)

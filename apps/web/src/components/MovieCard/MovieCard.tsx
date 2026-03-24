@@ -10,9 +10,10 @@ interface MovieCardProps {
   kinoKotRating?: number;
   releaseDate?: string;
   genre?: string;
+  basePath?: string;
 }
 
-export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotRating, releaseDate, genre }: MovieCardProps) {
+export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotRating, releaseDate, genre, basePath = '/films' }: MovieCardProps) {
   if (!title) {
     return (
       <div className={styles['card']}>
@@ -66,7 +67,7 @@ export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotR
   );
 
   if (id) {
-    return <Link href={`/films/${id}`} className={styles['card__link']}>{content}</Link>;
+    return <Link href={`${basePath}/${id}`} className={styles['card__link']}>{content}</Link>;
   }
 
   return content;

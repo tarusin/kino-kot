@@ -14,6 +14,7 @@ interface FilmsFiltersProps {
   appliedYear: string | null;
   appliedCountry: string | null;
   activeList?: string;
+  basePath?: string;
 }
 
 export default function FilmsFilters({
@@ -24,6 +25,7 @@ export default function FilmsFilters({
   appliedYear,
   appliedCountry,
   activeList,
+  basePath = '/films',
 }: FilmsFiltersProps) {
   const router = useRouter();
 
@@ -44,7 +46,7 @@ export default function FilmsFilters({
     if (pendingYear) params.set('year', pendingYear);
     if (pendingCountry) params.set('country', pendingCountry);
     const qs = params.toString();
-    router.push(qs ? `/films?${qs}` : '/films');
+    router.push(qs ? `${basePath}?${qs}` : basePath);
   }
 
   function handleClear() {
@@ -54,7 +56,7 @@ export default function FilmsFilters({
     const params = new URLSearchParams();
     if (activeList && activeList !== 'popular') params.set('list', activeList);
     const qs = params.toString();
-    router.push(qs ? `/films?${qs}` : '/films');
+    router.push(qs ? `${basePath}?${qs}` : basePath);
   }
 
   const hasFilters = pendingGenre || pendingYear || pendingCountry;

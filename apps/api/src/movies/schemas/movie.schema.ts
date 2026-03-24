@@ -37,7 +37,10 @@ export class Movie {
 
   @Prop()
   runtime: number;
+
+  @Prop({ default: 'movie' })
+  mediaType: string;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);
-MovieSchema.index({ tmdbId: 1, category: 1 }, { unique: true });
+MovieSchema.index({ tmdbId: 1, category: 1, mediaType: 1 }, { unique: true });

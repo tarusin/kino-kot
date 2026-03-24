@@ -5,6 +5,9 @@ import styles from './FilmOfTheWeek.module.scss';
 
 interface FilmOfTheWeekProps {
   film: FilmOfTheWeekType;
+  badge?: string;
+  categoryLabel?: string;
+  basePath?: string;
 }
 
 function formatRuntime(minutes: number): string {
@@ -13,12 +16,17 @@ function formatRuntime(minutes: number): string {
   return `${hours}ч ${String(mins).padStart(2, '0')}м`;
 }
 
-export default function FilmOfTheWeek({ film }: FilmOfTheWeekProps) {
+export default function FilmOfTheWeek({
+  film,
+  badge = 'Фильм Недели',
+  categoryLabel = 'Фильм',
+  basePath = '/films',
+}: FilmOfTheWeekProps) {
   const backdropUrl = film.backdropPath
     ? `https://image.tmdb.org/t/p/original${film.backdropPath}`
     : null;
 
-  const meta: string[] = ['Фильм'];
+  const meta: string[] = [categoryLabel];
   if (film.releaseYear) meta.push(String(film.releaseYear));
   if (film.runtime) meta.push(formatRuntime(film.runtime));
 
@@ -38,7 +46,7 @@ export default function FilmOfTheWeek({ film }: FilmOfTheWeekProps) {
 
       <div className={styles['fotw__content']}>
         <div className={styles['fotw__header']}>
-          <span className={styles['fotw__badge']}>Фильм Недели</span>
+          <span className={styles['fotw__badge']}>{badge}</span>
           <h2 className={styles['fotw__title']}>{film.title}</h2>
           <span
             className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-top']}`}
@@ -78,7 +86,7 @@ export default function FilmOfTheWeek({ film }: FilmOfTheWeekProps) {
             ))}
           </div>
 
-          <Link href={`/films/${film._id}`} className={styles['fotw__button']}>
+          <Link href={`${basePath}/${film._id}`} className={styles['fotw__button']}>
             Смотреть отзывы
           </Link>
 

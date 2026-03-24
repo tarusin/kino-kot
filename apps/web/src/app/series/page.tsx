@@ -4,21 +4,19 @@ import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
-import FilmsPagination from './FilmsPagination';
-import styles from './films.module.scss';
+import SeriesPagination from './SeriesPagination';
+import styles from './series.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
-const MOVIES_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10;
 
 async function getGenres(): Promise<string[]> {
   try {
-    const res = await fetch(`${ API_URL }/movies/genres?mediaType=movie`, {
+    const res = await fetch(`${API_URL}/movies/genres?mediaType=series`, {
       cache: 'no-store',
     });
-    if (!res.ok) {
-      return [];
-    }
+    if (!res.ok) return [];
     return res.json();
   } catch {
     return [];
@@ -27,7 +25,7 @@ async function getGenres(): Promise<string[]> {
 
 async function getYears(): Promise<string[]> {
   try {
-    const res = await fetch(`${API_URL}/movies/years?mediaType=movie`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/movies/years?mediaType=series`, { cache: 'no-store' });
     if (!res.ok) return [];
     const years: number[] = await res.json();
     return years.map(String);
@@ -38,7 +36,7 @@ async function getYears(): Promise<string[]> {
 
 async function getCountries(): Promise<string[]> {
   try {
-    const res = await fetch(`${API_URL}/movies/countries?mediaType=movie`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/movies/countries?mediaType=series`, { cache: 'no-store' });
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -46,7 +44,7 @@ async function getCountries(): Promise<string[]> {
   }
 }
 
-async function getMovies(
+async function getSeries(
   genre?: string,
   year?: string,
   country?: string,
@@ -55,15 +53,15 @@ async function getMovies(
 ): Promise<{ movies: Movie[]; total: number; page: number; totalPages: number }> {
   try {
     const params = new URLSearchParams();
-    params.set('mediaType', 'movie');
+    params.set('mediaType', 'series');
     if (list) params.set('list', list);
     if (genre) params.set('genre', genre);
     if (year) params.set('year', year);
     if (country) params.set('country', country);
     params.set('page', String(page));
-    params.set('limit', String(MOVIES_PER_PAGE));
+    params.set('limit', String(ITEMS_PER_PAGE));
 
-    const res = await fetch(`${ API_URL }/movies?${ params.toString() }`, {
+    const res = await fetch(`${API_URL}/movies?${params.toString()}`, {
       cache: 'no-store',
     });
     if (!res.ok) {
@@ -75,9 +73,9 @@ async function getMovies(
   }
 }
 
-async function getFilmOfTheWeek(): Promise<FilmOfTheWeekType | null> {
+async function getSeriesOfTheWeek(): Promise<FilmOfTheWeekType | null> {
   try {
-    const res = await fetch(`${API_URL}/movies/film-of-the-week?mediaType=movie`, {
+    const res = await fetch(`${API_URL}/movies/film-of-the-week?mediaType=series`, {
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -90,38 +88,33 @@ async function getFilmOfTheWeek(): Promise<FilmOfTheWeekType | null> {
 }
 
 async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
-
-  if (movieIds.length === 0) {
-    return {};
-  }
+  if (movieIds.length === 0) return {};
   try {
-    const res = await fetch(`${ API_URL }/reviews/ratings?movieIds=${ movieIds.join(',') }`, {
+    const res = await fetch(`${API_URL}/reviews/ratings?movieIds=${movieIds.join(',')}`, {
       cache: 'no-store',
     });
-    if (!res.ok) {
-      return {};
-    }
+    if (!res.ok) return {};
     return res.json();
   } catch {
     return {};
   }
 }
 
-export default async function FilmsPage({
-                                          searchParams,
-                                        }: {
+export default async function SeriesPage({
+  searchParams,
+}: {
   searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string; list?: string }>;
 }) {
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
 
-  const [genres, years, countries, data, filmOfTheWeek] = await Promise.all([
+  const [genres, years, countries, data, seriesOfTheWeek] = await Promise.all([
     getGenres(),
     getYears(),
     getCountries(),
-    getMovies(genre, year, country, currentPage, activeList),
-    getFilmOfTheWeek(),
+    getSeries(genre, year, country, currentPage, activeList),
+    getSeriesOfTheWeek(),
   ]);
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
@@ -132,16 +125,23 @@ export default async function FilmsPage({
 
   return (
     <>
-      <Header/>
+      <Header />
       <main>
-        <section className={ styles['films'] }>
-          <div className={ styles['films__wrap'] }>
-            {filmOfTheWeek && <FilmOfTheWeek film={filmOfTheWeek} />}
-            <div className={ styles['films__head'] }>
-              <h2 className={ styles['films__title'] }>Фильмы</h2>
+        <section className={styles['series']}>
+          <div className={styles['series__wrap']}>
+            {seriesOfTheWeek && (
+              <FilmOfTheWeek
+                film={seriesOfTheWeek}
+                badge="Сериал Недели"
+                categoryLabel="Сериал"
+                basePath="/series"
+              />
+            )}
+            <div className={styles['series__head']}>
+              <h2 className={styles['series__title']}>Сериалы</h2>
             </div>
-            <FilmsTabs activeTab={activeList} />
-            <div className="films__filters">
+            <FilmsTabs activeTab={activeList} basePath="/series" />
+            <div className="series__filters">
               <FilmsFilters
                 genres={genres}
                 years={years}
@@ -150,34 +150,36 @@ export default async function FilmsPage({
                 appliedYear={year || null}
                 appliedCountry={country || null}
                 activeList={activeList}
+                basePath="/series"
               />
             </div>
-            <div className={ styles['films__grid'] }>
-              { moviesWithRatings.map((movie) => (
+            <div className={styles['series__grid']}>
+              {moviesWithRatings.map((movie) => (
                 <MovieCard
-                  key={ movie._id }
-                  id={ movie._id }
-                  title={ movie.title }
-                  posterPath={ movie.posterPath }
-                  voteAverage={ movie.voteAverage }
-                  kinoKotRating={ movie.kinoKotRating }
-                  releaseDate={ movie.releaseDate }
-                  genre={ movie.genres?.[0] }
+                  key={movie._id}
+                  id={movie._id}
+                  title={movie.title}
+                  posterPath={movie.posterPath}
+                  voteAverage={movie.voteAverage}
+                  kinoKotRating={movie.kinoKotRating}
+                  releaseDate={movie.releaseDate}
+                  genre={movie.genres?.[0]}
+                  basePath="/series"
                 />
-              )) }
+              ))}
             </div>
-            <FilmsPagination
-              currentPage={ currentPage }
-              totalPages={ data.totalPages }
-              genre={ genre }
-              year={ year }
-              country={ country }
-              list={ list }
+            <SeriesPagination
+              currentPage={currentPage}
+              totalPages={data.totalPages}
+              genre={genre}
+              year={year}
+              country={country}
+              list={list}
             />
           </div>
         </section>
       </main>
-      <Footer/>
+      <Footer />
     </>
   );
 }

@@ -6,13 +6,13 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Get('popular')
-  findPopular() {
-    return this.moviesService.findByCategory('popular');
+  findPopular(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.findByCategory('popular', mediaType);
   }
 
   @Get('top-rated')
-  findTopRated() {
-    return this.moviesService.findByCategory('top_rated');
+  findTopRated(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.findByCategory('top_rated', mediaType);
   }
 
   @Get('search')
@@ -29,23 +29,23 @@ export class MoviesController {
   }
 
   @Get('genres')
-  getGenres() {
-    return this.moviesService.getGenres();
+  getGenres(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.getGenres(mediaType);
   }
 
   @Get('countries')
-  getCountries() {
-    return this.moviesService.getCountries();
+  getCountries(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.getCountries(mediaType);
   }
 
   @Get('years')
-  getYears() {
-    return this.moviesService.getYears();
+  getYears(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.getYears(mediaType);
   }
 
   @Get('film-of-the-week')
-  getFilmOfTheWeek() {
-    return this.moviesService.findFilmOfTheWeek();
+  getFilmOfTheWeek(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.findFilmOfTheWeek(mediaType || 'movie');
   }
 
   @Get(':id')
@@ -61,6 +61,7 @@ export class MoviesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('list') list?: string,
+    @Query('mediaType') mediaType?: string,
   ) {
     return this.moviesService.findAll(
       genre,
@@ -69,6 +70,7 @@ export class MoviesController {
       page ? parseInt(page, 10) || 1 : 1,
       limit ? parseInt(limit, 10) || 10 : 10,
       list || undefined,
+      mediaType || undefined,
     );
   }
 }
