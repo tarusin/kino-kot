@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getInitials } from '@/utils/getInitials';
@@ -16,6 +16,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function Header() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -201,9 +202,9 @@ export default function Header() {
         </button>
 
         <nav className={styles['header__nav']}>
-          <a href="/films" className={styles['header__link']}>Фильмы</a>
-          <a href="/series" className={styles['header__link']}>Сериалы</a>
-          <a href="/cartoons" className={styles['header__link']}>Мультфильмы</a>
+          <a href="/films" className={`${styles['header__link']} ${pathname.startsWith('/films') ? styles['header__link--active'] : ''}`}>Фильмы</a>
+          <a href="/series" className={`${styles['header__link']} ${pathname.startsWith('/series') ? styles['header__link--active'] : ''}`}>Сериалы</a>
+          <a href="/cartoons" className={`${styles['header__link']} ${pathname.startsWith('/cartoons') ? styles['header__link--active'] : ''}`}>Мультфильмы</a>
         </nav>
 
         {isMobileMenuOpen && (
@@ -220,9 +221,9 @@ export default function Header() {
                   <path d="M18 6L6 18M6 6l12 12" stroke="#102031" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </button>
-              <a href="/films" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Фильмы</a>
-              <a href="/series" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Сериалы</a>
-              <a href="/cartoons" className={styles['header__mobile-link']} onClick={() => setIsMobileMenuOpen(false)}>Мультфильмы</a>
+              <a href="/films" className={`${styles['header__mobile-link']} ${pathname.startsWith('/films') ? styles['header__mobile-link--active'] : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Фильмы</a>
+              <a href="/series" className={`${styles['header__mobile-link']} ${pathname.startsWith('/series') ? styles['header__mobile-link--active'] : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Сериалы</a>
+              <a href="/cartoons" className={`${styles['header__mobile-link']} ${pathname.startsWith('/cartoons') ? styles['header__mobile-link--active'] : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Мультфильмы</a>
             </div>
           </>
         )}
