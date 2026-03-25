@@ -54,9 +54,13 @@
       transition: color 0.2s;
 
       &:hover {
-        color: $color-text;
+        color: $color-primary;
       }
     }
+  }
+
+  &__nav-link--active {
+    color: $color-primary !important;
   }
 
   &__tmdb {

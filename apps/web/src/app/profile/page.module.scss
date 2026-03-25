@@ -2,7 +2,7 @@
 
 .profile {
   padding: rem(24) 0 rem(48);
-  min-height: calc(100vh - 10rem);
+  min-height: calc(100vh - 12rem);
 
   &__container {
     @include container;

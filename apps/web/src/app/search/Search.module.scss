@@ -2,7 +2,7 @@
 
 .search {
   padding: rem(40) 0;
-  min-height: calc(100vh - 10rem);
+  min-height: calc(100vh - 12rem);
 
   &__wrap {
     @include container;

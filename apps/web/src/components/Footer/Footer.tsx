@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import FooterNav from './FooterNav';
 import styles from './Footer.module.scss';
 
 export default function Footer() {
@@ -10,13 +11,8 @@ export default function Footer() {
           <Image src="/images/logo.svg" alt="КиноКот" width={162} height={44} />
         </Link>
         <div className={styles['footer__info']}>
-          <p className={styles['footer__copyright']}>© 2026 · Все права защищены, КиноКот</p>
-          <nav className={styles['footer__nav']}>
-            <Link href="/about">О проекте</Link>
-            <Link href="/privacy">Политика Конфиденциальности</Link>
-            <Link href="/terms">Пользовательское соглашение</Link>
-            <Link href="/support">Поддержка</Link>
-          </nav>
+          <p className={styles['footer__copyright']}>© 2026 · КиноКот</p>
+          <FooterNav />
           <a
             href="https://www.themoviedb.org/"
             target="_blank"
