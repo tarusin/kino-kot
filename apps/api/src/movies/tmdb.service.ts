@@ -468,6 +468,7 @@ export class TmdbService {
 
   async proxySearchMovies(query: string, page = 1): Promise<ProxyPaginatedResult> {
     const apiKey = process.env.TMDB_API_KEY;
+    const ANIMATION_GENRE_ID = 16;
     const [{ data }, genreMap] = await Promise.all([
       axios.get<TmdbPaginatedResponse<TmdbMovie>>(
         `${this.baseUrl}/search/movie`,
@@ -477,7 +478,10 @@ export class TmdbService {
     ]);
 
     return {
-      movies: data.results.map((m) => this.mapMovieToProxy(m, genreMap, 'movie')),
+      movies: data.results.map((m) => {
+        const isAnimation = m.genre_ids.includes(ANIMATION_GENRE_ID);
+        return this.mapMovieToProxy(m, genreMap, isAnimation ? 'cartoon' : 'movie');
+      }),
       total: data.total_results,
       page: data.page,
       totalPages: Math.min(data.total_pages, 500),
@@ -486,6 +490,7 @@ export class TmdbService {
 
   async proxySearchTV(query: string, page = 1): Promise<ProxyPaginatedResult> {
     const apiKey = process.env.TMDB_API_KEY;
+    const ANIMATION_GENRE_ID = 16;
     const [{ data }, genreMap] = await Promise.all([
       axios.get<TmdbPaginatedResponse<TmdbTVShow>>(
         `${this.baseUrl}/search/tv`,
@@ -495,7 +500,10 @@ export class TmdbService {
     ]);
 
     return {
-      movies: data.results.map((s) => this.mapTVToProxy(s, genreMap, 'series')),
+      movies: data.results.map((s) => {
+        const isAnimation = s.genre_ids.includes(ANIMATION_GENRE_ID);
+        return this.mapTVToProxy(s, genreMap, isAnimation ? 'cartoon' : 'series');
+      }),
       total: data.total_results,
       page: data.page,
       totalPages: Math.min(data.total_pages, 500),

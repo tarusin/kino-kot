@@ -6,11 +6,12 @@ import Header from '@/components/Header/Header';
 import MovieCard from '@/components/MovieCard/MovieCard';
 import Pagination from '@/components/Pagination/Pagination';
 import Footer from '@/components/Footer/Footer';
+import { getMoviePath } from '@/utils/getMoviePath';
 import type { Movie } from '@/types/movie';
 import styles from './Search.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const LIMIT = 12;
+const LIMIT = 20;
 
 interface SearchResponse {
   movies: Movie[];
@@ -95,18 +96,23 @@ function SearchResults() {
         ) : movies.length > 0 ? (
           <>
             <div className={styles['search__grid']}>
-              {movies.map((movie) => (
-                <MovieCard
-                  key={movie._id}
-                  id={movie._id}
-                  title={movie.title}
-                  posterPath={movie.posterPath}
-                  voteAverage={movie.voteAverage}
-                  kinoKotRating={movie.kinoKotRating}
-                  releaseDate={movie.releaseDate}
-                  genre={movie.genres?.[0]}
-                />
-              ))}
+              {movies.map((movie) => {
+                const moviePath = getMoviePath(movie._id);
+                const basePath = moviePath.substring(0, moviePath.lastIndexOf('/'));
+                return (
+                  <MovieCard
+                    key={movie._id}
+                    id={movie._id}
+                    title={movie.title}
+                    posterPath={movie.posterPath}
+                    voteAverage={movie.voteAverage}
+                    kinoKotRating={movie.kinoKotRating}
+                    releaseDate={movie.releaseDate}
+                    genre={movie.genres?.[0]}
+                    basePath={basePath}
+                  />
+                );
+              })}
             </div>
             <div className={styles['search__pagination']}>
               <Pagination

@@ -35,10 +35,15 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'stills', label: 'Кадры' },
 ];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  popular: 'Фильм',
-  top_rated: 'Фильм',
+const MEDIA_TYPE_LABELS: Record<string, string> = {
+  series: 'Сериал',
+  cartoon: 'Мультфильм',
 };
+
+function getMediaTypeLabel(compositeId: string): string {
+  const prefix = compositeId.split('-')[0];
+  return MEDIA_TYPE_LABELS[prefix] || 'Фильм';
+}
 
 function formatRuntime(minutes: number): string {
   const h = Math.floor(minutes / 60);
@@ -136,7 +141,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 
         {/* Мета-информация */}
         <div className={styles['movie-detail__meta']}>
-          <span>{CATEGORY_LABELS[movie.category] || 'Фильм'}</span>
+          <span>{getMediaTypeLabel(movie._id)}</span>
           {year && <span>{year}</span>}
           {movie.runtime && <span>{formatRuntime(movie.runtime)}</span>}
         </div>

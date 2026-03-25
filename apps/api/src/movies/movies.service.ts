@@ -311,8 +311,15 @@ export class MoviesService {
     if (!query || query.length < 2) return [];
 
     try {
-      const result = await this.tmdbService.proxySearchMovies(query);
-      return result.movies.slice(0, limit);
+      const [movieResult, tvResult] = await Promise.all([
+        this.tmdbService.proxySearchMovies(query),
+        this.tmdbService.proxySearchTV(query),
+      ]);
+
+      const combined = [...movieResult.movies, ...tvResult.movies]
+        .sort((a, b) => (b.voteAverage ?? 0) - (a.voteAverage ?? 0));
+
+      return combined.slice(0, limit);
     } catch (error) {
       this.logger.error('TMDB search failed', error);
       return [];
@@ -329,7 +336,20 @@ export class MoviesService {
     }
 
     try {
-      return await this.tmdbService.proxySearchMovies(query, page);
+      const [movieResult, tvResult] = await Promise.all([
+        this.tmdbService.proxySearchMovies(query, page),
+        this.tmdbService.proxySearchTV(query, page),
+      ]);
+
+      const combined = [...movieResult.movies, ...tvResult.movies]
+        .sort((a, b) => (b.voteAverage ?? 0) - (a.voteAverage ?? 0));
+
+      return {
+        movies: combined.slice(0, limit),
+        total: movieResult.total + tvResult.total,
+        page,
+        totalPages: Math.max(movieResult.totalPages, tvResult.totalPages),
+      };
     } catch (error) {
       this.logger.error('TMDB search failed', error);
       return { movies: [], total: 0, page, totalPages: 0 };
