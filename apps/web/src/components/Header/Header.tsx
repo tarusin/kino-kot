@@ -160,7 +160,7 @@ export default function Header() {
                   —
                 </span>
                 <span className={styles['header__search-rating']}>
-                  <Image src="/icons/rating-imdb.svg" alt="IMDB" width={16} height={16} />
+                  <Image src="/icons/rating-tmdb.svg" alt="TMDB" width={16} height={16} style={{ borderRadius: '50%' }} />
                   {movie.voteAverage?.toFixed(1)}
                 </span>
               </div>

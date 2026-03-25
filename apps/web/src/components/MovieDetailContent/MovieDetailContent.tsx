@@ -100,9 +100,6 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
   return (
     <section className={styles['movie-detail']}>
       <div className={styles['movie-detail__container']}>
-        {/*/!* Заголовок *!/*/}
-        {/*<h1 className={styles['movie-detail__title']}>{movie.title}</h1>*/}
-
         {/* Заголовок + рейтинги + кнопка */}
         <div className={styles['movie-detail__info-row']}>
           <h1 className={styles['movie-detail__title']}>{movie.title}</h1>
@@ -119,10 +116,11 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
             </div>
             <div className={styles['movie-detail__rating']}>
               <Image
-                src="/icons/rating-imdb.svg"
-                alt="IMDb"
+                src="/icons/rating-tmdb.svg"
+                alt="TMDB"
                 width={32}
                 height={32}
+                style={{ borderRadius: '50%' }}
               />
               <span className={styles['movie-detail__rating-value']}>
                 {movie.voteAverage.toFixed(1)}
@@ -192,49 +190,6 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
               </span>
           ))}
         </div>
-
-
-        {/*<div className={styles['movie-detail__info-row']}>*/}
-        {/*  <div className={styles['movie-detail__genres']}>*/}
-        {/*    {movie.genres.map((genre) => (*/}
-        {/*      <span key={genre.id} className={styles['movie-detail__genre']}>*/}
-        {/*        {genre.name}*/}
-        {/*      </span>*/}
-        {/*    ))}*/}
-        {/*  </div>*/}
-
-        {/*  <div className={styles['movie-detail__ratings']}>*/}
-        {/*    <div className={styles['movie-detail__rating']}>*/}
-        {/*      <Image*/}
-        {/*        src="/icons/rating-kk.svg"*/}
-        {/*        alt="КиноКот"*/}
-        {/*        width={32}*/}
-        {/*        height={32}*/}
-        {/*      />*/}
-        {/*      <span className={styles['movie-detail__rating-value']}>—</span>*/}
-        {/*    </div>*/}
-        {/*    <div className={styles['movie-detail__rating']}>*/}
-        {/*      <Image*/}
-        {/*        src="/icons/rating-imdb.svg"*/}
-        {/*        alt="IMDb"*/}
-        {/*        width={32}*/}
-        {/*        height={32}*/}
-        {/*      />*/}
-        {/*      <span className={styles['movie-detail__rating-value']}>*/}
-        {/*        {movie.voteAverage.toFixed(1)}*/}
-        {/*      </span>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-
-        {/*  {!userHasReview && (*/}
-        {/*    <button*/}
-        {/*      className={styles['movie-detail__review-btn']}*/}
-        {/*      onClick={handleReviewClick}*/}
-        {/*    >*/}
-        {/*      Оставить отзыв*/}
-        {/*    </button>*/}
-        {/*  )}*/}
-        {/*</div>*/}
 
         {/* Вкладки */}
         <div className={styles['movie-detail__tabs']} ref={tabsRef}>

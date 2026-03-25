@@ -58,4 +58,21 @@
       }
     }
   }
+
+  &__tmdb {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    margin-top: rem(8);
+    transition: opacity 0.2s;
+
+    span {
+      font-size: rem(12);
+      color: rgba($color-text, 0.5);
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }

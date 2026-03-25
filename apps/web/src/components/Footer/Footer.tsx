@@ -16,6 +16,15 @@ export default function Footer() {
             <Link href="/licenses">Лицензии</Link>
             <Link href="/support">Поддержка</Link>
           </nav>
+          <a
+            href="https://www.themoviedb.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles['footer__tmdb']}
+          >
+            <Image src="/images/tmdb-blue_short.svg" alt="TMDB" width={100} height={34} />
+            <span>Данные предоставлены TMDB</span>
+          </a>
         </div>
       </div>
     </footer>
