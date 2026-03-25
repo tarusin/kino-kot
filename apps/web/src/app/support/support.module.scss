@@ -1,0 +1,187 @@
+@use '../../styles/variables' as *;
+
+.support {
+  padding: rem(32) 0 rem(64);
+
+  @media (min-width: $breakpoint-md) {
+    padding: rem(48) 0 rem(80);
+  }
+
+  &__container {
+    @include container;
+    max-width: rem(800);
+  }
+
+  &__title {
+    font-size: rem(28);
+    font-weight: 700;
+    color: $color-text;
+    margin-bottom: rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(36);
+    }
+  }
+
+  &__subtitle {
+    font-size: rem(16);
+    color: $color-text-secondary;
+    margin-bottom: rem(32);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(18);
+      margin-bottom: rem(40);
+    }
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: rem(16);
+    margin-bottom: rem(40);
+
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: rem(20);
+    }
+  }
+
+  &__card {
+    background: $color-gray;
+    border-radius: rem(12);
+    padding: rem(24);
+
+    h2 {
+      font-size: rem(18);
+      font-weight: 600;
+      color: $color-text;
+      margin-bottom: rem(8);
+    }
+
+    p {
+      font-size: rem(14);
+      line-height: 1.6;
+      color: $color-text-secondary;
+    }
+  }
+
+  &__card-icon {
+    width: rem(40);
+    height: rem(40);
+    border-radius: rem(10);
+    background: $color-gradient;
+    color: white;
+    font-size: rem(20);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: rem(14);
+  }
+
+  &__contact {
+    margin-bottom: rem(40);
+
+    h2 {
+      font-size: rem(20);
+      font-weight: 600;
+      color: $color-text;
+      margin-bottom: rem(12);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(22);
+      }
+    }
+
+    p {
+      font-size: rem(15);
+      line-height: 1.7;
+      color: $color-text;
+      margin-bottom: rem(16);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(16);
+      }
+    }
+  }
+
+  &__email {
+    display: inline-block;
+    background: $color-gradient;
+    color: white;
+    font-size: rem(16);
+    font-weight: 600;
+    padding: rem(12) rem(24);
+    border-radius: rem(8);
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &__faq {
+    h2 {
+      font-size: rem(20);
+      font-weight: 600;
+      color: $color-text;
+      margin-bottom: rem(16);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(22);
+      }
+    }
+  }
+
+  &__faq-item {
+    border-bottom: 1px solid $color-gray-dark;
+    padding: rem(16) 0;
+
+    &:first-of-type {
+      border-top: 1px solid $color-gray-dark;
+    }
+
+    summary {
+      font-size: rem(15);
+      font-weight: 600;
+      color: $color-text;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(16);
+      }
+
+      &::after {
+        content: '+';
+        font-size: rem(20);
+        font-weight: 400;
+        color: $color-text-secondary;
+        transition: transform 0.2s;
+      }
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+    }
+
+    &[open] summary::after {
+      content: '−';
+    }
+
+    p {
+      font-size: rem(14);
+      line-height: 1.7;
+      color: $color-text-secondary;
+      padding-top: rem(10);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(15);
+      }
+    }
+  }
+}
