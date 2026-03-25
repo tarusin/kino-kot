@@ -13,7 +13,7 @@ export default function Footer() {
           <p className={styles['footer__copyright']}>© 2026 · Все права защищены, КиноКот</p>
           <nav className={styles['footer__nav']}>
             <Link href="/privacy">Политика Конфиденциальности</Link>
-            <Link href="/licenses">Лицензии</Link>
+            <Link href="/terms">Пользовательское соглашение</Link>
             <Link href="/support">Поддержка</Link>
           </nav>
           <a

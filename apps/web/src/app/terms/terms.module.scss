@@ -1,0 +1,102 @@
+@use '../../styles/variables' as *;
+
+.terms {
+  padding: rem(32) 0 rem(64);
+
+  @media (min-width: $breakpoint-md) {
+    padding: rem(48) 0 rem(80);
+  }
+
+  &__container {
+    @include container;
+    max-width: rem(800);
+  }
+
+  &__title {
+    font-size: rem(28);
+    font-weight: 700;
+    color: $color-text;
+    margin-bottom: rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(36);
+    }
+  }
+
+  &__updated {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin-bottom: rem(32);
+
+    @media (min-width: $breakpoint-md) {
+      margin-bottom: rem(40);
+    }
+  }
+
+  &__section {
+    margin-bottom: rem(28);
+
+    h2 {
+      font-size: rem(20);
+      font-weight: 600;
+      color: $color-text;
+      margin-bottom: rem(12);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(22);
+      }
+    }
+
+    p {
+      font-size: rem(15);
+      line-height: 1.7;
+      color: $color-text;
+      margin-bottom: rem(10);
+
+      @media (min-width: $breakpoint-md) {
+        font-size: rem(16);
+      }
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: rem(8) 0 rem(10);
+
+      li {
+        position: relative;
+        padding-left: rem(20);
+        font-size: rem(15);
+        line-height: 1.7;
+        color: $color-text;
+        margin-bottom: rem(6);
+
+        @media (min-width: $breakpoint-md) {
+          font-size: rem(16);
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: rem(10);
+          width: rem(6);
+          height: rem(6);
+          border-radius: 50%;
+          background: $color-gradient;
+        }
+      }
+    }
+
+    a {
+      color: $color-primary;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
