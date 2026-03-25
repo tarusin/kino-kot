@@ -1,0 +1,72 @@
+import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
+import styles from './about.module.scss';
+
+export const metadata = {
+  title: 'О проекте — КиноКот',
+  description: 'Узнайте больше о проекте КиноКот — платформе для поиска фильмов, сериалов и мультфильмов',
+};
+
+export default function AboutPage() {
+  return (
+    <>
+      <Header />
+      <main className={styles['about']}>
+        <div className={styles['about__container']}>
+          <h1 className={styles['about__title']}>О проекте</h1>
+          <p className={styles['about__subtitle']}>
+            КиноКот — это уютная платформа для настоящих любителей кино
+          </p>
+
+          <section className={styles['about__section']}>
+            <h2>Что такое КиноКот?</h2>
+            <p>
+              КиноКот — платформа, где можно найти фильмы, сериалы и мультфильмы на любой вкус,
+              оставить отзыв и узнать мнение других зрителей. Мы верим, что каждый фильм
+              заслуживает честной оценки, а каждый зритель — хорошей рекомендации.
+            </p>
+          </section>
+
+          <section className={styles['about__section']}>
+            <h2>Что можно делать на КиноКот?</h2>
+            <ul>
+              <li>Искать фильмы, сериалы и мультфильмы по жанрам, годам и странам</li>
+              <li>Читать отзывы других пользователей и оставлять свои</li>
+              <li>Оценивать фильмы по 10-балльной шкале</li>
+              <li>Пройти тест кинематографического вкуса и получить персональные рекомендации</li>
+              <li>Следить за популярными и лучшими фильмами</li>
+            </ul>
+          </section>
+
+          <section className={styles['about__section']}>
+            <h2>Почему кот?</h2>
+            <p>
+              Потому что коты — лучшие компаньоны для вечернего просмотра фильмов.
+              Они разбираются в хорошем кино не хуже профессиональных критиков,
+              а их мурчание — лучший саундтрек к любому сеансу.
+            </p>
+          </section>
+
+          <section className={styles['about__section']}>
+            <h2>Откуда данные о фильмах?</h2>
+            <p>
+              Информация о фильмах, сериалах и мультфильмах предоставляется
+              сервисом <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">The Movie Database (TMDB)</a>.
+              Рейтинг КиноКот формируется на основе отзывов наших пользователей
+              и не зависит от внешних источников.
+            </p>
+          </section>
+
+          <section className={styles['about__section']}>
+            <h2>Связаться с нами</h2>
+            <p>
+              Нашли ошибку, есть идея или просто хотите сказать «мяу»?
+              Напишите нам через страницу <a href="/support">Поддержки</a>.
+            </p>
+          </section>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
