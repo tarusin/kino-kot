@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getInitials } from '@/utils/getInitials';
+import { getMoviePath } from '@/utils/getMoviePath';
 import styles from './ProfileReviewCard.module.scss';
 
 interface ProfileReviewCardProps {
@@ -31,7 +32,7 @@ export default function ProfileReviewCard({
     <div className={ styles['profile-review-card'] }>
       <div className={ styles['profile-review-card__left'] }>
         <Link
-          href={ `/films/${ movieId }` }
+          href={ getMoviePath(movieId) }
           className={ styles['profile-review-card__poster-link'] }
         >
           { moviePosterPath ? (
@@ -62,7 +63,7 @@ export default function ProfileReviewCard({
       <div className={ styles['profile-review-card__right'] }>
         <div className={ styles['profile-review-card__right-top'] }>
           <Link
-            href={ `/films/${ movieId }` }
+            href={ getMoviePath(movieId) }
             className={ styles['profile-review-card__movie-title'] }
           >
             { movieTitle }

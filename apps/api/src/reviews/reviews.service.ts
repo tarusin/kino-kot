@@ -5,6 +5,7 @@ import { Review } from './schemas/review.schema.js';
 import { ReviewReaction } from './schemas/review-reaction.schema.js';
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
+import { MoviesService } from '../movies/movies.service.js';
 
 @Injectable()
 export class ReviewsService {
@@ -12,6 +13,7 @@ export class ReviewsService {
     @InjectModel(Review.name) private reviewModel: Model<Review>,
     @InjectModel(ReviewReaction.name)
     private reactionModel: Model<ReviewReaction>,
+    private readonly moviesService: MoviesService,
   ) {}
 
   async create(
@@ -21,16 +23,19 @@ export class ReviewsService {
   ): Promise<Review> {
     const existing = await this.reviewModel.findOne({
       userId: new Types.ObjectId(userId),
-      movieId: new Types.ObjectId(dto.movieId),
+      movieId: dto.movieId,
     });
 
     if (existing) {
       throw new ConflictException('Вы уже оставили отзыв на этот фильм');
     }
 
+    // Ensure a movie exists in MongoDB for $lookup in findLatest/findByUser
+    await this.moviesService.ensureMovieInDb(dto.movieId);
+
     return this.reviewModel.create({
       userId: new Types.ObjectId(userId),
-      movieId: new Types.ObjectId(dto.movieId),
+      movieId: dto.movieId,
       rating: dto.rating,
       text: dto.text,
       userName,
@@ -98,20 +103,21 @@ export class ReviewsService {
               $lookup: {
                 from: 'movies',
                 localField: 'movieId',
-                foreignField: '_id',
+                foreignField: 'compositeId',
                 as: 'movie',
               },
             },
-            { $unwind: '$movie' },
+            { $unwind: { path: '$movie', preserveNullAndEmptyArrays: true } },
             {
               $project: {
                 rating: 1,
                 text: 1,
                 userName: 1,
                 createdAt: 1,
+                movieId: 1,
                 movie: {
-                  _id: '$movie._id',
-                  title: '$movie.title',
+                  _id: { $ifNull: ['$movie.compositeId', '$movieId'] },
+                  title: { $ifNull: ['$movie.title', 'Неизвестный фильм'] },
                   posterPath: '$movie.posterPath',
                 },
               },
@@ -133,10 +139,8 @@ export class ReviewsService {
   }
 
   async getAverageRatings(movieIds: string[]): Promise<Record<string, number>> {
-    const objectIds = movieIds.map((id) => new Types.ObjectId(id));
-
     const result = await this.reviewModel.aggregate([
-      { $match: { movieId: { $in: objectIds } } },
+      { $match: { movieId: { $in: movieIds } } },
       { $group: { _id: '$movieId', avg: { $avg: '$rating' } } },
     ]);
 
@@ -155,20 +159,21 @@ export class ReviewsService {
         $lookup: {
           from: 'movies',
           localField: 'movieId',
-          foreignField: '_id',
+          foreignField: 'compositeId',
           as: 'movie',
         },
       },
-      { $unwind: '$movie' },
+      { $unwind: { path: '$movie', preserveNullAndEmptyArrays: true } },
       {
         $project: {
           rating: 1,
           text: 1,
           userName: 1,
           createdAt: 1,
+          movieId: 1,
           movie: {
-            _id: '$movie._id',
-            title: '$movie.title',
+            _id: { $ifNull: ['$movie.compositeId', '$movieId'] },
+            title: { $ifNull: ['$movie.title', 'Неизвестный фильм'] },
             posterPath: '$movie.posterPath',
           },
         },
@@ -177,10 +182,8 @@ export class ReviewsService {
   }
 
   async findByMovie(movieId: string, userId?: string) {
-    const movieOid = new Types.ObjectId(movieId);
-
     const pipeline: any[] = [
-      { $match: { movieId: movieOid } },
+      { $match: { movieId } },
       { $sort: { createdAt: -1 as const } },
       {
         $lookup: {

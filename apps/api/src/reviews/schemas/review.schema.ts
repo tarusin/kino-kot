@@ -6,8 +6,8 @@ export class Review extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Movie', required: true })
-  movieId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  movieId: string;
 
   @Prop({ required: true, min: 1, max: 10 })
   rating: number;

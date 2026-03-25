@@ -8,6 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getInitials } from '@/utils/getInitials';
+import { getMoviePath } from '@/utils/getMoviePath';
 import type { Movie } from '@/types/movie';
 import styles from './Header.module.scss';
 
@@ -131,7 +132,7 @@ export default function Header() {
         {results.map((movie) => (
           <Link
             key={movie._id}
-            href={`/films/${movie._id}`}
+            href={getMoviePath(movie._id)}
             className={styles['header__search-result']}
             onClick={handleResultClick}
           >

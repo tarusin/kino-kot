@@ -39,8 +39,8 @@ export class MoviesController {
   }
 
   @Get('years')
-  getYears(@Query('mediaType') mediaType?: string) {
-    return this.moviesService.getYears(mediaType);
+  getYears() {
+    return this.moviesService.getYears();
   }
 
   @Get('film-of-the-week')

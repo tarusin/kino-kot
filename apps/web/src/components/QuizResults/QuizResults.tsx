@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { QuizResultType } from '@/data/quiz-results';
 import type { Movie } from '@/types/movie';
+import { getMoviePath } from '@/utils/getMoviePath';
 import styles from './QuizResults.module.scss';
 
 interface QuizResultsProps {
@@ -22,7 +23,7 @@ export default function QuizResults({ resultType, movies, onRestart }: QuizResul
         {movies.map((movie) => (
           <Link
             key={movie._id}
-            href={`/films/${movie._id}`}
+            href={getMoviePath(movie._id)}
             className={styles['quiz-results__movie']}
           >
             <span className={styles['quiz-results__movie-name']}>{movie.title}</span>

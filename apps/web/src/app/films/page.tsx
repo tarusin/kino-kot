@@ -9,7 +9,7 @@ import styles from './films.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
-const MOVIES_PER_PAGE = 10;
+const MOVIES_PER_PAGE = 20;
 
 async function getGenres(): Promise<string[]> {
   try {

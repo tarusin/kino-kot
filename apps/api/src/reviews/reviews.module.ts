@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module.js';
+import { MoviesModule } from '../movies/movies.module.js';
 import { Review, ReviewSchema } from './schemas/review.schema.js';
 import {
   ReviewReaction,
@@ -16,6 +17,7 @@ import { ReviewsController } from './reviews.controller.js';
       { name: ReviewReaction.name, schema: ReviewReactionSchema },
     ]),
     AuthModule,
+    MoviesModule,
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService],

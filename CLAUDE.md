@@ -20,7 +20,7 @@ kino-kot/
 - **Стили**: SCSS Modules с BEM-именованием
 - **Backend**: Node.js + NestJS, TypeScript
 - **БД**: MongoDB 7 (через Docker Compose)
-- **API фильмов**: TMDB API (авто-сид при пустой БД)
+- **API фильмов**: TMDB API (гибридный прокси — TMDB как основной источник, MongoDB для отзывов)
 - **Монорепо**: npm workspaces
 
 ## Команды
@@ -34,15 +34,15 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Env-файлы
 
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET` (шаблон: `.env.example`)
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `FRONTEND_URL` (шаблон: `.env.example`)
 - `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
 
 ## Backend (apps/api/)
 
 - **Глобальный префикс**: `/api`
-- **CORS**: разрешён `http://localhost:3000` с `credentials: true`
+- **CORS**: разрешён `http://localhost:3000` + `FRONTEND_URL` env с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
-- **MoviesModule**: схема Movie (Mongoose, поля `category`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType` + составной индекс `tmdbId+category+mediaType`), TMDB-сервис, авто-сид фильмов (popular, top_rated, now_playing, upcoming), сериалов (popular, top_rated, on_the_air, airing_today), мультфильмов (popular, top_rated, now_playing, upcoming), seedMissingCategories при старте, backfill genres/countries/years/runtime
+- **MoviesModule**: гибридный подход — TMDB API как основной источник для списков/поиска/фильтров, MongoDB только для фильмов с отзывами. Схема Movie (Mongoose, поля `compositeId` unique, `tmdbId`, `title`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType`). TmdbService проксирует discover/list/search эндпоинты TMDB. Составные ID: `movie-{tmdbId}`, `series-{tmdbId}`, `cartoon-{tmdbId}`. `ensureMovieInDb(compositeId)` сохраняет фильм в MongoDB при создании отзыва
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
@@ -50,10 +50,11 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
 - **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
-- **ReviewsModule**: схема Review (userId, movieId, rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
+- **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
 - **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
-- Авто-сид: при старте, если БД пуста, загружает фильмы, сериалы и мультфильмы из TMDB. Сериалы — через TMDB TV API (/tv/*), мультфильмы — через discover с жанром Animation
+- **Составные ID**: формат `{mediaType}-{tmdbId}` (например `movie-550`, `series-1396`, `cartoon-508947`). Используются в URL, API ответах, отзывах. Обратная совместимость: `findById` поддерживает и legacy MongoDB ObjectId
+- **Утилита getMoviePath** (`apps/web/src/utils/getMoviePath.ts`): маппинг compositeId → правильный URL (/films/, /series/, /cartoons/)
 
 ## Правила стилей
 

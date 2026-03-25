@@ -1,8 +1,11 @@
-import { IsNotEmpty, IsString, IsInt, Min, Max, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, Min, Max, MaxLength, Matches } from 'class-validator';
 
 export class CreateReviewDto {
   @IsString()
   @IsNotEmpty()
+  @Matches(/^(movie|series|cartoon)-\d+$/, {
+    message: 'movieId должен быть в формате movie-123, series-123 или cartoon-123',
+  })
   movieId: string;
 
   @IsInt()

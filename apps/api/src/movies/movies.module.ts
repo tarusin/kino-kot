@@ -15,5 +15,6 @@ import { TmdbService } from './tmdb.service.js';
   ],
   controllers: [MoviesController],
   providers: [MoviesService, TmdbService],
+  exports: [MoviesService],
 })
 export class MoviesModule {}
