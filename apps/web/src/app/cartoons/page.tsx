@@ -34,7 +34,7 @@ async function getYears(): Promise<string[]> {
   }
 }
 
-async function getCountries(): Promise<string[]> {
+async function getCountries(): Promise<{ code: string; name: string }[]> {
   try {
     const res = await fetch(`${API_URL}/movies/countries?mediaType=cartoon`, { cache: 'no-store' });
     if (!res.ok) return [];
@@ -109,13 +109,16 @@ export default async function CartoonsPage({
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
 
-  const [genres, years, countries, data, cartoonOfTheWeek] = await Promise.all([
+  const [genres, years, countriesData, data, cartoonOfTheWeek] = await Promise.all([
     getGenres(),
     getYears(),
     getCountries(),
     getCartoons(genre, year, country, currentPage, activeList),
     getCartoonOfTheWeek(),
   ]);
+
+  const countries = countriesData.map((c) => c.code);
+  const countryDisplayMap = Object.fromEntries(countriesData.map((c) => [c.code, c.name]));
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
   const moviesWithRatings = data.movies.map((m) => ({
@@ -146,6 +149,7 @@ export default async function CartoonsPage({
                 genres={genres}
                 years={years}
                 countries={countries}
+                countryDisplayMap={countryDisplayMap}
                 appliedGenre={genre || null}
                 appliedYear={year || null}
                 appliedCountry={country || null}

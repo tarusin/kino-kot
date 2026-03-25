@@ -362,12 +362,48 @@ export class MoviesService {
     return genres.map((g) => g.name).sort();
   }
 
-  async getCountries(mediaType?: string): Promise<string[]> {
+  private static readonly TOP_COUNTRIES = [
+    'US',
+    'GB',
+    'FR',
+    'DE',
+    'RU',
+    'SU',
+    'KR',
+    'JP',
+    'IN',
+    'IT',
+  ];
+
+  private static readonly NAME_OVERRIDES: Record<string, string> = {
+    SU: 'СССР',
+  };
+
+  async getCountries(
+    mediaType?: string,
+  ): Promise<{ code: string; name: string }[]> {
     const countries = await this.tmdbService.getCountriesList();
-    return countries
-      .map((c) => c.iso_3166_1)
-      .filter((c) => !!c)
-      .sort();
+    const all = countries
+      .filter((c) => !!c.iso_3166_1)
+      .map((c) => ({
+        code: c.iso_3166_1,
+        name:
+          MoviesService.NAME_OVERRIDES[c.iso_3166_1] ||
+          c.native_name ||
+          c.english_name ||
+          c.iso_3166_1,
+      }));
+
+    const topSet = new Set(MoviesService.TOP_COUNTRIES);
+    const top = MoviesService.TOP_COUNTRIES
+      .map((code) => all.find((c) => c.code === code))
+      .filter(Boolean) as { code: string; name: string }[];
+
+    const rest = all
+      .filter((c) => !topSet.has(c.code))
+      .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+
+    return [...top, ...rest];
   }
 
   async getYears(): Promise<number[]> {

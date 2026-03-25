@@ -36,7 +36,7 @@ async function getYears(): Promise<string[]> {
   }
 }
 
-async function getCountries(): Promise<string[]> {
+async function getCountries(): Promise<{ code: string; name: string }[]> {
   try {
     const res = await fetch(`${API_URL}/movies/countries?mediaType=movie`, { cache: 'no-store' });
     if (!res.ok) return [];
@@ -116,13 +116,16 @@ export default async function FilmsPage({
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
 
-  const [genres, years, countries, data, filmOfTheWeek] = await Promise.all([
+  const [genres, years, countriesData, data, filmOfTheWeek] = await Promise.all([
     getGenres(),
     getYears(),
     getCountries(),
     getMovies(genre, year, country, currentPage, activeList),
     getFilmOfTheWeek(),
   ]);
+
+  const countries = countriesData.map((c) => c.code);
+  const countryDisplayMap = Object.fromEntries(countriesData.map((c) => [c.code, c.name]));
 
   const ratings = await getRatings(data.movies.map((m) => m._id));
   const moviesWithRatings = data.movies.map((m) => ({
@@ -146,6 +149,7 @@ export default async function FilmsPage({
                 genres={genres}
                 years={years}
                 countries={countries}
+                countryDisplayMap={countryDisplayMap}
                 appliedGenre={genre || null}
                 appliedYear={year || null}
                 appliedCountry={country || null}

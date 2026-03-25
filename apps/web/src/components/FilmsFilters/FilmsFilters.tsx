@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import FilterDropdown from '@/components/FilterDropdown/FilterDropdown';
-import { countryNames } from '@/utils/countries';
 import styles from './FilmsFilters.module.scss';
 
 interface FilmsFiltersProps {
   genres: string[];
   years: string[];
   countries: string[];
+  countryDisplayMap: Record<string, string>;
   appliedGenre: string | null;
   appliedYear: string | null;
   appliedCountry: string | null;
@@ -21,6 +21,7 @@ export default function FilmsFilters({
   genres,
   years,
   countries,
+  countryDisplayMap,
   appliedGenre,
   appliedYear,
   appliedCountry,
@@ -88,7 +89,7 @@ export default function FilmsFilters({
           options={countries}
           selected={pendingCountry}
           onSelect={setPendingCountry}
-          displayMap={countryNames}
+          displayMap={countryDisplayMap}
         />
       </div>
       <div className={styles['films-filters__actions']}>

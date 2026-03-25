@@ -46,7 +46,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=`, `GET /api/movies/years?mediaType=`
+- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=` (возвращает `{ code, name }[]` — топ-10 популярных стран вверху, затем остальные по алфавиту; названия из TMDB на русском, SU → «СССР»), `GET /api/movies/years?mediaType=`
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
 - **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
 - **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
@@ -80,7 +80,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **FilterDropdown** — generic дропдаун-фильтр (icon, label, options, selected, onSelect, displayMap), без навигации
 - **FilmsTabs** — client-компонент, горизонтальные табы-кнопки для переключения списков (props: `activeTab`, `basePath`), pill-стиль с градиентом на активном. Наборы табов зависят от basePath: /films, /series, /cartoons
 - **FilmOfTheWeek** — серверный компонент, баннер «X Недели» (props: `badge`, `categoryLabel`, `basePath`): backdrop-изображение, белые блоки контента с fake-border-radius, рейтинги КиноКот+TMDB, мета, кнопка → basePath/:id
-- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, props: `basePath` для поддержки /series и /cartoons
+- **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, props: `basePath`, `countryDisplayMap` (из API, не хардкод)
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
