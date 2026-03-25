@@ -11,6 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 interface ReviewCardProps {
   reviewId: string;
+  userId: string;
   userName: string;
   rating: number;
   text: string;
@@ -22,6 +23,7 @@ interface ReviewCardProps {
 
 export default function ReviewCard({
                                      reviewId,
+                                     userId,
                                      userName,
                                      rating,
                                      text,
@@ -31,6 +33,7 @@ export default function ReviewCard({
                                      userReaction: initialReaction,
                                    }: ReviewCardProps) {
   const { user } = useAuth();
+  const isOwnReview = user?.id === userId;
   const [likesCount, setLikesCount] = useState(initialLikes);
   const [dislikesCount, setDislikesCount] = useState(initialDislikes);
   const [userReaction, setUserReaction] = useState(initialReaction);
@@ -45,7 +48,7 @@ export default function ReviewCard({
       toast.error('Войдите, чтобы оценить отзыв');
       return;
     }
-    if (isSubmitting) {
+    if (isOwnReview || isSubmitting) {
       return;
     }
 
@@ -135,7 +138,7 @@ export default function ReviewCard({
                 : ''
             }` }
             onClick={ () => handleReaction('like') }
-            disabled={ isSubmitting }
+            disabled={ isSubmitting || isOwnReview }
             type="button"
           >
             <svg
@@ -161,7 +164,7 @@ export default function ReviewCard({
                 : ''
             }` }
             onClick={ () => handleReaction('dislike') }
-            disabled={ isSubmitting }
+            disabled={ isSubmitting || isOwnReview }
             type="button"
           >
             <svg

@@ -13,6 +13,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 interface ReviewData {
   _id: string;
+  userId: string;
   userName: string;
   rating: number;
   text: string;
@@ -329,6 +330,7 @@ function ReviewsTab({
             <ReviewCard
               key={review._id}
               reviewId={review._id}
+              userId={review.userId}
               userName={review.userName}
               rating={review.rating}
               text={review.text}

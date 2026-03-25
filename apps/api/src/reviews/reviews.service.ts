@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Review } from './schemas/review.schema.js';
@@ -45,6 +49,13 @@ export class ReviewsService {
   async toggleReaction(userId: string, dto: ToggleReactionDto) {
     const userOid = new Types.ObjectId(userId);
     const reviewOid = new Types.ObjectId(dto.reviewId);
+
+    const review = await this.reviewModel.findById(reviewOid);
+    if (review && review.userId.toString() === userId) {
+      throw new ForbiddenException(
+        'Нельзя ставить реакции на собственные отзывы',
+      );
+    }
 
     const existing = await this.reactionModel.findOne({
       userId: userOid,
