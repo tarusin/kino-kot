@@ -45,6 +45,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **MoviesModule**: гибридный подход — TMDB API как основной источник для списков/поиска/фильтров, MongoDB только для фильмов с отзывами. Схема Movie (Mongoose, поля `compositeId` unique, `tmdbId`, `title`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType`). TmdbService проксирует discover/list/search эндпоинты TMDB. Составные ID: `movie-{tmdbId}`, `series-{tmdbId}`, `cartoon-{tmdbId}`. `ensureMovieInDb(compositeId)` сохраняет фильм в MongoDB при создании отзыва
 - **UsersModule**: схема User (name, email unique, password bcrypt-хеш, isEmailVerified bool default false, emailVerificationToken string optional), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
+- **Удаление аккаунта**: `DELETE /api/users/account` (JwtAuthGuard) — каскадное удаление: отзывы пользователя, реакции (свои + на свои отзывы), учётная запись; очистка cookies
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
 - **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Resend. Fallback на console.log в dev (если RESEND_API_KEY не задан). Метод `sendVerificationEmail(to, token)`
 - **Email Verification**: при регистрации отправляется письмо с ссылкой подтверждения. Логин разрешён без подтверждения, но `POST /api/reviews` и `POST /api/reviews/reactions` требуют `VerifiedEmailGuard`. На фронте неподтверждённые пользователи видят баннер вместо формы отзыва
@@ -87,6 +88,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление)
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
 - **EditProfileModal** — модалка редактирования профиля (имя, email, аватар-заглушка с инициалом, "Загрузить фото" — в разработке)
+- **DeleteAccountModal** — модалка подтверждения удаления аккаунта с предупреждением о необратимости, редирект на главную после удаления
 - **ReviewsMarquee** — client-компонент, двухрядный авто-скроллящийся marquee с последними отзывами (CSS @keyframes, пауза при наведении), переиспользует ProfileReviewCard
 - **QuizCard** — client-компонент, карточка вопроса теста с 5 вариантами ответа (кликабельные плашки, подсветка выбора, авто-переход 350ms)
 - **QuizResults** — client-компонент, карточка результата теста: тип ("Вы эстет"), описание, список рекомендованных фильмов (ссылки на /films/:id), кнопка "Пройти ещё раз"
@@ -106,13 +108,13 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput), после успешной регистрации показывает экран "Проверьте почту" с кнопкой повторной отправки
 - `/verify-email` — подтверждение email по ссылке из письма (читает token из query params, вызывает GET /api/auth/verify-email)
-- `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования)
+- `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования, модалка удаления аккаунта)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
 
 ## Авторизация
 
 - **AuthContext** (`apps/web/src/context/AuthContext.tsx`) — React Context с `AuthProvider`, хук `useAuth()`
-- Состояние: `user` (включает `isEmailVerified`), `loading`, методы `login()`, `register()` (возвращает `{ needsVerification }`), `logout()`, `updateUser()`, `resendVerification()`
+- Состояние: `user` (включает `isEmailVerified`), `loading`, методы `login()`, `register()` (возвращает `{ needsVerification }`), `logout()`, `updateUser()`, `resendVerification()`, `deleteAccount()`
 - Токены хранятся в httpOnly cookies (access_token + refresh_token), отправляются через `credentials: 'include'`
 - При монтировании AuthProvider вызывает `GET /api/auth/me` для восстановления сессии
 - Toast-уведомления (react-hot-toast) при login/register/logout, `<Toaster>` в layout.tsx

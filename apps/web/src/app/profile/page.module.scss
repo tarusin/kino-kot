@@ -118,11 +118,36 @@
     color: $color-text;
   }
 
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: rem(16);
+    flex-wrap: wrap;
+  }
+
   &__edit-btn {
     @include gradient-button;
     padding: rem(12) rem(32);
     font-size: rem(14);
     font-family: $font-family;
+  }
+
+  &__delete-btn {
+    padding: rem(12) rem(32);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: #DC2626;
+    background: none;
+    border: 1px solid #DC2626;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background: #DC2626;
+      color: white;
+    }
   }
 
   &__reviews {

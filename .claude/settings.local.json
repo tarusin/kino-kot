@@ -30,7 +30,8 @@
       "WebFetch(domain:kino-kot-app.onrender.com)",
       "Bash(kill:*)",
       "Bash(lsof -ti:3001)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(npx --workspace=web next build)"
     ]
   },
   "enabledPlugins": {

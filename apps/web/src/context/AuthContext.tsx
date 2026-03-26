@@ -18,6 +18,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateUser: (data: { name?: string }) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -100,6 +101,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.success('Профиль обновлён');
   };
 
+  const deleteAccount = async () => {
+    const res = await fetch(`${API_URL}/users/account`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Ошибка удаления аккаунта');
+    }
+
+    setUser(null);
+    toast.success('Аккаунт удалён');
+  };
+
   const resendVerification = async (email: string) => {
     const res = await fetch(`${API_URL}/auth/resend-verification`, {
       method: 'POST',
@@ -117,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, logout, updateUser, resendVerification }}
+      value={{ user, loading, login, register, logout, updateUser, resendVerification, deleteAccount }}
     >
       {children}
     </AuthContext.Provider>

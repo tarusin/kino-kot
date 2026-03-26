@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import EditProfileModal from '@/components/EditProfileModal/EditProfileModal';
+import DeleteAccountModal from '@/components/DeleteAccountModal/DeleteAccountModal';
 import ProfileReviewCard from '@/components/ProfileReviewCard/ProfileReviewCard';
 import Pagination from '@/components/Pagination/Pagination';
 import { useAuth } from '@/context/AuthContext';
@@ -38,6 +39,7 @@ export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [reviews, setReviews] = useState<UserReview[]>([]);
   const [reviewsPage, setReviewsPage] = useState(1);
@@ -119,13 +121,22 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <button
-                className={ styles['profile__edit-btn'] }
-                onClick={ () => setIsEditModalOpen(true) }
-                type="button"
-              >
-                Редактировать
-              </button>
+              <div className={ styles['profile__actions'] }>
+                <button
+                  className={ styles['profile__edit-btn'] }
+                  onClick={ () => setIsEditModalOpen(true) }
+                  type="button"
+                >
+                  Редактировать
+                </button>
+                <button
+                  className={ styles['profile__delete-btn'] }
+                  onClick={ () => setIsDeleteModalOpen(true) }
+                  type="button"
+                >
+                  Удалить аккаунт
+                </button>
+              </div>
             </div>
           ) }
 
@@ -170,6 +181,11 @@ export default function ProfilePage() {
       <EditProfileModal
         isOpen={ isEditModalOpen }
         onClose={ () => setIsEditModalOpen(false) }
+      />
+
+      <DeleteAccountModal
+        isOpen={ isDeleteModalOpen }
+        onClose={ () => setIsDeleteModalOpen(false) }
       />
 
       <Footer/>

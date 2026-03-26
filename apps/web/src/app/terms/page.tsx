@@ -14,7 +14,7 @@ export default function TermsPage() {
       <main className={styles['terms']}>
         <div className={styles['terms__container']}>
           <h1 className={styles['terms__title']}>Пользовательское соглашение</h1>
-          <p className={styles['terms__updated']}>Последнее обновление: 25 марта 2026 г.</p>
+          <p className={styles['terms__updated']}>Последнее обновление: 26 марта 2026 г.</p>
 
           <section className={styles['terms__section']}>
             <h2>1. Общие положения</h2>
@@ -69,7 +69,7 @@ export default function TermsPage() {
               <li>Публиковать отзывы и ставить оценки после регистрации</li>
               <li>Ставить лайки и дизлайки к отзывам других пользователей</li>
               <li>Редактировать данные своего профиля</li>
-              <li>Запросить удаление своей учётной записи</li>
+              <li>Самостоятельно удалить свою учётную запись и все связанные данные через настройки профиля</li>
             </ul>
             <p>Пользователь обязуется:</p>
             <ul>

@@ -1,0 +1,64 @@
+@use '../../styles/variables' as *;
+
+.delete-account {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
+
+  &__text {
+    font-size: rem(14);
+    line-height: 1.6;
+    color: $color-text-secondary;
+  }
+
+  &__actions {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__cancel {
+    flex: 1;
+    padding: rem(14);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: $color-text;
+    background: $color-gray;
+    border: none;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__confirm {
+    flex: 1;
+    padding: rem(14);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: white;
+    background: #DC2626;
+    border: none;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
