@@ -359,6 +359,37 @@ function DescriptionTab({ overview }: { overview: string }) {
 
 /* ---------- Вкладка: Актеры и команда ---------- */
 
+function CastMemberCard({
+  name,
+  role,
+  profilePath,
+}: {
+  name: string;
+  role: string;
+  profilePath: string | null;
+}) {
+  return (
+    <div className={styles['cast-tab__card']}>
+      <div className={styles['cast-tab__photo']}>
+        {profilePath ? (
+          <Image
+            src={`https://image.tmdb.org/t/p/w185${profilePath}`}
+            alt={name}
+            fill
+            sizes="60px"
+          />
+        ) : (
+          <div className={styles['cast-tab__placeholder']} />
+        )}
+      </div>
+      <div className={styles['cast-tab__info']}>
+        <p className={styles['cast-tab__name']}>{name}</p>
+        <p className={styles['cast-tab__role']}>{role}</p>
+      </div>
+    </div>
+  );
+}
+
 function CastTab({
   cast,
   crew,
@@ -366,37 +397,43 @@ function CastTab({
   cast: MovieDetail['cast'];
   crew: MovieDetail['crew'];
 }) {
-  const allMembers = [
-    ...crew.map((c) => ({ ...c, role: c.job })),
-    ...cast.map((c) => ({ ...c, role: c.character })),
-  ];
-
-  if (allMembers.length === 0) {
+  if (cast.length === 0 && crew.length === 0) {
     return <p className={styles['cast-tab__empty']}>Информация недоступна</p>;
   }
 
   return (
     <div className={styles['cast-tab']}>
-      {allMembers.map((member, i) => (
-        <div key={`${member.name}-${i}`} className={styles['cast-tab__card']}>
-          <div className={styles['cast-tab__photo']}>
-            {member.profilePath ? (
-              <Image
-                src={`https://image.tmdb.org/t/p/w185${member.profilePath}`}
-                alt={member.name}
-                fill
-                sizes="60px"
+      {cast.length > 0 && (
+        <div className={styles['cast-tab__section']}>
+          <h3 className={styles['cast-tab__title']}>Актерский состав</h3>
+          <div className={styles['cast-tab__grid']}>
+            {cast.map((member, i) => (
+              <CastMemberCard
+                key={`cast-${member.name}-${i}`}
+                name={member.name}
+                role={member.character}
+                profilePath={member.profilePath}
               />
-            ) : (
-              <div className={styles['cast-tab__placeholder']} />
-            )}
-          </div>
-          <div className={styles['cast-tab__info']}>
-            <p className={styles['cast-tab__name']}>{member.name}</p>
-            <p className={styles['cast-tab__role']}>{member.role}</p>
+            ))}
           </div>
         </div>
-      ))}
+      )}
+
+      {crew.length > 0 && (
+        <div className={styles['cast-tab__section']}>
+          <h3 className={styles['cast-tab__title']}>Команда</h3>
+          <div className={styles['cast-tab__grid']}>
+            {crew.map((member, i) => (
+              <CastMemberCard
+                key={`crew-${member.name}-${i}`}
+                name={member.name}
+                role={member.job}
+                profilePath={member.profilePath}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

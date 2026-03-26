@@ -295,11 +295,42 @@
   }
 }
 
-// Вкладка: Актеры
+// Вкладка: Актеры и команда
 .cast-tab {
   display: flex;
   flex-direction: column;
-  gap: rem(16);
+  gap: rem(32);
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__title {
+    font-size: rem(18);
+    font-weight: 700;
+    color: $color-text;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(20);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: rem(16);
+
+    @media (min-width: $breakpoint-sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: $breakpoint-lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 
   &__card {
     display: flex;
@@ -341,6 +372,9 @@
     font-weight: 600;
     color: $color-text;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     @media (min-width: $breakpoint-md) {
       font-size: rem(15);
@@ -351,6 +385,9 @@
     font-size: rem(12);
     color: $color-text-secondary;
     margin: rem(2) 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     @media (min-width: $breakpoint-md) {
       font-size: rem(13);
