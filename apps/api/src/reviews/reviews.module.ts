@@ -7,6 +7,10 @@ import {
   ReviewReaction,
   ReviewReactionSchema,
 } from './schemas/review-reaction.schema.js';
+import {
+  ReviewComment,
+  ReviewCommentSchema,
+} from './schemas/review-comment.schema.js';
 import { ReviewsService } from './reviews.service.js';
 import { ReviewsController } from './reviews.controller.js';
 
@@ -15,6 +19,7 @@ import { ReviewsController } from './reviews.controller.js';
     MongooseModule.forFeature([
       { name: Review.name, schema: ReviewSchema },
       { name: ReviewReaction.name, schema: ReviewReactionSchema },
+      { name: ReviewComment.name, schema: ReviewCommentSchema },
     ]),
     AuthModule,
     MoviesModule,

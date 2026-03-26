@@ -2,12 +2,23 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
+import CommentCard from '@/components/CommentCard/CommentCard';
+import CommentForm from '@/components/CommentForm/CommentForm';
 import styles from './ReviewCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+interface CommentData {
+  _id: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: string;
+}
 
 interface ReviewCardProps {
   reviewId: string;
@@ -19,6 +30,7 @@ interface ReviewCardProps {
   likesCount: number;
   dislikesCount: number;
   userReaction: 'like' | 'dislike' | null;
+  commentsCount: number;
 }
 
 export default function ReviewCard({
@@ -31,6 +43,7 @@ export default function ReviewCard({
                                      likesCount: initialLikes,
                                      dislikesCount: initialDislikes,
                                      userReaction: initialReaction,
+                                     commentsCount: initialCommentsCount,
                                    }: ReviewCardProps) {
   const { user } = useAuth();
   const isOwnReview = user?.id === userId;
@@ -39,9 +52,45 @@ export default function ReviewCard({
   const [userReaction, setUserReaction] = useState(initialReaction);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<CommentData[]>([]);
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(initialCommentsCount);
+
   const initials = getInitials(userName);
   const d = new Date(createdAt);
   const date = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`${API_URL}/reviews/comments/${reviewId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setComments(data);
+        setCommentsCount(data.length);
+        setCommentsLoaded(true);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleToggleComments = () => {
+    const next = !showComments;
+    setShowComments(next);
+    if (next && !commentsLoaded) {
+      fetchComments();
+    }
+  };
+
+  const handleCommentSubmitted = () => {
+    fetchComments();
+  };
+
+  const handleCommentDeleted = (commentId: string) => {
+    setComments((prev) => prev.filter((c) => c._id !== commentId));
+    setCommentsCount((c) => c - 1);
+  };
 
   const handleReaction = async (type: 'like' | 'dislike') => {
     if (!user) {
@@ -130,59 +179,114 @@ export default function ReviewCard({
           <span className={ styles['review-card__date'] }>{ date }</span>
         </div>
         <p className={ styles['review-card__text'] }>{ text }</p>
-        <div className={ styles['review-card__reactions'] }>
-          <button
-            className={ `${ styles['review-card__reaction-btn'] } ${ styles['review-card__reaction-btn--like'] } ${
-              userReaction === 'like'
-                ? styles['review-card__reaction-btn--active']
-                : ''
-            }` }
-            onClick={ () => handleReaction('like') }
-            disabled={ isSubmitting || isOwnReview }
-            type="button"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        <div className={ styles['review-card__actions'] }>
+          <div className={ styles['review-card__reactions'] }>
+            <button
+              className={ `${ styles['review-card__reaction-btn'] } ${ styles['review-card__reaction-btn--like'] } ${
+                userReaction === 'like'
+                  ? styles['review-card__reaction-btn--active']
+                  : ''
+              }` }
+              onClick={ () => handleReaction('like') }
+              disabled={ isSubmitting || isOwnReview }
+              type="button"
             >
-              <path d="M7 10v12"/>
-              <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
-            </svg>
-            <span>{ likesCount.toLocaleString('ru-RU') }</span>
-          </button>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7 10v12"/>
+                <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
+              </svg>
+              <span>{ likesCount.toLocaleString('ru-RU') }</span>
+            </button>
+
+            <button
+              className={ `${ styles['review-card__reaction-btn'] } ${ styles['review-card__reaction-btn--dislike'] } ${
+                userReaction === 'dislike'
+                  ? styles['review-card__reaction-btn--active']
+                  : ''
+              }` }
+              onClick={ () => handleReaction('dislike') }
+              disabled={ isSubmitting || isOwnReview }
+              type="button"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 14V2"/>
+                <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>
+              </svg>
+              <span>{ dislikesCount.toLocaleString('ru-RU') }</span>
+            </button>
+          </div>
 
           <button
-            className={ `${ styles['review-card__reaction-btn'] } ${ styles['review-card__reaction-btn--dislike'] } ${
-              userReaction === 'dislike'
-                ? styles['review-card__reaction-btn--active']
-                : ''
-            }` }
-            onClick={ () => handleReaction('dislike') }
-            disabled={ isSubmitting || isOwnReview }
+            className={styles['review-card__comments-toggle']}
+            onClick={handleToggleComments}
             type="button"
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 14V2"/>
-              <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
-            <span>{ dislikesCount.toLocaleString('ru-RU') }</span>
+            <span>
+              {commentsCount > 0
+                ? `Комментарии (${commentsCount})`
+                : 'Комментировать'}
+            </span>
           </button>
         </div>
+
+        {showComments && (
+          <div className={styles['review-card__comments-section']}>
+            {comments.length > 0 && (
+              <div className={styles['review-card__comments-list']}>
+                {comments.map((comment) => (
+                  <CommentCard
+                    key={comment._id}
+                    commentId={comment._id}
+                    userId={comment.userId}
+                    userName={comment.userName}
+                    text={comment.text}
+                    createdAt={comment.createdAt}
+                    isOwn={user?.id === comment.userId}
+                    onDeleted={handleCommentDeleted}
+                  />
+                ))}
+              </div>
+            )}
+
+            {user ? (
+              user.isEmailVerified ? (
+                <CommentForm
+                  reviewId={reviewId}
+                  onCommentSubmitted={handleCommentSubmitted}
+                />
+              ) : (
+                <p className={styles['review-card__comments-auth']}>
+                  Подтвердите email, чтобы комментировать
+                </p>
+              )
+            ) : (
+              <p className={styles['review-card__comments-auth']}>
+                <Link href="/login">Войдите</Link>, чтобы комментировать
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

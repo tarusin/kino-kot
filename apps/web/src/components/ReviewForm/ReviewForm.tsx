@@ -115,7 +115,7 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
         />
         <span>
           Я принимаю{' '}
-          <a href="#" className={styles['review-form__agreement-link']}>
+          <a href="/terms" className={styles['review-form__agreement-link']}>
             пользовательское соглашение
           </a>
         </span>

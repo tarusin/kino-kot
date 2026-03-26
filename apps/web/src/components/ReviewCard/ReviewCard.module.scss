@@ -77,10 +77,15 @@
     margin: 0 0 rem(16) 0;
   }
 
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   &__reactions {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: rem(12);
   }
 
@@ -120,6 +125,50 @@
 
       &.review-card__reaction-btn--active {
         color: $color-primary;
+      }
+    }
+  }
+
+  &__comments-toggle {
+    display: flex;
+    align-items: center;
+    gap: rem(6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-secondary;
+    font-size: rem(14);
+    padding: rem(4) rem(8);
+    border-radius: rem(6);
+    transition: color 0.2s, background-color 0.2s;
+
+    &:hover {
+      color: $color-text;
+      background: rgba($color-text, 0.05);
+    }
+  }
+
+  &__comments-section {
+    margin-top: rem(16);
+    padding-top: rem(12);
+    border-top: 1px solid $color-gray;
+  }
+
+  &__comments-list {
+    margin-bottom: rem(8);
+  }
+
+  &__comments-auth {
+    font-size: rem(13);
+    color: $color-text-secondary;
+    margin: rem(8) 0 0;
+
+    a {
+      color: $color-primary;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

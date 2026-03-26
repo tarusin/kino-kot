@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Body,
   Param,
   Query,
@@ -11,6 +12,7 @@ import {
 import { ReviewsService } from './reviews.service.js';
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
+import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { PaginationQueryDto } from './dto/pagination-query.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { VerifiedEmailGuard } from '../auth/verified-email.guard.js';
@@ -48,6 +50,23 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   findByUser(@Req() req: any, @Query() query: PaginationQueryDto) {
     return this.reviewsService.findByUser(req.user.id, query.page, query.limit);
+  }
+
+  @Post('comments')
+  @UseGuards(JwtAuthGuard, VerifiedEmailGuard)
+  createComment(@Req() req: any, @Body() dto: CreateCommentDto) {
+    return this.reviewsService.createComment(req.user.id, req.user.name, dto);
+  }
+
+  @Get('comments/:reviewId')
+  getCommentsByReview(@Param('reviewId') reviewId: string) {
+    return this.reviewsService.getCommentsByReview(reviewId);
+  }
+
+  @Delete('comments/:commentId')
+  @UseGuards(JwtAuthGuard)
+  deleteComment(@Req() req: any, @Param('commentId') commentId: string) {
+    return this.reviewsService.deleteComment(commentId, req.user.id);
   }
 
   @Get('movie/:movieId')

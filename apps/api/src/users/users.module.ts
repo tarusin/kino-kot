@@ -7,6 +7,10 @@ import {
   ReviewReaction,
   ReviewReactionSchema,
 } from '../reviews/schemas/review-reaction.schema.js';
+import {
+  ReviewComment,
+  ReviewCommentSchema,
+} from '../reviews/schemas/review-comment.schema.js';
 import { UsersService } from './users.service.js';
 import { UsersController } from './users.controller.js';
 
@@ -16,6 +20,7 @@ import { UsersController } from './users.controller.js';
       { name: User.name, schema: UserSchema },
       { name: Review.name, schema: ReviewSchema },
       { name: ReviewReaction.name, schema: ReviewReactionSchema },
+      { name: ReviewComment.name, schema: ReviewCommentSchema },
     ]),
     PassportModule,
   ],

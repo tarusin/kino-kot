@@ -1,0 +1,40 @@
+@use '../../styles/variables' as *;
+
+.comment-form {
+  display: flex;
+  gap: rem(8);
+  align-items: flex-end;
+  padding-top: rem(12);
+
+  &__textarea {
+    flex: 1;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    padding: rem(8) rem(12);
+    font-size: rem(14);
+    font-family: $font-family;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+  }
+
+  &__submit {
+    @include gradient-button;
+    padding: rem(8) rem(16);
+    font-size: rem(14);
+    white-space: nowrap;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}

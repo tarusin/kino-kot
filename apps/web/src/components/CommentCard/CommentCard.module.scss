@@ -1,0 +1,79 @@
+@use '../../styles/variables' as *;
+
+.comment-card {
+  display: flex;
+  align-items: flex-start;
+  gap: rem(12);
+  padding: rem(12) 0;
+  border-bottom: 1px solid $color-gray;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__avatar {
+    width: rem(36);
+    height: rem(36);
+    min-width: rem(36);
+    border-radius: 50%;
+    background: #2c5581;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(13);
+    font-weight: 600;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    margin-bottom: rem(4);
+  }
+
+  &__name {
+    font-size: rem(14);
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__date {
+    font-size: rem(13);
+    color: $color-text-secondary;
+  }
+
+  &__delete {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: $color-primary;
+    font-size: rem(13);
+    cursor: pointer;
+    padding: rem(2) rem(6);
+    border-radius: rem(4);
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background: rgba($color-primary, 0.08);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__text {
+    font-size: rem(14);
+    line-height: 1.5;
+    color: #10203199;
+    margin: 0;
+    word-break: break-word;
+  }
+}

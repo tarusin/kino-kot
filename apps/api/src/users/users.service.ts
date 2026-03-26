@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { User } from './user.schema.js';
 import { Review } from '../reviews/schemas/review.schema.js';
 import { ReviewReaction } from '../reviews/schemas/review-reaction.schema.js';
+import { ReviewComment } from '../reviews/schemas/review-comment.schema.js';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,8 @@ export class UsersService {
     @InjectModel(Review.name) private reviewModel: Model<Review>,
     @InjectModel(ReviewReaction.name)
     private reactionModel: Model<ReviewReaction>,
+    @InjectModel(ReviewComment.name)
+    private commentModel: Model<ReviewComment>,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -51,6 +54,9 @@ export class UsersService {
     await Promise.all([
       this.reviewModel.deleteMany({ userId: userOid }),
       this.reactionModel.deleteMany({
+        $or: [{ userId: userOid }, { reviewId: { $in: reviewIds } }],
+      }),
+      this.commentModel.deleteMany({
         $or: [{ userId: userOid }, { reviewId: { $in: reviewIds } }],
       }),
     ]);

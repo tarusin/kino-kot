@@ -2,13 +2,16 @@ import {
   Injectable,
   ConflictException,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Review } from './schemas/review.schema.js';
 import { ReviewReaction } from './schemas/review-reaction.schema.js';
+import { ReviewComment } from './schemas/review-comment.schema.js';
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
+import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { MoviesService } from '../movies/movies.service.js';
 
 @Injectable()
@@ -17,6 +20,8 @@ export class ReviewsService {
     @InjectModel(Review.name) private reviewModel: Model<Review>,
     @InjectModel(ReviewReaction.name)
     private reactionModel: Model<ReviewReaction>,
+    @InjectModel(ReviewComment.name)
+    private commentModel: Model<ReviewComment>,
     private readonly moviesService: MoviesService,
   ) {}
 
@@ -255,12 +260,64 @@ export class ReviewsService {
       pipeline.push({ $addFields: { userReaction: null } });
     }
 
-    pipeline.push({
-      $project: {
-        reactions: 0,
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'reviewcomments',
+          localField: '_id',
+          foreignField: 'reviewId',
+          as: 'comments',
+        },
       },
-    });
+      {
+        $addFields: {
+          commentsCount: { $size: '$comments' },
+        },
+      },
+      {
+        $project: {
+          reactions: 0,
+          comments: 0,
+        },
+      },
+    );
 
     return this.reviewModel.aggregate(pipeline);
+  }
+
+  async createComment(
+    userId: string,
+    userName: string,
+    dto: CreateCommentDto,
+  ): Promise<ReviewComment> {
+    const review = await this.reviewModel.findById(dto.reviewId);
+    if (!review) {
+      throw new NotFoundException('Отзыв не найден');
+    }
+
+    return this.commentModel.create({
+      userId: new Types.ObjectId(userId),
+      reviewId: new Types.ObjectId(dto.reviewId),
+      text: dto.text,
+      userName,
+    });
+  }
+
+  async getCommentsByReview(reviewId: string) {
+    return this.commentModel
+      .find({ reviewId: new Types.ObjectId(reviewId) })
+      .sort({ createdAt: 1 });
+  }
+
+  async deleteComment(commentId: string, userId: string) {
+    const comment = await this.commentModel.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException('Комментарий не найден');
+    }
+    if (comment.userId.toString() !== userId) {
+      throw new ForbiddenException('Нельзя удалить чужой комментарий');
+    }
+    await comment.deleteOne();
+    return { deleted: true };
   }
 }
