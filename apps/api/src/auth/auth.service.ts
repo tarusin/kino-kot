@@ -1,11 +1,15 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service.js';
+import { EmailService } from '../email/email.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 
@@ -14,6 +18,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -23,18 +28,55 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const emailVerificationToken = randomUUID();
+
     const user = await this.usersService.create({
       name: dto.name,
       email: dto.email,
       password: hashedPassword,
+      emailVerificationToken,
     });
 
-    const id = user._id.toString();
-    const tokens = this.generateTokens(id);
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      emailVerificationToken,
+    );
+
     return {
-      user: { id, name: user.name, email: user.email },
-      ...tokens,
+      message: 'Проверьте вашу почту для подтверждения email',
     };
+  }
+
+  async verifyEmail(token: string) {
+    const user = await this.usersService.findByVerificationToken(token);
+    if (!user) {
+      throw new BadRequestException('Недействительная ссылка подтверждения');
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined as any;
+    await user.save();
+
+    return { message: 'Email успешно подтверждён' };
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    if (user.isEmailVerified) {
+      return { message: 'Email уже подтверждён' };
+    }
+
+    const newToken = randomUUID();
+    user.emailVerificationToken = newToken;
+    await user.save();
+
+    await this.emailService.sendVerificationEmail(user.email, newToken);
+
+    return { message: 'Письмо отправлено повторно' };
   }
 
   async login(dto: LoginDto) {
@@ -51,7 +93,12 @@ export class AuthService {
     const id = user._id.toString();
     const tokens = this.generateTokens(id);
     return {
-      user: { id, name: user.name, email: user.email },
+      user: {
+        id,
+        name: user.name,
+        email: user.email,
+        isEmailVerified: user.isEmailVerified,
+      },
       ...tokens,
     };
   }
@@ -86,6 +133,11 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return { id: user._id.toString(), name: user.name, email: user.email };
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      isEmailVerified: user.isEmailVerified,
+    };
   }
 }

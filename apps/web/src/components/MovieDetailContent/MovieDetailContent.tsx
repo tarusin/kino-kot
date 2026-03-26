@@ -237,6 +237,44 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 
 /* ---------- Вкладка: Отзывы ---------- */
 
+function VerifyEmailBanner() {
+  const { user, resendVerification } = useAuth();
+  const [sending, setSending] = useState(false);
+
+  const handleResend = async () => {
+    if (!user) return;
+    setSending(true);
+    try {
+      await resendVerification(user.email);
+    } catch {
+      // toast handled in context
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className={styles['verify-banner']}>
+      <svg className={styles['verify-banner__icon']} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="M22 4L12 13L2 4" />
+      </svg>
+      <div className={styles['verify-banner__content']}>
+        <p className={styles['verify-banner__text']}>
+          Подтвердите email, чтобы оставлять отзывы
+        </p>
+        <button
+          className={styles['verify-banner__button']}
+          onClick={handleResend}
+          disabled={sending}
+        >
+          {sending ? 'Отправляем...' : 'Отправить письмо повторно'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ReviewsTab({
   user,
   loading,
@@ -246,7 +284,7 @@ function ReviewsTab({
   userHasReview,
   onReviewSubmitted,
 }: {
-  user: { id: string; name: string; email: string } | null;
+  user: { id: string; name: string; email: string; isEmailVerified: boolean } | null;
   loading: boolean;
   movieId: string;
   reviews: ReviewData[];
@@ -260,11 +298,15 @@ function ReviewsTab({
     <div className={styles['reviews-tab']}>
       {user ? (
         !userHasReview && (
-          <ReviewForm
-            movieId={movieId}
-            user={user}
-            onReviewSubmitted={onReviewSubmitted}
-          />
+          user.isEmailVerified ? (
+            <ReviewForm
+              movieId={movieId}
+              user={user}
+              onReviewSubmitted={onReviewSubmitted}
+            />
+          ) : (
+            <VerifyEmailBanner />
+          )
         )
       ) : (
         <p className={styles['reviews-tab__auth-message']}>

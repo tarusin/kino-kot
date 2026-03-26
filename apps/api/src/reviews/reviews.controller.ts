@@ -13,6 +13,7 @@ import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
 import { PaginationQueryDto } from './dto/pagination-query.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { VerifiedEmailGuard } from '../auth/verified-email.guard.js';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard.js';
 
 @Controller('reviews')
@@ -20,13 +21,13 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, VerifiedEmailGuard)
   create(@Req() req: any, @Body() dto: CreateReviewDto) {
     return this.reviewsService.create(req.user.id, req.user.name, dto);
   }
 
   @Post('reactions')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, VerifiedEmailGuard)
   toggleReaction(@Req() req: any, @Body() dto: ToggleReactionDto) {
     return this.reviewsService.toggleReaction(req.user.id, dto);
   }

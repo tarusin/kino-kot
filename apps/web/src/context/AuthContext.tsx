@@ -7,15 +7,17 @@ interface User {
   id: string;
   name: string;
   email: string;
+  isEmailVerified: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<{ needsVerification: boolean }>;
   logout: () => Promise<void>;
   updateUser: (data: { name?: string }) => Promise<void>;
+  resendVerification: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -67,9 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.message || 'Ошибка регистрации');
     }
 
-    const data = await res.json();
-    setUser(data.user);
-    toast.success('Регистрация прошла успешно');
+    toast.success('Проверьте вашу почту для подтверждения');
+    return { needsVerification: true };
   };
 
   const logout = async () => {
@@ -99,8 +100,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.success('Профиль обновлён');
   };
 
+  const resendVerification = async (email: string) => {
+    const res = await fetch(`${API_URL}/auth/resend-verification`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Ошибка отправки письма');
+    }
+
+    toast.success('Письмо отправлено повторно');
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, logout, updateUser, resendVerification }}
+    >
       {children}
     </AuthContext.Provider>
   );

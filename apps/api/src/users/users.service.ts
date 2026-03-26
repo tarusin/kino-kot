@@ -19,8 +19,13 @@ export class UsersService {
     name: string;
     email: string;
     password: string;
+    emailVerificationToken?: string;
   }): Promise<User> {
     return this.userModel.create(data);
+  }
+
+  async findByVerificationToken(token: string): Promise<User | null> {
+    return this.userModel.findOne({ emailVerificationToken: token });
   }
 
   async updateProfile(

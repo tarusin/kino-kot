@@ -34,7 +34,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Env-файлы
 
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `FRONTEND_URL` (шаблон: `.env.example`)
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `RESEND_API_KEY`, `FRONTEND_URL` (шаблон: `.env.example`)
 - `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
 
 ## Backend (apps/api/)
@@ -43,15 +43,17 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **CORS**: разрешён `http://localhost:3000` + `FRONTEND_URL` env с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
 - **MoviesModule**: гибридный подход — TMDB API как основной источник для списков/поиска/фильтров, MongoDB только для фильмов с отзывами. Схема Movie (Mongoose, поля `compositeId` unique, `tmdbId`, `title`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType`). TmdbService проксирует discover/list/search эндпоинты TMDB. Составные ID: `movie-{tmdbId}`, `series-{tmdbId}`, `cartoon-{tmdbId}`. `ensureMovieInDb(compositeId)` сохраняет фильм в MongoDB при создании отзыва
-- **UsersModule**: схема User (name, email unique, password bcrypt-хеш), UsersService, UsersController
+- **UsersModule**: схема User (name, email unique, password bcrypt-хеш, isEmailVerified bool default false, emailVerificationToken string optional), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
+- **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Resend. Fallback на console.log в dev (если RESEND_API_KEY не задан). Метод `sendVerificationEmail(to, token)`
+- **Email Verification**: при регистрации отправляется письмо с ссылкой подтверждения. Логин разрешён без подтверждения, но `POST /api/reviews` и `POST /api/reviews/reactions` требуют `VerifiedEmailGuard`. На фронте неподтверждённые пользователи видят баннер вместо формы отзыва
 - **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=` (возвращает `{ code, name }[]` — топ-10 популярных стран вверху, затем остальные по алфавиту; названия из TMDB на русском, SU → «СССР»), `GET /api/movies/years?mediaType=`
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
 - **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
-- **Эндпоинты авторизации**: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`
+- **Эндпоинты авторизации**: `POST /api/auth/register` (не выдаёт JWT, возвращает message), `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/auth/verify-email?token=`, `POST /api/auth/resend-verification` (body: email)
 - **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId)
-- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard, toggle like/dislike)
+- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard + VerifiedEmailGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction), `POST /api/reviews/reactions` (JwtAuthGuard + VerifiedEmailGuard, toggle like/dislike)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
 - **Составные ID**: формат `{mediaType}-{tmdbId}` (например `movie-550`, `series-1396`, `cartoon-508947`). Используются в URL, API ответах, отзывах. Обратная совместимость: `findById` поддерживает и legacy MongoDB ObjectId
 - **Утилита getMoviePath** (`apps/web/src/utils/getMoviePath.ts`): маппинг compositeId → правильный URL (/films/, /series/, /cartoons/)
@@ -102,14 +104,15 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/series` — сериалы (mediaType=series) по образу /films, табы: Популярные, Лучшие, Сейчас на экранах, Сегодня в эфире
 - `/cartoons` — мультфильмы (mediaType=cartoon) по образу /films, табы: Популярные, Лучшие, Сейчас в кино, Скоро
 - `/login` — страница входа (client component, AuthForm + FormInput)
-- `/register` — страница регистрации (client component, AuthForm + FormInput)
+- `/register` — страница регистрации (client component, AuthForm + FormInput), после успешной регистрации показывает экран "Проверьте почту" с кнопкой повторной отправки
+- `/verify-email` — подтверждение email по ссылке из письма (читает token из query params, вызывает GET /api/auth/verify-email)
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
 
 ## Авторизация
 
 - **AuthContext** (`apps/web/src/context/AuthContext.tsx`) — React Context с `AuthProvider`, хук `useAuth()`
-- Состояние: `user`, `loading`, методы `login()`, `register()`, `logout()`, `updateUser()`
+- Состояние: `user` (включает `isEmailVerified`), `loading`, методы `login()`, `register()` (возвращает `{ needsVerification }`), `logout()`, `updateUser()`, `resendVerification()`
 - Токены хранятся в httpOnly cookies (access_token + refresh_token), отправляются через `credentials: 'include'`
 - При монтировании AuthProvider вызывает `GET /api/auth/me` для восстановления сессии
 - Toast-уведомления (react-hot-toast) при login/register/logout, `<Toaster>` в layout.tsx
