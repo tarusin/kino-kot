@@ -2,6 +2,7 @@
 
 .reviews-marquee {
   padding: rem(24) 0;
+  overflow: hidden;
 
   @media (min-width: $breakpoint-sm) {
     padding: rem(40) 0;
@@ -9,7 +10,6 @@
 
   &__wrap {
     @include container;
-    overflow: hidden;
   }
 
   &__header {

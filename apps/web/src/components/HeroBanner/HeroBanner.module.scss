@@ -1,15 +1,7 @@
 @use '../../styles/variables' as *;
 
 .hero {
-  padding: rem(24) 0 rem(40);
-
-  @media (min-width: $breakpoint-sm) {
-    padding: rem(40) 0 rem(60);
-  }
-
-  &__wrap {
-    @include container;
-  }
+  // padding управляется родительским контейнером
 }
 
 .banner {

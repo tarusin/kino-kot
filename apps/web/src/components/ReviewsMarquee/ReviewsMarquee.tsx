@@ -7,9 +7,10 @@ import styles from './ReviewsMarquee.module.scss';
 
 interface ReviewsMarqueeProps {
   reviews: LatestReview[];
+  noContainer?: boolean;
 }
 
-export default function ReviewsMarquee({ reviews }: ReviewsMarqueeProps) {
+export default function ReviewsMarquee({ reviews, noContainer }: ReviewsMarqueeProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
@@ -61,52 +62,66 @@ export default function ReviewsMarquee({ reviews }: ReviewsMarqueeProps) {
 
   if (reviews.length < 4) return null;
 
+  const content = (
+    <>
+      <div className={styles['reviews-marquee__header']}>
+        <h2 className={styles['reviews-marquee__title']}>Последние отзывы</h2>
+        <div className={styles['reviews-marquee__controls']}>
+          <button
+            className={`${styles['reviews-marquee__arrow']} ${styles['reviews-marquee__arrow--left']}`}
+            onClick={() => scroll('left')}
+            aria-label="Назад"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <button
+            className={`${styles['reviews-marquee__arrow']} ${styles['reviews-marquee__arrow--right']}`}
+            onClick={() => scroll('right')}
+            aria-label="Вперёд"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        className={styles['reviews-marquee__track']}
+        ref={trackRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {reviews.map((review) => (
+          <div key={review._id} className={styles['reviews-marquee__item']}>
+            <ProfileReviewCard
+              movieTitle={review.movie.title}
+              moviePosterPath={review.movie.posterPath}
+              movieId={review.movie._id}
+              userName={review.userName}
+              rating={review.rating}
+              text={review.text}
+              createdAt={review.createdAt}
+            />
+          </div>
+        ))}
+      </div>
+    </>
+  );
+
+  if (noContainer) {
+    return (
+      <section className={styles['reviews-marquee']}>
+        {content}
+      </section>
+    );
+  }
+
   return (
     <section className={styles['reviews-marquee']}>
       <div className={styles['reviews-marquee__wrap']}>
-        <div className={styles['reviews-marquee__header']}>
-          <h2 className={styles['reviews-marquee__title']}>Последние отзывы</h2>
-          <div className={styles['reviews-marquee__controls']}>
-            <button
-              className={`${styles['reviews-marquee__arrow']} ${styles['reviews-marquee__arrow--left']}`}
-              onClick={() => scroll('left')}
-              aria-label="Назад"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <button
-              className={`${styles['reviews-marquee__arrow']} ${styles['reviews-marquee__arrow--right']}`}
-              onClick={() => scroll('right')}
-              aria-label="Вперёд"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div
-          className={styles['reviews-marquee__track']}
-          ref={trackRef}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {reviews.map((review) => (
-            <div key={review._id} className={styles['reviews-marquee__item']}>
-              <ProfileReviewCard
-                movieTitle={review.movie.title}
-                moviePosterPath={review.movie.posterPath}
-                movieId={review.movie._id}
-                userName={review.userName}
-                rating={review.rating}
-                text={review.text}
-                createdAt={review.createdAt}
-              />
-            </div>
-          ))}
-        </div>
+        {content}
       </div>
     </section>
   );

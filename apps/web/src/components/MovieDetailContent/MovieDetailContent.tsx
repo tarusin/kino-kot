@@ -273,7 +273,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
 
         {/* Рекомендации */}
         {recommendations.length > 0 && (
-          <MovieSlider title="Рекомендации" movies={recommendations} />
+          <MovieSlider title="Рекомендации" movies={recommendations} noContainer />
         )}
       </div>
     </section>

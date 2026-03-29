@@ -3,6 +3,7 @@ import HeroBanner from '@/components/HeroBanner/HeroBanner';
 import ReviewsMarquee from '@/components/ReviewsMarquee/ReviewsMarquee';
 import MovieSlider from '@/components/MovieSlider/MovieSlider';
 import Footer from '@/components/Footer/Footer';
+import styles from './page.module.scss';
 import type { Movie } from '@/types/movie';
 import type { LatestReview } from '@/types/review';
 
@@ -69,10 +70,14 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        <HeroBanner />
-        {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} />}
-        <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} />
-        <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} />
+        <section className={styles['home']}>
+          <div className={styles['home__wrap']}>
+            <HeroBanner />
+            {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} noContainer />}
+            <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />
+            <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} noContainer />
+          </div>
+        </section>
       </main>
       <Footer />
     </>
