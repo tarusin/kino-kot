@@ -43,9 +43,26 @@ export default function Header() {
       signal: controller.signal,
     })
       .then((res) => res.json())
-      .then((data: Movie[]) => {
+      .then(async (data: Movie[]) => {
         setHasMore(data.length > 5);
-        setResults(data.slice(0, 5));
+        const sliced = data.slice(0, 5);
+
+        try {
+          const ids = sliced.map((m) => m._id).join(',');
+          if (ids) {
+            const ratingsRes = await fetch(`${API_URL}/reviews/ratings?movieIds=${ids}`);
+            if (ratingsRes.ok) {
+              const ratings: Record<string, number> = await ratingsRes.json();
+              sliced.forEach((m) => {
+                if (ratings[m._id] !== undefined) m.kinoKotRating = ratings[m._id];
+              });
+            }
+          }
+        } catch {
+          // ignore
+        }
+
+        setResults(sliced);
         setIsOpen(true);
         setIsLoading(false);
       })
@@ -155,10 +172,12 @@ export default function Header() {
                 {movie.genres?.length > 0 && ` | ${formatGenres(movie.genres)}`}
               </span>
               <div className={styles['header__search-ratings']}>
-                <span className={styles['header__search-rating']}>
-                  <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
-                  —
-                </span>
+                {movie.kinoKotRating !== undefined && (
+                  <span className={styles['header__search-rating']}>
+                    <Image src="/icons/rating-kk.svg" alt="КиноКот" width={16} height={16} />
+                    {movie.kinoKotRating.toFixed(1)}
+                  </span>
+                )}
                 <span className={styles['header__search-rating']}>
                   <Image src="/icons/rating-tmdb.svg" alt="TMDB" width={16} height={16} style={{ borderRadius: '50%' }} />
                   {movie.voteAverage?.toFixed(1)}

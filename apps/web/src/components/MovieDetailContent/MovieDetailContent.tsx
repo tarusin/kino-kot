@@ -85,6 +85,13 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
     ? reviews.some((r: any) => r.userId === user.id)
     : false;
 
+  const kinoKotRating =
+    reviews.length > 0
+      ? Math.round(
+          (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10
+        ) / 10
+      : null;
+
   const year = movie.releaseDate
     ? new Date(movie.releaseDate).getFullYear()
     : '';
@@ -106,15 +113,19 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
           <h1 className={styles['movie-detail__title']}>{movie.title}</h1>
 
           <div className={styles['movie-detail__ratings']}>
-            <div className={styles['movie-detail__rating']}>
-              <Image
-                src="/icons/rating-kk.svg"
-                alt="КиноКот"
-                width={32}
-                height={32}
-              />
-              <span className={styles['movie-detail__rating-value']}>—</span>
-            </div>
+            {kinoKotRating !== null && (
+              <div className={styles['movie-detail__rating']}>
+                <Image
+                  src="/icons/rating-kk.svg"
+                  alt="КиноКот"
+                  width={32}
+                  height={32}
+                />
+                <span className={styles['movie-detail__rating-value']}>
+                  {kinoKotRating.toFixed(1)}
+                </span>
+              </div>
+            )}
             <div className={styles['movie-detail__rating']}>
               <Image
                 src="/icons/rating-tmdb.svg"
