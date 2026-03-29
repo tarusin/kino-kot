@@ -510,6 +510,52 @@ export class TmdbService {
     };
   }
 
+  // --- Recommendations ---
+
+  async fetchMovieRecommendations(tmdbId: number): Promise<ProxyPaginatedResult> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const [{ data }, genreMap] = await Promise.all([
+      axios.get<TmdbPaginatedResponse<TmdbMovie>>(
+        `${this.baseUrl}/movie/${tmdbId}/recommendations`,
+        { params: { api_key: apiKey, language: 'ru-RU', page: 1 } },
+      ),
+      this.getMovieGenreMap(),
+    ]);
+
+    const ANIMATION_GENRE_ID = 16;
+    return {
+      movies: data.results.map((m) => {
+        const isAnimation = m.genre_ids.includes(ANIMATION_GENRE_ID);
+        return this.mapMovieToProxy(m, genreMap, isAnimation ? 'cartoon' : 'movie');
+      }),
+      total: data.total_results,
+      page: data.page,
+      totalPages: Math.min(data.total_pages, 500),
+    };
+  }
+
+  async fetchTVRecommendations(tmdbId: number): Promise<ProxyPaginatedResult> {
+    const apiKey = process.env.TMDB_API_KEY;
+    const [{ data }, genreMap] = await Promise.all([
+      axios.get<TmdbPaginatedResponse<TmdbTVShow>>(
+        `${this.baseUrl}/tv/${tmdbId}/recommendations`,
+        { params: { api_key: apiKey, language: 'ru-RU', page: 1 } },
+      ),
+      this.getTVGenreMap(),
+    ]);
+
+    const ANIMATION_GENRE_ID = 16;
+    return {
+      movies: data.results.map((s) => {
+        const isAnimation = s.genre_ids.includes(ANIMATION_GENRE_ID);
+        return this.mapTVToProxy(s, genreMap, isAnimation ? 'cartoon' : 'series');
+      }),
+      total: data.total_results,
+      page: data.page,
+      totalPages: Math.min(data.total_pages, 500),
+    };
+  }
+
   // --- Detail fetching methods (unchanged) ---
 
   async fetchMovieDetails(tmdbId: number): Promise<TmdbMovieDetails> {

@@ -48,6 +48,11 @@ export class MoviesController {
     return this.moviesService.findFilmOfTheWeek(mediaType || 'movie');
   }
 
+  @Get(':id/recommendations')
+  getRecommendations(@Param('id') id: string) {
+    return this.moviesService.getRecommendations(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.moviesService.findById(id);

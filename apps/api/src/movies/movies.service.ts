@@ -307,6 +307,25 @@ export class MoviesService {
     return null;
   }
 
+  async getRecommendations(id: string): Promise<ProxyMovie[]> {
+    const parsed = parseCompositeId(id);
+    if (!parsed) throw new NotFoundException('Неверный формат ID');
+
+    const { mediaType, tmdbId } = parsed;
+    const isSeries = mediaType === 'series';
+
+    try {
+      const result = isSeries
+        ? await this.tmdbService.fetchTVRecommendations(tmdbId)
+        : await this.tmdbService.fetchMovieRecommendations(tmdbId);
+
+      return result.movies.slice(0, 20);
+    } catch (error) {
+      this.logger.error(`Failed to fetch recommendations for ${id}`, error);
+      return [];
+    }
+  }
+
   async search(query: string, limit: number): Promise<ProxyMovie[]> {
     if (!query || query.length < 2) return [];
 

@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import ReviewForm from '@/components/ReviewForm/ReviewForm';
 import ReviewCard from '@/components/ReviewCard/ReviewCard';
-import type { MovieDetail } from '@/types/movie';
+import MovieSlider from '@/components/MovieSlider/MovieSlider';
+import type { Movie, MovieDetail } from '@/types/movie';
 import styles from './MovieDetailContent.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -59,6 +60,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('reviews');
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState<Movie[]>([]);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { user, loading } = useAuth();
 
@@ -80,6 +82,32 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
+
+  useEffect(() => {
+    async function fetchRecommendations() {
+      try {
+        const res = await fetch(`${API_URL}/movies/${movie._id}/recommendations`);
+        if (res.ok) {
+          const data = await res.json();
+          setRecommendations(
+            data.map((m: any) => ({
+              _id: m._id,
+              tmdbId: m.tmdbId,
+              title: m.title,
+              overview: m.overview || '',
+              posterPath: m.posterPath,
+              voteAverage: m.voteAverage,
+              releaseDate: m.releaseDate || '',
+              genres: m.genres || [],
+            })),
+          );
+        }
+      } catch {
+        // ignore
+      }
+    }
+    fetchRecommendations();
+  }, [movie._id]);
 
   const userHasReview = user
     ? reviews.some((r: any) => r.userId === user.id)
@@ -242,6 +270,11 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
             {activeTab === 'stills' && <StillsTab stills={movie.stills} />}
           </div>
         </div>
+
+        {/* Рекомендации */}
+        {recommendations.length > 0 && (
+          <MovieSlider title="Рекомендации" movies={recommendations} />
+        )}
       </div>
     </section>
   );
