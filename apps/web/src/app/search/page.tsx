@@ -110,6 +110,7 @@ function SearchResults() {
                     releaseDate={movie.releaseDate}
                     genre={movie.genres?.[0]}
                     basePath={basePath}
+                    showMediaType
                   />
                 );
               })}

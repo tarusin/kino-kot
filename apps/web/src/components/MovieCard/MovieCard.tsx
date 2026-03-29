@@ -11,9 +11,16 @@ interface MovieCardProps {
   releaseDate?: string;
   genre?: string;
   basePath?: string;
+  showMediaType?: boolean;
 }
 
-export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotRating, releaseDate, genre, basePath = '/films' }: MovieCardProps) {
+const MEDIA_TYPE_LABELS: Record<string, string> = {
+  movie: 'Фильм',
+  series: 'Сериал',
+  cartoon: 'Мультфильм',
+};
+
+export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotRating, releaseDate, genre, basePath = '/films', showMediaType }: MovieCardProps) {
   if (!title) {
     return (
       <div className={styles['card']}>
@@ -44,6 +51,15 @@ export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotR
             sizes="(max-width: 576px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
           />
         )}
+        {showMediaType && id && (() => {
+          const mediaType = id.split('-')[0];
+          const label = MEDIA_TYPE_LABELS[mediaType];
+          return label ? (
+            <span className={`${styles['card__media-type']} ${styles[`card__media-type--${mediaType}`]}`}>
+              {label}
+            </span>
+          ) : null;
+        })()}
         <div className={styles['card__ratings']}>
           {kinoKotRating !== undefined && (
             <span className={`${styles['card__rating']} ${styles['card__rating--kk']}`}>

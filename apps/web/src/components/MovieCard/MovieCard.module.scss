@@ -34,6 +34,31 @@
     }
   }
 
+  &__media-type {
+    position: absolute;
+    top: rem(8);
+    left: rem(8);
+    color: #fff;
+    font-size: rem(11);
+    font-weight: 600;
+    padding: rem(3) rem(8);
+    border-radius: rem(6);
+    line-height: 1;
+    z-index: 1;
+
+    &--movie {
+      background: #3B82F6;
+    }
+
+    &--series {
+      background: #8B5CF6;
+    }
+
+    &--cartoon {
+      background: #F59E0B;
+    }
+  }
+
   &__ratings {
     position: absolute;
     top: rem(8);
