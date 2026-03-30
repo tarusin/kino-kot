@@ -22,6 +22,7 @@ interface UserReview {
   text: string;
   userName: string;
   createdAt: string;
+  status?: 'approved' | 'pending' | 'rejected';
   movie: {
     _id: string;
     title: string;
@@ -162,6 +163,7 @@ export default function ProfilePage() {
                       rating={ review.rating }
                       text={ review.text }
                       createdAt={ review.createdAt }
+                      status={ review.status }
                     />
                   )) }
                   <div className={ styles['profile__reviews-pagination'] }>

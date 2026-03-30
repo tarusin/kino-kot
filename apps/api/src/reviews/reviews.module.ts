@@ -13,6 +13,7 @@ import {
 } from './schemas/review-comment.schema.js';
 import { ReviewsService } from './reviews.service.js';
 import { ReviewsController } from './reviews.controller.js';
+import { ModerationModule } from '../moderation/moderation.module.js';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReviewsController } from './reviews.controller.js';
     ]),
     AuthModule,
     MoviesModule,
+    ModerationModule,
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService],

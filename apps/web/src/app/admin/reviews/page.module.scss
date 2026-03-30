@@ -1,0 +1,59 @@
+@use '../../../styles/variables' as *;
+
+.admin-reviews {
+  min-height: calc(100vh - rem(200));
+  padding: rem(24) 0 rem(48);
+
+  &__container {
+    @include container;
+  }
+
+  &__header {
+    margin-bottom: rem(24);
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(6);
+    font-size: rem(14);
+    color: $color-text-secondary;
+    text-decoration: none;
+    margin-bottom: rem(12);
+    transition: color 0.2s;
+
+    &:hover {
+      color: $color-text;
+    }
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(28);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__loading,
+  &__empty {
+    text-align: center;
+    padding: rem(48) 0;
+    color: $color-text-secondary;
+    font-size: rem(15);
+  }
+
+  &__pagination {
+    margin-top: rem(24);
+    display: flex;
+    justify-content: center;
+  }
+}

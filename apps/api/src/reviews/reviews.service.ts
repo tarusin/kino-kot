@@ -13,6 +13,7 @@ import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { MoviesService } from '../movies/movies.service.js';
+import { ModerationService } from '../moderation/moderation.service.js';
 
 @Injectable()
 export class ReviewsService {
@@ -23,6 +24,7 @@ export class ReviewsService {
     @InjectModel(ReviewComment.name)
     private commentModel: Model<ReviewComment>,
     private readonly moviesService: MoviesService,
+    private readonly moderationService: ModerationService,
   ) {}
 
   async create(
@@ -36,11 +38,17 @@ export class ReviewsService {
     });
 
     if (existing) {
-      throw new ConflictException('Вы уже оставили отзыв на этот фильм');
+      if (existing.status === 'rejected') {
+        await existing.deleteOne();
+      } else {
+        throw new ConflictException('Вы уже оставили отзыв на этот фильм');
+      }
     }
 
     // Ensure a movie exists in MongoDB for $lookup in findLatest/findByUser
     await this.moviesService.ensureMovieInDb(dto.movieId);
+
+    const modResult = this.moderationService.moderateText(dto.text);
 
     return this.reviewModel.create({
       userId: new Types.ObjectId(userId),
@@ -48,6 +56,8 @@ export class ReviewsService {
       rating: dto.rating,
       text: dto.text,
       userName,
+      status: modResult.status,
+      moderationReason: modResult.reason,
     });
   }
 
@@ -131,6 +141,8 @@ export class ReviewsService {
                 userName: 1,
                 createdAt: 1,
                 movieId: 1,
+                status: 1,
+                moderationReason: 1,
                 movie: {
                   _id: { $ifNull: ['$movie.compositeId', '$movieId'] },
                   title: { $ifNull: ['$movie.title', 'Неизвестный фильм'] },
@@ -156,7 +168,7 @@ export class ReviewsService {
 
   async getAverageRatings(movieIds: string[]): Promise<Record<string, number>> {
     const result = await this.reviewModel.aggregate([
-      { $match: { movieId: { $in: movieIds } } },
+      { $match: { movieId: { $in: movieIds }, status: { $ne: 'rejected' } } },
       { $group: { _id: '$movieId', avg: { $avg: '$rating' } } },
     ]);
 
@@ -169,6 +181,7 @@ export class ReviewsService {
 
   async findLatest(limit = 20) {
     return this.reviewModel.aggregate([
+      { $match: { status: 'approved' } },
       { $sort: { createdAt: -1 as const } },
       { $limit: limit },
       {
@@ -198,8 +211,18 @@ export class ReviewsService {
   }
 
   async findByMovie(movieId: string, userId?: string) {
+    const matchStage: any = { movieId };
+    if (userId) {
+      matchStage.$or = [
+        { status: 'approved' },
+        { userId: new Types.ObjectId(userId), status: 'pending' },
+      ];
+    } else {
+      matchStage.status = 'approved';
+    }
+
     const pipeline: any[] = [
-      { $match: { movieId } },
+      { $match: matchStage },
       { $sort: { createdAt: -1 as const } },
       {
         $lookup: {
@@ -271,7 +294,14 @@ export class ReviewsService {
       },
       {
         $addFields: {
-          commentsCount: { $size: '$comments' },
+          commentsCount: {
+            $size: {
+              $filter: {
+                input: '$comments',
+                cond: { $eq: ['$$this.status', 'approved'] },
+              },
+            },
+          },
         },
       },
       {
@@ -295,17 +325,24 @@ export class ReviewsService {
       throw new NotFoundException('Отзыв не найден');
     }
 
+    const modResult = this.moderationService.moderateText(dto.text);
+
     return this.commentModel.create({
       userId: new Types.ObjectId(userId),
       reviewId: new Types.ObjectId(dto.reviewId),
       text: dto.text,
       userName,
+      status: modResult.status,
+      moderationReason: modResult.reason,
     });
   }
 
   async getCommentsByReview(reviewId: string) {
     return this.commentModel
-      .find({ reviewId: new Types.ObjectId(reviewId) })
+      .find({
+        reviewId: new Types.ObjectId(reviewId),
+        status: 'approved',
+      })
       .sort({ createdAt: 1 });
   }
 

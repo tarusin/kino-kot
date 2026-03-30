@@ -43,7 +43,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **CORS**: разрешён `http://localhost:3000` + `FRONTEND_URL` env с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
 - **MoviesModule**: гибридный подход — TMDB API как основной источник для списков/поиска/фильтров, MongoDB только для фильмов с отзывами. Схема Movie (Mongoose, поля `compositeId` unique, `tmdbId`, `title`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType`). TmdbService проксирует discover/list/search эндпоинты TMDB. Составные ID: `movie-{tmdbId}`, `series-{tmdbId}`, `cartoon-{tmdbId}`. `ensureMovieInDb(compositeId)` сохраняет фильм в MongoDB при создании отзыва
-- **UsersModule**: схема User (name, email unique, password bcrypt-хеш, isEmailVerified bool default false, emailVerificationToken string optional), UsersService, UsersController
+- **UsersModule**: схема User (name, email unique, password bcrypt-хеш, role enum user/admin default user, isEmailVerified bool default false, emailVerificationToken string optional), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **Удаление аккаунта**: `DELETE /api/users/account` (JwtAuthGuard) — каскадное удаление: отзывы пользователя, реакции (свои + на свои отзывы), комментарии (свои + на свои отзывы), учётная запись; очистка cookies
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
@@ -53,7 +53,12 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
 - **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
 - **Эндпоинты авторизации**: `POST /api/auth/register` (не выдаёт JWT, возвращает message), `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/auth/verify-email?token=`, `POST /api/auth/resend-verification` (body: email)
-- **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId), схема ReviewComment (userId, reviewId, text, userName, createdAt; индекс reviewId)
+- **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId), схема ReviewComment (userId, reviewId, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; индекс reviewId)
+- **ModerationModule** (`apps/api/src/moderation/`): гибридная модерация контента — автомодерация через словарный фильтр (regex-паттерны: мат, оскорбления, разжигание ненависти, спам/реклама) + ручная модерация через админ-панель. ModerationService: `moderateText(text)` → `{status, reason?}` (синхронный, без внешних API). Паттерны расширяемы: `PROFANITY_PATTERNS`, `SPAM_PATTERNS`. ModerationController: эндпоинты под AdminGuard
+- **Эндпоинты модерации** (все под JwtAuthGuard + AdminGuard): `GET /api/moderation/stats`, `GET /api/moderation/pending/reviews?page&limit`, `GET /api/moderation/pending/comments?page&limit`, `PATCH /api/moderation/reviews/:id` (body: `{action, reason?}`), `PATCH /api/moderation/comments/:id`
+- **AdminGuard** (`apps/api/src/auth/admin.guard.ts`): проверяет `req.user.role === 'admin'`, используется в связке с JwtAuthGuard
+- **Флоу модерации**: при создании отзыва/комментария текст проверяется словарным фильтром → чистый контент получает `status: approved` (сразу виден), подозрительный → `status: pending` (ждёт ручной модерации). Публичные запросы фильтруют по `status: approved`, авторы видят свои `pending` отзывы с бейджем. При отклонении отзыва модератором — отзыв удаляется, пользователь может написать новый
+- **Назначение админа**: вручную в MongoDB: `db.users.updateOne({email: '...'}, {$set: {role: 'admin'}})`
 - **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard + VerifiedEmailGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction/commentsCount), `POST /api/reviews/reactions` (JwtAuthGuard + VerifiedEmailGuard, toggle like/dislike)
 - **Эндпоинты комментариев**: `POST /api/reviews/comments` (JwtAuthGuard + VerifiedEmailGuard, создание комментария к отзыву), `GET /api/reviews/comments/:reviewId` (публичный, комментарии к отзыву отсортированные хронологически), `DELETE /api/reviews/comments/:commentId` (JwtAuthGuard, удаление своего комментария)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
@@ -95,6 +100,8 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **ReviewsMarquee** — client-компонент, двухрядный авто-скроллящийся marquee с последними отзывами (CSS @keyframes, пауза при наведении), переиспользует ProfileReviewCard
 - **QuizCard** — client-компонент, карточка вопроса теста с 5 вариантами ответа (кликабельные плашки, подсветка выбора, авто-переход 350ms)
 - **QuizResults** — client-компонент, карточка результата теста: тип ("Вы эстет"), описание, список рекомендованных фильмов (ссылки на /films/:id), кнопка "Пройти ещё раз"
+- **AdminReviewCard** — client-компонент, карточка отзыва на модерации: данные автора, рейтинг, текст, фильм, причина флага, кнопки "Одобрить"/"Отклонить" (с формой причины отклонения)
+- **AdminCommentCard** — client-компонент, карточка комментария на модерации: аналогично AdminReviewCard
 - **Footer** — логотип, копирайт, навигация
 
 ## Данные теста (apps/web/src/data/)
@@ -113,6 +120,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/verify-email` — подтверждение email по ссылке из письма (читает token из query params, вызывает GET /api/auth/verify-email)
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования, модалка удаления аккаунта)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
+- `/admin` — панель модерации (client component, защищён role === 'admin', статистика pending отзывов/комментариев)
+- `/admin/reviews` — очередь отзывов на модерации (пагинация, одобрение/отклонение)
+- `/admin/comments` — очередь комментариев на модерации
 
 ## Авторизация
 

@@ -31,6 +31,7 @@ interface ReviewCardProps {
   dislikesCount: number;
   userReaction: 'like' | 'dislike' | null;
   commentsCount: number;
+  status?: 'approved' | 'pending' | 'rejected';
 }
 
 export default function ReviewCard({
@@ -44,6 +45,7 @@ export default function ReviewCard({
                                      dislikesCount: initialDislikes,
                                      userReaction: initialReaction,
                                      commentsCount: initialCommentsCount,
+                                     status,
                                    }: ReviewCardProps) {
   const { user } = useAuth();
   const isOwnReview = user?.id === userId;
@@ -159,7 +161,13 @@ export default function ReviewCard({
   };
 
   return (
-    <div className={ styles['review-card'] }>
+    <div className={`${styles['review-card']}${status === 'pending' ? ` ${styles['review-card--pending']}` : ''}${status === 'rejected' ? ` ${styles['review-card--rejected']}` : ''}`}>
+      {status === 'pending' && (
+        <div className={styles['review-card__status-badge']}>На модерации</div>
+      )}
+      {status === 'rejected' && (
+        <div className={`${styles['review-card__status-badge']} ${styles['review-card__status-badge--rejected']}`}>Отклонено</div>
+      )}
       <div className={ styles['review-card__left'] }>
         <div className={ styles['review-card__avatar'] }>{ initials }</div>
         <div className={ styles['review-card__rating-badge'] }>

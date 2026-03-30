@@ -41,7 +41,12 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
         throw new Error(data.message || 'Ошибка при отправке');
       }
 
-      toast.success('Отзыв отправлен!');
+      const result = await res.json();
+      if (result.status === 'pending') {
+        toast.success('Отзыв отправлен на модерацию');
+      } else {
+        toast.success('Отзыв отправлен!');
+      }
       setRating(0);
       setText('');
       setAgreed(false);

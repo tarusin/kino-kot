@@ -309,6 +309,12 @@ export default function Header() {
                 </div>
                 <div className={styles['header__dropdown']}>
                   <div className={styles['header__dropdown-menu']}>
+                    {user.role === 'admin' && (
+                      <Link href="/admin" className={styles['header__dropdown-item']}>
+                        <Image src="/icons/admin.svg" alt="" width={20} height={20} />
+                        Админка
+                      </Link>
+                    )}
                     <Link href="/profile" className={styles['header__dropdown-item']}>
                       <Image src="/icons/profile.svg" alt="" width={20} height={20} />
                       Профиль

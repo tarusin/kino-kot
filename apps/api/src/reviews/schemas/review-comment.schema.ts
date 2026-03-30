@@ -15,6 +15,12 @@ export class ReviewComment extends Document {
   @Prop({ required: true })
   userName: string;
 
+  @Prop({ default: 'approved', enum: ['approved', 'pending', 'rejected'] })
+  status: string;
+
+  @Prop()
+  moderationReason: string;
+
   createdAt: Date;
 }
 

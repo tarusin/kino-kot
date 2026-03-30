@@ -12,6 +12,7 @@ interface ProfileReviewCardProps {
   rating: number;
   text: string;
   createdAt: string;
+  status?: 'approved' | 'pending' | 'rejected';
 }
 
 export default function ProfileReviewCard({
@@ -22,6 +23,7 @@ export default function ProfileReviewCard({
                                             rating,
                                             text,
                                             createdAt,
+                                            status,
                                           }: ProfileReviewCardProps) {
   const d = new Date(createdAt);
   const date = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
@@ -29,7 +31,13 @@ export default function ProfileReviewCard({
   const initials = getInitials(userName);
 
   return (
-    <div className={ styles['profile-review-card'] }>
+    <div className={`${styles['profile-review-card']}${status === 'pending' ? ` ${styles['profile-review-card--pending']}` : ''}${status === 'rejected' ? ` ${styles['profile-review-card--rejected']}` : ''}`}>
+      {status === 'pending' && (
+        <div className={styles['profile-review-card__status-badge']}>На модерации</div>
+      )}
+      {status === 'rejected' && (
+        <div className={`${styles['profile-review-card__status-badge']} ${styles['profile-review-card__status-badge--rejected']}`}>Отклонено</div>
+      )}
       <div className={ styles['profile-review-card__left'] }>
         <Link
           href={ getMoviePath(movieId) }

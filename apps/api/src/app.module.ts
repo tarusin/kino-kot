@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MoviesModule } from './movies/movies.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ReviewsModule } from './reviews/reviews.module.js';
+import { ModerationModule } from './moderation/moderation.module.js';
 import { EmailModule } from './email/email.module.js';
 
 @Module({
@@ -18,6 +19,7 @@ import { EmailModule } from './email/email.module.js';
     MoviesModule,
     AuthModule,
     ReviewsModule,
+    ModerationModule,
   ],
 })
 export class AppModule {}

@@ -23,6 +23,7 @@ interface ReviewData {
   dislikesCount: number;
   userReaction: 'like' | 'dislike' | null;
   commentsCount: number;
+  status?: 'approved' | 'pending' | 'rejected';
 }
 
 interface MovieDetailContentProps {
@@ -381,6 +382,7 @@ function ReviewsTab({
               dislikesCount={review.dislikesCount}
               userReaction={review.userReaction}
               commentsCount={review.commentsCount}
+              status={review.status}
             />
           ))}
         </div>

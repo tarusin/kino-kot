@@ -1,0 +1,77 @@
+@use '../../styles/variables' as *;
+
+.admin {
+  min-height: calc(100vh - rem(200));
+  padding: rem(24) 0 rem(48);
+
+  &__container {
+    @include container;
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin-bottom: rem(32);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(32);
+    }
+  }
+
+  &__cards {
+    display: grid;
+    gap: rem(16);
+
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: rem(24);
+    }
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: rem(16);
+    padding: rem(24);
+    background: $color-bg;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(12);
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: $color-primary;
+      box-shadow: 0 rem(4) rem(12) rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  &__card-icon {
+    flex-shrink: 0;
+    width: rem(56);
+    height: rem(56);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($color-primary, 0.08);
+    border-radius: rem(12);
+  }
+
+  &__card-info {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  &__card-label {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    font-weight: 500;
+  }
+
+  &__card-count {
+    font-size: rem(28);
+    font-weight: 700;
+    color: $color-text;
+  }
+}

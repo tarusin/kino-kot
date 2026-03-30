@@ -98,6 +98,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         isEmailVerified: user.isEmailVerified,
+        role: user.role,
       },
       ...tokens,
     };
@@ -138,6 +139,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       isEmailVerified: user.isEmailVerified,
+      role: user.role,
     };
   }
 }
