@@ -55,7 +55,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Эндпоинты авторизации**: `POST /api/auth/register` (не выдаёт JWT, возвращает message), `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/auth/verify-email?token=`, `POST /api/auth/resend-verification` (body: email)
 - **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId), схема ReviewComment (userId, reviewId, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; индекс reviewId)
 - **ModerationModule** (`apps/api/src/moderation/`): гибридная модерация контента — автомодерация через словарный фильтр (regex-паттерны: мат, оскорбления, разжигание ненависти, спам/реклама) + ручная модерация через админ-панель. ModerationService: `moderateText(text)` → `{status, reason?}` (синхронный, без внешних API). Паттерны расширяемы: `PROFANITY_PATTERNS`, `SPAM_PATTERNS`. ModerationController: эндпоинты под AdminGuard
-- **Эндпоинты модерации** (все под JwtAuthGuard + AdminGuard): `GET /api/moderation/stats`, `GET /api/moderation/pending/reviews?page&limit`, `GET /api/moderation/pending/comments?page&limit`, `PATCH /api/moderation/reviews/:id` (body: `{action, reason?}`), `PATCH /api/moderation/comments/:id`
+- **ReportsModule** (`apps/api/src/reports/`): система жалоб пользователей на отзывы/комментарии. Схема Report (userId, targetId ObjectId, targetType enum review/comment, reason enum spam/offensive/spoilers/other, description optional max 500, status enum pending/resolved default pending, createdAt; уникальный индекс userId+targetId). ReportsService: create (с проверкой существования контента, ConflictException при повторной жалобе), findPending (агрегация с lookup в reviews/comments/users), resolve (dismiss — закрывает жалобу, delete-content — удаляет контент + закрывает все жалобы на него), getPendingCount
+- **Эндпоинты жалоб**: `POST /api/reports` (JwtAuthGuard + VerifiedEmailGuard — создание жалобы)
+- **Эндпоинты модерации** (все под JwtAuthGuard + AdminGuard): `GET /api/moderation/stats` (включая pendingReports), `GET /api/moderation/pending/reviews?page&limit`, `GET /api/moderation/pending/comments?page&limit`, `GET /api/moderation/reports?page&limit`, `PATCH /api/moderation/reviews/:id` (body: `{action, reason?}`), `PATCH /api/moderation/comments/:id`, `PATCH /api/moderation/reports/:id` (body: `{action}` — dismiss/delete-content)
 - **AdminGuard** (`apps/api/src/auth/admin.guard.ts`): проверяет `req.user.role === 'admin'`, используется в связке с JwtAuthGuard
 - **Флоу модерации**: при создании отзыва/комментария текст проверяется словарным фильтром → чистый контент получает `status: approved` (сразу виден), подозрительный → `status: pending` (ждёт ручной модерации). Публичные запросы фильтруют по `status: approved`, авторы видят свои `pending` отзывы с бейджем. При отклонении отзыва модератором — отзыв удаляется, пользователь может написать новый
 - **Назначение админа**: вручную в MongoDB: `db.users.updateOne({email: '...'}, {$set: {role: 'admin'}})`
@@ -91,8 +93,9 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **FilmOfTheWeek** — серверный компонент, баннер «X Недели» (props: `badge`, `categoryLabel`, `basePath`): backdrop-изображение, белые блоки контента с fake-border-radius, рейтинги КиноКот+TMDB, мета, кнопка → basePath/:id
 - **FilmsFilters** — client-компонент, обёртка 3 FilterDropdown (жанр, год, страна) + кнопки "Применить"/"Очистить", batch-apply логика через URL params, props: `basePath`, `countryDisplayMap` (из API, не хардкод)
 - **ReviewForm** — форма отзыва: аватар, кинолапки (10 шт.), textarea, кнопка "Отправить", чекбокс соглашения
-- **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление), кнопка "Комментарии (N)" с раскрываемой секцией комментариев (lazy-загрузка)
-- **CommentCard** — client-компонент, карточка комментария к отзыву: аватар с инициалом, имя, дата, текст, кнопка "Удалить" для своих комментариев
+- **ReviewCard** — client-компонент, карточка отзыва: аватар, имя, дата, бейдж рейтинга (лапка + "X.X/10"), текст, кнопки лайк/дизлайк с счётчиками (оптимистичное обновление), кнопка "Пожаловаться" (флажок, для авторизованных, не на свои), кнопка "Комментарии (N)" с раскрываемой секцией комментариев (lazy-загрузка)
+- **CommentCard** — client-компонент, карточка комментария к отзыву: аватар с инициалом, имя, дата, текст, кнопка "Пожаловаться" (для авторизованных, не на свои), кнопка "Удалить" для своих комментариев
+- **ReportModal** — client-компонент, модалка жалобы: 4 причины (спам, оскорбление, спойлеры, другое) + textarea описания, POST `/api/reports`
 - **CommentForm** — client-компонент, форма комментария: textarea (max 500 символов) + кнопка "Отправить", POST `/api/reviews/comments`
 - **Modal** — переиспользуемый модальный компонент (createPortal, overlay, ESC-закрытие, блокировка скролла)
 - **EditProfileModal** — модалка редактирования профиля (имя, email, аватар-заглушка с инициалом, "Загрузить фото" — в разработке)
@@ -102,6 +105,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **QuizResults** — client-компонент, карточка результата теста: тип ("Вы эстет"), описание, список рекомендованных фильмов (ссылки на /films/:id), кнопка "Пройти ещё раз"
 - **AdminReviewCard** — client-компонент, карточка отзыва на модерации: данные автора, рейтинг, текст, фильм, причина флага, кнопки "Одобрить"/"Отклонить" (с формой причины отклонения)
 - **AdminCommentCard** — client-компонент, карточка комментария на модерации: аналогично AdminReviewCard
+- **AdminReportCard** — client-компонент, карточка жалобы: бейдж типа (отзыв/комментарий), причина, описание, превью контента с автором, кнопки "Отклонить жалобу"/"Удалить контент"
 - **Footer** — логотип, копирайт, навигация
 
 ## Данные теста (apps/web/src/data/)
@@ -123,6 +127,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/admin` — панель модерации (client component, защищён role === 'admin', статистика pending отзывов/комментариев)
 - `/admin/reviews` — очередь отзывов на модерации (пагинация, одобрение/отклонение)
 - `/admin/comments` — очередь комментариев на модерации
+- `/admin/reports` — очередь жалоб пользователей (dismiss/delete-content)
 
 ## Авторизация
 

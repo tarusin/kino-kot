@@ -27,6 +27,10 @@
       grid-template-columns: repeat(2, 1fr);
       gap: rem(24);
     }
+
+    @media (min-width: $breakpoint-lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   &__card {

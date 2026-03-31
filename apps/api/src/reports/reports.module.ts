@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Report, ReportSchema } from './schemas/report.schema.js';
 import { Review, ReviewSchema } from '../reviews/schemas/review.schema.js';
 import {
   ReviewComment,
   ReviewCommentSchema,
 } from '../reviews/schemas/review-comment.schema.js';
-import { ReportsModule } from '../reports/reports.module.js';
-import { ModerationService } from './moderation.service.js';
-import { ModerationController } from './moderation.controller.js';
+import { AuthModule } from '../auth/auth.module.js';
+import { ReportsService } from './reports.service.js';
+import { ReportsController } from './reports.controller.js';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      { name: Report.name, schema: ReportSchema },
       { name: Review.name, schema: ReviewSchema },
       { name: ReviewComment.name, schema: ReviewCommentSchema },
     ]),
-    ReportsModule,
+    AuthModule,
   ],
-  controllers: [ModerationController],
-  providers: [ModerationService],
-  exports: [ModerationService],
+  controllers: [ReportsController],
+  providers: [ReportsService],
+  exports: [ReportsService],
 })
-export class ModerationModule {}
+export class ReportsModule {}

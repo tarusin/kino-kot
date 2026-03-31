@@ -271,4 +271,9 @@ export class ModerationService {
 
     return { pendingReviews, pendingComments };
   }
+
+  async getStatsWithReports(pendingReports: number) {
+    const stats = await this.getStats();
+    return { ...stats, pendingReports };
+  }
 }

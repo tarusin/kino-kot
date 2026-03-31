@@ -47,6 +47,24 @@
     color: $color-text-secondary;
   }
 
+  &__report {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    padding: rem(2) rem(6);
+    border-radius: rem(4);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s, background-color 0.2s;
+
+    &:hover {
+      color: $color-primary;
+      background: rgba($color-primary, 0.08);
+    }
+  }
+
   &__delete {
     margin-left: auto;
     background: none;

@@ -5,6 +5,7 @@ import { MoviesModule } from './movies/movies.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ReviewsModule } from './reviews/reviews.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { EmailModule } from './email/email.module.js';
 
 @Module({
@@ -20,6 +21,7 @@ import { EmailModule } from './email/email.module.js';
     AuthModule,
     ReviewsModule,
     ModerationModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

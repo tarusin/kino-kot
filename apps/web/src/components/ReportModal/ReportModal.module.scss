@@ -1,0 +1,114 @@
+@use '../../styles/variables' as *;
+
+.report-modal {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+
+  &__subtitle {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin: 0;
+  }
+
+  &__reasons {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+  }
+
+  &__reason {
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+    padding: rem(12) rem(14);
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    cursor: pointer;
+    font-size: rem(14);
+    color: $color-text;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &:hover {
+      border-color: $color-primary;
+    }
+
+    &--selected {
+      border-color: $color-primary;
+      background: rgba($color-primary, 0.05);
+    }
+  }
+
+  &__radio {
+    accent-color: $color-primary;
+    width: rem(16);
+    height: rem(16);
+    cursor: pointer;
+  }
+
+  &__description {
+    width: 100%;
+    padding: rem(10);
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    font-size: rem(13);
+    font-family: $font-family;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__cancel {
+    flex: 1;
+    padding: rem(12);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: $color-text;
+    background: $color-gray;
+    border: none;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__submit {
+    flex: 1;
+    padding: rem(12);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: white;
+    background: linear-gradient(90deg, $color-primary, $color-primary-end);
+    border: none;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

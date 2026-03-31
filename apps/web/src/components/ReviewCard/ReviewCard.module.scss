@@ -153,6 +153,30 @@
     }
   }
 
+  &__right-actions {
+    display: flex;
+    align-items: center;
+    gap: rem(4);
+  }
+
+  &__report-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-secondary;
+    padding: rem(4) rem(8);
+    border-radius: rem(6);
+    transition: color 0.2s, background-color 0.2s;
+
+    &:hover {
+      color: $color-primary;
+      background: rgba($color-primary, 0.08);
+    }
+  }
+
   &__comments-toggle {
     display: flex;
     align-items: center;

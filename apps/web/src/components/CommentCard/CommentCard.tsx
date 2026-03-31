@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
 import { getAvatarColor } from '@/utils/getAvatarColor';
+import ReportModal from '@/components/ReportModal/ReportModal';
 import styles from './CommentCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -27,7 +29,9 @@ export default function CommentCard({
   isOwn,
   onDeleted,
 }: CommentCardProps) {
+  const { user } = useAuth();
   const [deleting, setDeleting] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const initials = getInitials(userName);
   const d = new Date(createdAt);
@@ -60,6 +64,19 @@ export default function CommentCard({
         <div className={styles['comment-card__header']}>
           <span className={styles['comment-card__name']}>{userName}</span>
           <span className={styles['comment-card__date']}>{date}</span>
+          {user && !isOwn && (
+            <button
+              className={styles['comment-card__report']}
+              onClick={() => setReportOpen(true)}
+              type="button"
+              title="Пожаловаться"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                <line x1="4" y1="22" x2="4" y2="15"/>
+              </svg>
+            </button>
+          )}
           {isOwn && (
             <button
               className={styles['comment-card__delete']}
@@ -73,6 +90,13 @@ export default function CommentCard({
         </div>
         <p className={styles['comment-card__text']}>{text}</p>
       </div>
+
+      <ReportModal
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+        targetId={commentId}
+        targetType="comment"
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { getInitials } from '@/utils/getInitials';
 import { getAvatarColor } from '@/utils/getAvatarColor';
 import CommentCard from '@/components/CommentCard/CommentCard';
 import CommentForm from '@/components/CommentForm/CommentForm';
+import ReportModal from '@/components/ReportModal/ReportModal';
 import styles from './ReviewCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -59,6 +60,7 @@ export default function ReviewCard({
   const [comments, setComments] = useState<CommentData[]>([]);
   const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [commentsCount, setCommentsCount] = useState(initialCommentsCount);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const initials = getInitials(userName);
   const d = new Date(createdAt);
@@ -243,20 +245,36 @@ export default function ReviewCard({
             </button>
           </div>
 
-          <button
-            className={styles['review-card__comments-toggle']}
-            onClick={handleToggleComments}
-            type="button"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            <span>
-              {commentsCount > 0
-                ? `Комментарии (${commentsCount})`
-                : 'Комментировать'}
-            </span>
-          </button>
+          <div className={styles['review-card__right-actions']}>
+            {user && !isOwnReview && (
+              <button
+                className={styles['review-card__report-btn']}
+                onClick={() => setReportOpen(true)}
+                type="button"
+                title="Пожаловаться"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                  <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+              </button>
+            )}
+
+            <button
+              className={styles['review-card__comments-toggle']}
+              onClick={handleToggleComments}
+              type="button"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span>
+                {commentsCount > 0
+                  ? `Комментарии (${commentsCount})`
+                  : 'Комментировать'}
+              </span>
+            </button>
+          </div>
         </div>
 
         {showComments && (
@@ -297,6 +315,13 @@ export default function ReviewCard({
           </div>
         )}
       </div>
+
+      <ReportModal
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+        targetId={reviewId}
+        targetType="review"
+      />
     </div>
   );
 }

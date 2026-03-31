@@ -13,6 +13,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 interface Stats {
   pendingReviews: number;
   pendingComments: number;
+  pendingReports: number;
 }
 
 export default function AdminPage() {
@@ -72,6 +73,21 @@ export default function AdminPage() {
                 <span className={styles['admin__card-label']}>Комментарии на модерации</span>
                 <span className={styles['admin__card-count']}>
                   {stats?.pendingComments ?? '...'}
+                </span>
+              </div>
+            </Link>
+
+            <Link href="/admin/reports" className={styles['admin__card']}>
+              <div className={styles['admin__card-icon']}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="#FF3B2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="4" y1="22" x2="4" y2="15" stroke="#FF3B2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className={styles['admin__card-info']}>
+                <span className={styles['admin__card-label']}>Жалобы пользователей</span>
+                <span className={styles['admin__card-count']}>
+                  {stats?.pendingReports ?? '...'}
                 </span>
               </div>
             </Link>
