@@ -10,6 +10,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { getInitials } from '@/utils/getInitials';
 import { getAvatarColor } from '@/utils/getAvatarColor';
 import { getMoviePath } from '@/utils/getMoviePath';
+import RandomMovieButton from '@/components/RandomMovieButton/RandomMovieButton';
 import type { Movie } from '@/types/movie';
 import styles from './Header.module.scss';
 
@@ -250,6 +251,8 @@ export default function Header() {
         )}
 
         <div className={styles['header__actions']}>
+
+          <RandomMovieButton />
 
           <button
             className={styles['header__search-trigger']}

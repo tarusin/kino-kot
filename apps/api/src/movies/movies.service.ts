@@ -307,6 +307,25 @@ export class MoviesService {
     return null;
   }
 
+  async getRandomMovie(mediaType?: string): Promise<ProxyMovie> {
+    const type = mediaType || 'movie';
+    const randomPage = Math.floor(Math.random() * 100) + 1;
+
+    const result = await this.proxyList(type, 'popular', randomPage);
+
+    if (!result.movies.length) {
+      const fallback = await this.proxyList(type, 'popular', 1);
+      if (!fallback.movies.length) {
+        throw new NotFoundException('Не удалось найти случайный фильм');
+      }
+      const idx = Math.floor(Math.random() * fallback.movies.length);
+      return fallback.movies[idx];
+    }
+
+    const idx = Math.floor(Math.random() * result.movies.length);
+    return result.movies[idx];
+  }
+
   async getRecommendations(id: string): Promise<ProxyMovie[]> {
     const parsed = parseCompositeId(id);
     if (!parsed) throw new NotFoundException('Неверный формат ID');

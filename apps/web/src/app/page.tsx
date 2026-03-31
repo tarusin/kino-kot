@@ -4,6 +4,7 @@ import WhyKinoKot from '@/components/WhyKinoKot/WhyKinoKot';
 import ReviewsMarquee from '@/components/ReviewsMarquee/ReviewsMarquee';
 import MovieSlider from '@/components/MovieSlider/MovieSlider';
 import QuizBanner from '@/components/QuizBanner/QuizBanner';
+import LuckyBanner from '@/components/LuckyBanner/LuckyBanner';
 import Footer from '@/components/Footer/Footer';
 import styles from './page.module.scss';
 import type { Movie } from '@/types/movie';
@@ -115,6 +116,7 @@ export default async function Home() {
             <QuizBanner />
             <MovieSlider title="Популярные сериалы" movies={popularSeries.length > 0 ? mergeRatings(popularSeries, ratings) : undefined} noContainer />
             <MovieSlider title="Скоро выходят" movies={upcoming.length > 0 ? mergeRatings(upcoming, ratings) : undefined} noContainer />
+            <LuckyBanner />
           </div>
         </section>
       </main>

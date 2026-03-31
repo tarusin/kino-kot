@@ -90,7 +90,8 @@
 
     @media (min-width: $breakpoint-lg) {
       img {
-        width: rem(580);
+        width: auto;
+        height: rem(450);
       }
     }
   }

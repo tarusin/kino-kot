@@ -19,8 +19,8 @@ export default function QuizBanner() {
         <Image
           src="/images/cat-1.png"
           alt="КиноКот"
-          width={580}
-          height={460}
+          width={460}
+          height={580}
           priority={false}
         />
       </div>

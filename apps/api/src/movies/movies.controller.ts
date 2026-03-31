@@ -48,6 +48,11 @@ export class MoviesController {
     return this.moviesService.getYears();
   }
 
+  @Get('random')
+  getRandom(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.getRandomMovie(mediaType);
+  }
+
   @Get('film-of-the-week')
   getFilmOfTheWeek(@Query('mediaType') mediaType?: string) {
     return this.moviesService.findFilmOfTheWeek(mediaType || 'movie');
