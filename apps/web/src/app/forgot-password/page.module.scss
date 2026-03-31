@@ -1,0 +1,66 @@
+@use '../../styles/variables' as *;
+
+.forgot-password {
+  height: calc(100vh - 12rem);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: $color-gray;
+  padding: rem(20);
+
+  &__card {
+    width: 100%;
+    max-width: rem(480);
+    margin-top: rem(60);
+    padding: rem(32);
+    background: $color-bg;
+    border-radius: rem(16);
+    box-shadow: 0 rem(4) rem(24) rgba(0, 0, 0, 0.08);
+    text-align: center;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: rem(48);
+    }
+  }
+
+  &__icon {
+    margin-bottom: rem(24);
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin-bottom: rem(12);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(28);
+    }
+  }
+
+  &__text {
+    font-size: rem(15);
+    color: $color-text-secondary;
+    line-height: 1.5;
+    margin-bottom: rem(24);
+
+    strong {
+      color: $color-text;
+    }
+  }
+
+  &__footer {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin-top: rem(24);
+  }
+
+  &__link {
+    color: $color-primary;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

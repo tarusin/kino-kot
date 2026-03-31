@@ -39,6 +39,13 @@ export class UsersService {
     return this.userModel.findOne({ emailVerificationToken: token });
   }
 
+  async findByPasswordResetToken(token: string): Promise<User | null> {
+    return this.userModel.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: new Date() },
+    });
+  }
+
   async updateProfile(
     id: string,
     data: { name?: string; email?: string },

@@ -79,6 +79,36 @@ export class AuthService {
     return { message: 'Письмо отправлено повторно' };
   }
 
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      return { message: 'Если email зарегистрирован, вы получите письмо со ссылкой для сброса пароля' };
+    }
+
+    const resetToken = randomUUID();
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000);
+    await user.save();
+
+    await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+
+    return { message: 'Если email зарегистрирован, вы получите письмо со ссылкой для сброса пароля' };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.usersService.findByPasswordResetToken(token);
+    if (!user) {
+      throw new BadRequestException('Ссылка для сброса пароля недействительна или истекла');
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.passwordResetToken = undefined as any;
+    user.passwordResetExpires = undefined as any;
+    await user.save();
+
+    return { message: 'Пароль успешно изменён' };
+  }
+
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {

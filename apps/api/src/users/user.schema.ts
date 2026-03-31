@@ -20,6 +20,12 @@ export class User extends Document {
 
   @Prop()
   emailVerificationToken: string;
+
+  @Prop()
+  passwordResetToken: string;
+
+  @Prop()
+  passwordResetExpires: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

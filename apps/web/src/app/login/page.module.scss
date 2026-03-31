@@ -1,0 +1,15 @@
+@use '../../styles/variables' as *;
+
+.login {
+  &__forgot-link {
+    display: block;
+    text-align: right;
+    font-size: rem(14);
+    color: $color-text-secondary;
+    margin-top: rem(-8);
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}

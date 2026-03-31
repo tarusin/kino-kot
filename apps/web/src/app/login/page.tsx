@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import FormInput from '../../components/FormInput/FormInput';
 import { useAuth } from '../../context/AuthContext';
+import styles from './page.module.scss';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -74,6 +76,9 @@ export default function LoginPage() {
             onChange={handleChange}
             error={errors.password}
           />
+          <Link href="/forgot-password" className={styles['login__forgot-link']}>
+            Забыли пароль?
+          </Link>
         </AuthForm>
       </main>
       <Footer />
