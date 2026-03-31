@@ -251,7 +251,6 @@ export default function Header() {
         )}
 
         <div className={styles['header__actions']}>
-
           <RandomMovieButton />
 
           <button
