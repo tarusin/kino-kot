@@ -30,6 +30,16 @@ async function getTopRatedMovies(): Promise<Movie[]> {
   }
 }
 
+async function getPublicStats(): Promise<{ totalReviews: number; totalAuthors: number }> {
+  try {
+    const res = await fetch(`${API_URL}/reviews/stats`, { next: { revalidate: 3600 } });
+    if (!res.ok) return { totalReviews: 0, totalAuthors: 0 };
+    return res.json();
+  } catch {
+    return { totalReviews: 0, totalAuthors: 0 };
+  }
+}
+
 async function getLatestReviews(): Promise<LatestReview[]> {
   try {
     const res = await fetch(`${API_URL}/reviews/latest?limit=20`, { next: { revalidate: 3600 } });
@@ -58,10 +68,11 @@ function mergeRatings(movies: Movie[], ratings: Record<string, number>): Movie[]
 }
 
 export default async function Home() {
-  const [popular, topRated, latestReviews] = await Promise.all([
+  const [popular, topRated, latestReviews, stats] = await Promise.all([
     getPopularMovies(),
     getTopRatedMovies(),
     getLatestReviews(),
+    getPublicStats(),
   ]);
 
   const allIds = [...popular, ...topRated].map((m) => m._id);
@@ -73,7 +84,7 @@ export default async function Home() {
       <main>
         <section className={styles['home']}>
           <div className={styles['home__wrap']}>
-            <HeroBanner />
+            <HeroBanner totalReviews={stats.totalReviews} totalAuthors={stats.totalAuthors} />
             <WhyKinoKot />
             {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} noContainer />}
             <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />

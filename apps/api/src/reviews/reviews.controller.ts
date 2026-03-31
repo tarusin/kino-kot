@@ -34,6 +34,11 @@ export class ReviewsController {
     return this.reviewsService.toggleReaction(req.user.id, dto);
   }
 
+  @Get('stats')
+  getPublicStats() {
+    return this.reviewsService.getPublicStats();
+  }
+
   @Get('ratings')
   getAverageRatings(@Query('movieIds') movieIds: string) {
     const ids = movieIds ? movieIds.split(',').filter(Boolean) : [];

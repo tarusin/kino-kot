@@ -166,6 +166,14 @@ export class ReviewsService {
     };
   }
 
+  async getPublicStats() {
+    const [totalReviews, totalAuthors] = await Promise.all([
+      this.reviewModel.countDocuments({ status: 'approved' }),
+      this.reviewModel.distinct('userId', { status: 'approved' }).then((ids) => ids.length),
+    ]);
+    return { totalReviews, totalAuthors };
+  }
+
   async getAverageRatings(movieIds: string[]): Promise<Record<string, number>> {
     const result = await this.reviewModel.aggregate([
       { $match: { movieId: { $in: movieIds }, status: { $ne: 'rejected' } } },

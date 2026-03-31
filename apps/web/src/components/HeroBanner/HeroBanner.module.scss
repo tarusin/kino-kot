@@ -134,6 +134,27 @@
   }
 }
 
+.title-stats {
+  font-size: rem(14);
+  font-weight: 500;
+  margin: rem(8) 0 0;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  text-shadow: 0 rem(1) rem(4) rgba(0, 0, 0, 0.5);
+
+  @media (min-width: $breakpoint-md) {
+    font-size: rem(16);
+    color: $color-text-secondary;
+    text-align: left;
+    text-shadow: none;
+    margin-top: rem(12);
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    font-size: rem(18);
+  }
+}
+
 .fake-border-radius {
   display: none;
 
