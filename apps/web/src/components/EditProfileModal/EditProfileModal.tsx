@@ -60,14 +60,14 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
           <div className={styles['edit-profile__avatar']}>
             <span className={styles['edit-profile__initial']}>{initials}</span>
           </div>
-          <button
-            type="button"
-            className={styles['edit-profile__upload']}
-            onClick={handleUploadClick}
-          >
-            <Image src="/icons/upload.svg" alt="" width={16} height={16} />
-            Загрузить фото
-          </button>
+          {/*<button*/}
+          {/*  type="button"*/}
+          {/*  className={styles['edit-profile__upload']}*/}
+          {/*  onClick={handleUploadClick}*/}
+          {/*>*/}
+          {/*  <Image src="/icons/upload.svg" alt="" width={16} height={16} />*/}
+          {/*  Загрузить фото*/}
+          {/*</button>*/}
         </div>
 
         <div className={styles['edit-profile__fields']}>

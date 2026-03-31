@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import bcrypt from 'bcrypt';
 import { User } from './user.schema.js';
 import { Review } from '../reviews/schemas/review.schema.js';
 import { ReviewReaction } from '../reviews/schemas/review-reaction.schema.js';
@@ -43,6 +44,25 @@ export class UsersService {
     data: { name?: string; email?: string },
   ): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  async changePassword(
+    id: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.userModel.findById(id).select('+password');
+    if (!user) {
+      throw new BadRequestException('Пользователь не найден');
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isValid) {
+      throw new BadRequestException('Неверный текущий пароль');
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
   }
 
   async deleteAccount(id: string): Promise<void> {

@@ -49,8 +49,8 @@ export default function FormInput({
             <Image
               src={
                 showPassword
-                  ? '/icons/eye-off.svg'
-                  : '/icons/eye-show.svg'
+                  ? '/icons/eye-show.svg'
+                  : '/icons/eye-off.svg'
               }
               alt={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
               width={20}

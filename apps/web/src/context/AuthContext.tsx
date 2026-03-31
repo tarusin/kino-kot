@@ -20,6 +20,7 @@ interface AuthContextType {
   updateUser: (data: { name?: string }) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
   deleteAccount: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -117,6 +118,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.success('Аккаунт удалён');
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    const res = await fetch(`${API_URL}/users/password`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Ошибка смены пароля');
+    }
+
+    toast.success('Пароль успешно изменён');
+  };
+
   const resendVerification = async (email: string) => {
     const res = await fetch(`${API_URL}/auth/resend-verification`, {
       method: 'POST',
@@ -134,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, logout, updateUser, resendVerification, deleteAccount }}
+      value={{ user, loading, login, register, logout, updateUser, resendVerification, deleteAccount, changePassword }}
     >
       {children}
     </AuthContext.Provider>

@@ -132,6 +132,23 @@
     font-family: $font-family;
   }
 
+  &__password-btn {
+    padding: rem(12) rem(32);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: $font-family;
+    color: $color-text;
+    background: none;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $color-gray;
+    }
+  }
+
   &__delete-btn {
     padding: rem(12) rem(32);
     font-size: rem(14);

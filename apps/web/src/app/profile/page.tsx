@@ -6,6 +6,7 @@ import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import EditProfileModal from '@/components/EditProfileModal/EditProfileModal';
 import DeleteAccountModal from '@/components/DeleteAccountModal/DeleteAccountModal';
+import ChangePasswordModal from '@/components/ChangePasswordModal/ChangePasswordModal';
 import ProfileReviewCard from '@/components/ProfileReviewCard/ProfileReviewCard';
 import Pagination from '@/components/Pagination/Pagination';
 import { useAuth } from '@/context/AuthContext';
@@ -41,6 +42,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const [reviews, setReviews] = useState<UserReview[]>([]);
   const [reviewsPage, setReviewsPage] = useState(1);
@@ -131,6 +133,13 @@ export default function ProfilePage() {
                   Редактировать
                 </button>
                 <button
+                  className={ styles['profile__password-btn'] }
+                  onClick={ () => setIsPasswordModalOpen(true) }
+                  type="button"
+                >
+                  Изменить пароль
+                </button>
+                <button
                   className={ styles['profile__delete-btn'] }
                   onClick={ () => setIsDeleteModalOpen(true) }
                   type="button"
@@ -183,6 +192,11 @@ export default function ProfilePage() {
       <EditProfileModal
         isOpen={ isEditModalOpen }
         onClose={ () => setIsEditModalOpen(false) }
+      />
+
+      <ChangePasswordModal
+        isOpen={ isPasswordModalOpen }
+        onClose={ () => setIsPasswordModalOpen(false) }
       />
 
       <DeleteAccountModal

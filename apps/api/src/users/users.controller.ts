@@ -10,6 +10,7 @@ import {
 import express from 'express';
 import { UsersService } from './users.service.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 
 @Controller('users')
@@ -28,6 +29,18 @@ export class UsersController {
         email: user!.email,
       },
     };
+  }
+
+  @Patch('password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
+    await this.usersService.changePassword(
+      req.user.id,
+      dto.currentPassword,
+      dto.newPassword,
+    );
+
+    return { message: 'Пароль успешно изменён' };
   }
 
   @Delete('account')
