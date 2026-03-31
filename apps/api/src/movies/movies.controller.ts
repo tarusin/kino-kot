@@ -15,6 +15,11 @@ export class MoviesController {
     return this.moviesService.findByCategory('top_rated', mediaType);
   }
 
+  @Get('upcoming')
+  findUpcoming(@Query('mediaType') mediaType?: string) {
+    return this.moviesService.findByCategory('upcoming', mediaType);
+  }
+
   @Get('search')
   search(
     @Query('query') query: string,

@@ -31,6 +31,26 @@ async function getTopRatedMovies(): Promise<Movie[]> {
   }
 }
 
+async function getPopularSeries(): Promise<Movie[]> {
+  try {
+    const res = await fetch(`${API_URL}/movies/popular?mediaType=series`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+async function getUpcomingMovies(): Promise<Movie[]> {
+  try {
+    const res = await fetch(`${API_URL}/movies/upcoming?mediaType=movie`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 async function getPublicStats(): Promise<{ totalReviews: number; totalAuthors: number }> {
   try {
     const res = await fetch(`${API_URL}/reviews/stats`, { next: { revalidate: 3600 } });
@@ -69,14 +89,16 @@ function mergeRatings(movies: Movie[], ratings: Record<string, number>): Movie[]
 }
 
 export default async function Home() {
-  const [popular, topRated, latestReviews, stats] = await Promise.all([
+  const [popular, topRated, popularSeries, upcoming, latestReviews, stats] = await Promise.all([
     getPopularMovies(),
     getTopRatedMovies(),
+    getPopularSeries(),
+    getUpcomingMovies(),
     getLatestReviews(),
     getPublicStats(),
   ]);
 
-  const allIds = [...popular, ...topRated].map((m) => m._id);
+  const allIds = [...popular, ...topRated, ...popularSeries, ...upcoming].map((m) => m._id);
   const ratings = await getRatings(allIds);
 
   return (
@@ -91,6 +113,8 @@ export default async function Home() {
             <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />
             <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} noContainer />
             <QuizBanner />
+            <MovieSlider title="Популярные сериалы" movies={popularSeries.length > 0 ? mergeRatings(popularSeries, ratings) : undefined} noContainer />
+            <MovieSlider title="Скоро выходят" movies={upcoming.length > 0 ? mergeRatings(upcoming, ratings) : undefined} noContainer />
           </div>
         </section>
       </main>
