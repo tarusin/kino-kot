@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './ReviewForm.module.scss';
 
 interface ReviewFormProps {
@@ -61,7 +62,7 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
   return (
     <div className={styles['review-form']}>
       <div className={styles['review-form__rating-row']}>
-        <div className={styles['review-form__avatar']}>{initials}</div>
+        <div className={styles['review-form__avatar']} style={{ backgroundColor: getAvatarColor(user.name) }}>{initials}</div>
 
         <div className={styles['review-form__paws']}>
           {Array.from({ length: 10 }, (_, i) => (

@@ -22,8 +22,8 @@
 
   &__status-badge {
     position: absolute;
-    top: rem(12);
-    right: rem(12);
+    top: rem(6);
+    right: rem(24);
     padding: rem(4) rem(10);
     border-radius: rem(12);
     font-size: rem(11);
@@ -147,7 +147,6 @@
     width: rem(32);
     height: rem(32);
     border-radius: 50%;
-    background: #2c5581;
     color: white;
     display: flex;
     align-items: center;

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './CommentCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -54,7 +55,7 @@ export default function CommentCard({
 
   return (
     <div className={styles['comment-card']}>
-      <div className={styles['comment-card__avatar']}>{initials}</div>
+      <div className={styles['comment-card__avatar']} style={{ backgroundColor: getAvatarColor(userName) }}>{initials}</div>
       <div className={styles['comment-card__body']}>
         <div className={styles['comment-card__header']}>
           <span className={styles['comment-card__name']}>{userName}</span>

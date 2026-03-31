@@ -8,6 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import { getMoviePath } from '@/utils/getMoviePath';
 import type { Movie } from '@/types/movie';
 import styles from './Header.module.scss';
@@ -304,7 +305,7 @@ export default function Header() {
           {!loading && (
             user ? (
               <div className={styles['header__user']}>
-                <div className={styles['header__avatar']}>
+                <div className={styles['header__avatar']} style={{ backgroundColor: getAvatarColor(user.name) }}>
                   {getInitials(user.name)}
                 </div>
                 <div className={styles['header__dropdown']}>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import CommentCard from '@/components/CommentCard/CommentCard';
 import CommentForm from '@/components/CommentForm/CommentForm';
 import styles from './ReviewCard.module.scss';
@@ -169,7 +170,7 @@ export default function ReviewCard({
         <div className={`${styles['review-card__status-badge']} ${styles['review-card__status-badge--rejected']}`}>Отклонено</div>
       )}
       <div className={ styles['review-card__left'] }>
-        <div className={ styles['review-card__avatar'] }>{ initials }</div>
+        <div className={ styles['review-card__avatar'] } style={{ backgroundColor: getAvatarColor(userName) }}>{ initials }</div>
         <div className={ styles['review-card__rating-badge'] }>
           <Image
             src="/icons/rating-paw-full.svg"

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './AdminCommentCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -59,7 +60,7 @@ export default function AdminCommentCard({
     <div className={styles['admin-comment-card']}>
       <div className={styles['admin-comment-card__header']}>
         <div className={styles['admin-comment-card__user']}>
-          <div className={styles['admin-comment-card__avatar']}>
+          <div className={styles['admin-comment-card__avatar']} style={{ backgroundColor: getAvatarColor(userName) }}>
             {getInitials(userName)}
           </div>
           <div className={styles['admin-comment-card__meta']}>

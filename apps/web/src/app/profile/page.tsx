@@ -11,6 +11,7 @@ import ProfileReviewCard from '@/components/ProfileReviewCard/ProfileReviewCard'
 import Pagination from '@/components/Pagination/Pagination';
 import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './page.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -108,7 +109,7 @@ export default function ProfilePage() {
           { activeTab === 'info' && (
             <div className={ styles['profile__info'] }>
               <div className={ styles['profile__info-top'] }>
-                <div className={ styles['profile__avatar'] }>
+                <div className={ styles['profile__avatar'] } style={{ backgroundColor: getAvatarColor(user.name) }}>
                   <span className={ styles['profile__initial'] }>{ initials }</span>
                 </div>
 

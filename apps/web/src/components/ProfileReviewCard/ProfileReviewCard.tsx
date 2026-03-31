@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import { getMoviePath } from '@/utils/getMoviePath';
 import styles from './ProfileReviewCard.module.scss';
 
@@ -80,7 +81,7 @@ export default function ProfileReviewCard({
         </div>
 
         <div className={ styles['profile-review-card__author'] }>
-          <div className={ styles['profile-review-card__avatar'] }>{ initials }</div>
+          <div className={ styles['profile-review-card__avatar'] } style={{ backgroundColor: getAvatarColor(userName) }}>{ initials }</div>
           <span className={ styles['profile-review-card__name'] }>{ userName }</span>
         </div>
 

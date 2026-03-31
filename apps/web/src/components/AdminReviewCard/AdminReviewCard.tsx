@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './AdminReviewCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -64,7 +65,7 @@ export default function AdminReviewCard({
     <div className={styles['admin-review-card']}>
       <div className={styles['admin-review-card__header']}>
         <div className={styles['admin-review-card__user']}>
-          <div className={styles['admin-review-card__avatar']}>
+          <div className={styles['admin-review-card__avatar']} style={{ backgroundColor: getAvatarColor(userName) }}>
             {getInitials(userName)}
           </div>
           <div className={styles['admin-review-card__meta']}>

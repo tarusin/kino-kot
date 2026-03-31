@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Modal from '@/components/Modal/Modal';
 import FormInput from '@/components/FormInput/FormInput';
 import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
+import { getAvatarColor } from '@/utils/getAvatarColor';
 import styles from './EditProfileModal.module.scss';
 
 interface EditProfileModalProps {
@@ -57,7 +57,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     <Modal isOpen={isOpen} onClose={onClose} title="Редактирование профиля">
       <form className={styles['edit-profile']} onSubmit={handleSubmit}>
         <div className={styles['edit-profile__avatar-section']}>
-          <div className={styles['edit-profile__avatar']}>
+          <div className={styles['edit-profile__avatar']} style={{ backgroundColor: getAvatarColor(user.name) }}>
             <span className={styles['edit-profile__initial']}>{initials}</span>
           </div>
           {/*<button*/}
