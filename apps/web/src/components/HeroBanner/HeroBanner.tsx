@@ -8,15 +8,15 @@ export default function HeroBanner() {
           <div className={styles['banner-content']}>
             <div className={styles['banner-content__title']}>
               <p className={styles['title-text']}>
-                КиноКот поможет вам определить вкус в фильмографии
+                Узнайте, что думают зрители, прежде чем смотреть
               </p>
               <span
                 className={`${styles['fake-border-radius']} ${styles['fake-border-radius_right-top']}`}
               />
             </div>
             <div className={styles['banner-content__details']}>
-              <Link href="/quiz" className={styles['banner-content__btn']}>
-                Хочу узнать
+              <Link href="/films" className={styles['banner-content__btn']}>
+                Читать отзывы
               </Link>
               <span
                 className={`${styles['fake-border-radius']} ${styles['fake-border-radius_left-bottom']}`}

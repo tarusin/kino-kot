@@ -1,0 +1,78 @@
+@use '../../styles/variables' as *;
+
+.why-kinokot {
+  padding: rem(40) 0;
+
+  @media (min-width: $breakpoint-md) {
+    padding: rem(60) 0;
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 rem(24);
+    text-align: center;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(32);
+      margin-bottom: rem(36);
+    }
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: rem(16);
+
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: rem(24);
+    }
+  }
+
+  &__card {
+    background: $color-gray;
+    border-radius: rem(14);
+    padding: rem(24) rem(20);
+    text-align: center;
+
+    @media (min-width: $breakpoint-md) {
+      padding: rem(32) rem(24);
+    }
+  }
+
+  &__icon {
+    font-size: rem(40);
+    display: block;
+    margin-bottom: rem(12);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(48);
+      margin-bottom: rem(16);
+    }
+  }
+
+  &__card-title {
+    font-size: rem(18);
+    font-weight: 600;
+    color: $color-text;
+    margin: 0 0 rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(20);
+      margin-bottom: rem(12);
+    }
+  }
+
+  &__card-description {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    line-height: 1.5;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(16);
+    }
+  }
+}
