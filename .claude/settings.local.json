@@ -31,7 +31,9 @@
       "Bash(kill:*)",
       "Bash(lsof -ti:3001)",
       "Bash(docker exec:*)",
-      "Bash(npx --workspace=web next build)"
+      "Bash(npx --workspace=web next build)",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot"
     ]
   },
   "enabledPlugins": {

@@ -3,6 +3,7 @@ import HeroBanner from '@/components/HeroBanner/HeroBanner';
 import WhyKinoKot from '@/components/WhyKinoKot/WhyKinoKot';
 import ReviewsMarquee from '@/components/ReviewsMarquee/ReviewsMarquee';
 import MovieSlider from '@/components/MovieSlider/MovieSlider';
+import QuizBanner from '@/components/QuizBanner/QuizBanner';
 import Footer from '@/components/Footer/Footer';
 import styles from './page.module.scss';
 import type { Movie } from '@/types/movie';
@@ -89,6 +90,7 @@ export default async function Home() {
             {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} noContainer />}
             <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />
             <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} noContainer />
+            <QuizBanner />
           </div>
         </section>
       </main>

@@ -28,7 +28,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem(8);
+    gap: rem(16);
 
     @media (min-width: $breakpoint-md) {
       align-items: flex-end;
@@ -44,8 +44,12 @@
   &__nav {
     display: flex;
     flex-wrap: wrap;
-    gap: rem(18);
+    gap: rem(12);
     justify-content: center;
+
+    @media (min-width: $breakpoint-sm) {
+      gap: rem(18);
+    }
 
     a {
       font-size: rem(16);
