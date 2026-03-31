@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import express from 'express';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
@@ -32,6 +33,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @Throttle({ short: { ttl: 60000, limit: 3 } })
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
@@ -42,16 +44,19 @@ export class AuthController {
   }
 
   @Post('resend-verification')
+  @Throttle({ short: { ttl: 60000, limit: 2 } })
   async resendVerification(@Body('email') email: string) {
     return this.authService.resendVerification(email);
   }
 
   @Post('forgot-password')
+  @Throttle({ short: { ttl: 60000, limit: 2 } })
   async forgotPassword(@Body('email') email: string) {
     return this.authService.forgotPassword(email);
   }
 
   @Post('reset-password')
+  @Throttle({ short: { ttl: 60000, limit: 3 } })
   async resetPassword(
     @Body('token') token: string,
     @Body('password') password: string,
@@ -60,6 +65,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ short: { ttl: 60000, limit: 5 } })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: express.Response,
