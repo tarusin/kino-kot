@@ -232,6 +232,9 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
           ))}
         </div>
 
+        {/* Где посмотреть */}
+        <WatchProvidersSection movieTitle={movie.title} />
+
         {/* Вкладки */}
         <div className={styles['movie-detail__tabs']} ref={tabsRef}>
           <div className={styles['movie-detail__tab-bar']}>
@@ -476,6 +479,78 @@ function CastTab({
                 role={member.job}
                 profilePath={member.profilePath}
               />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------- Секция: Где посмотреть ---------- */
+
+const RUSSIAN_SERVICES = [
+  {
+    name: 'Кинопоиск',
+    buildUrl: (q: string) => `https://www.kinopoisk.ru/index.php?kp_query=${encodeURIComponent(q)}`,
+    color: '#ff6600',
+  },
+  {
+    name: 'Иви',
+    buildUrl: (q: string) => `https://www.ivi.tv/search?ivi_search=${encodeURIComponent(q)}`,
+    color: '#ea1845',
+  },
+  {
+    name: 'Okko',
+    buildUrl: (q: string) => `https://okko.tv/search/${encodeURIComponent(q)}`,
+    color: '#7b2bfc',
+  },
+  {
+    name: 'KION',
+    buildUrl: (q: string) => `https://kion.ru/search?searchValue=${encodeURIComponent(q)}`,
+    color: '#00b4ff',
+  },
+];
+
+function WatchProvidersSection({ movieTitle }: { movieTitle: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className={styles['watch-providers']}>
+      <button
+        className={styles['watch-providers__header']}
+        onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+      >
+        <h3 className={styles['watch-providers__title']}>Где посмотреть</h3>
+        <svg
+          className={`${styles['watch-providers__arrow']} ${open ? styles['watch-providers__arrow--open'] : ''}`}
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 8 10 12 14 8" />
+        </svg>
+      </button>
+      {open && (
+        <div className={styles['watch-providers__body']}>
+          <div className={styles['watch-providers__services']}>
+            {RUSSIAN_SERVICES.map((service) => (
+              <a
+                key={service.name}
+                href={service.buildUrl(movieTitle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles['watch-providers__service']}
+                style={{ '--service-color': service.color } as React.CSSProperties}
+              >
+                {service.name}
+              </a>
             ))}
           </div>
         </div>

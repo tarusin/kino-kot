@@ -100,6 +100,36 @@ interface TmdbImagesResponse {
   backdrops: TmdbImage[];
 }
 
+interface TmdbWatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
+interface TmdbWatchProvidersResponse {
+  results: Record<string, {
+    link?: string;
+    flatrate?: TmdbWatchProvider[];
+    rent?: TmdbWatchProvider[];
+    buy?: TmdbWatchProvider[];
+    free?: TmdbWatchProvider[];
+  }>;
+}
+
+export interface WatchProvider {
+  providerId: number;
+  providerName: string;
+  logoPath: string;
+}
+
+export interface WatchProviders {
+  link: string | null;
+  flatrate: WatchProvider[];
+  rent: WatchProvider[];
+  buy: WatchProvider[];
+  free: WatchProvider[];
+}
+
 interface TmdbCountry {
   iso_3166_1: string;
   english_name: string;
@@ -674,5 +704,65 @@ export class TmdbService {
       { params: { api_key: apiKey } },
     );
     return data.backdrops.slice(0, 10).map((img) => img.file_path);
+  }
+
+  private static readonly WATCH_PROVIDER_REGIONS = ['RU', 'US'];
+
+  private mapWatchProviders(raw: TmdbWatchProvider[] | undefined): WatchProvider[] {
+    if (!raw) return [];
+    return raw.map((p) => ({
+      providerId: p.provider_id,
+      providerName: p.provider_name,
+      logoPath: p.logo_path,
+    }));
+  }
+
+  private resolveWatchProviders(data: TmdbWatchProvidersResponse): WatchProviders {
+    const empty: WatchProviders = { link: null, flatrate: [], rent: [], buy: [], free: [] };
+    if (!data.results) return empty;
+
+    for (const region of TmdbService.WATCH_PROVIDER_REGIONS) {
+      const entry = data.results[region];
+      if (!entry) continue;
+
+      const hasProviders = entry.flatrate?.length || entry.rent?.length || entry.buy?.length || entry.free?.length;
+      if (!hasProviders) continue;
+
+      return {
+        link: entry.link || null,
+        flatrate: this.mapWatchProviders(entry.flatrate),
+        rent: this.mapWatchProviders(entry.rent),
+        buy: this.mapWatchProviders(entry.buy),
+        free: this.mapWatchProviders(entry.free),
+      };
+    }
+
+    return empty;
+  }
+
+  async fetchMovieWatchProviders(tmdbId: number): Promise<WatchProviders> {
+    const apiKey = process.env.TMDB_API_KEY;
+    try {
+      const { data } = await axios.get<TmdbWatchProvidersResponse>(
+        `${this.baseUrl}/movie/${tmdbId}/watch/providers`,
+        { params: { api_key: apiKey } },
+      );
+      return this.resolveWatchProviders(data);
+    } catch {
+      return { link: null, flatrate: [], rent: [], buy: [], free: [] };
+    }
+  }
+
+  async fetchTVWatchProviders(tmdbId: number): Promise<WatchProviders> {
+    const apiKey = process.env.TMDB_API_KEY;
+    try {
+      const { data } = await axios.get<TmdbWatchProvidersResponse>(
+        `${this.baseUrl}/tv/${tmdbId}/watch/providers`,
+        { params: { api_key: apiKey } },
+      );
+      return this.resolveWatchProviders(data);
+    } catch {
+      return { link: null, flatrate: [], rent: [], buy: [], free: [] };
+    }
   }
 }

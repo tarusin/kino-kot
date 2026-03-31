@@ -26,6 +26,20 @@ export interface FilmOfTheWeek {
   kinoKotRating: number | null;
 }
 
+export interface WatchProvider {
+  providerId: number;
+  providerName: string;
+  logoPath: string;
+}
+
+export interface WatchProviders {
+  link: string | null;
+  flatrate: WatchProvider[];
+  rent: WatchProvider[];
+  buy: WatchProvider[];
+  free: WatchProvider[];
+}
+
 export interface MovieDetail {
   _id: string;
   tmdbId: number;
@@ -42,4 +56,5 @@ export interface MovieDetail {
   crew: { name: string; job: string; profilePath: string | null }[];
   trailerKey: string | null;
   stills: string[];
+  watchProviders?: WatchProviders;
 }
