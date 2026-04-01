@@ -1,0 +1,112 @@
+@use '../../styles/variables' as *;
+
+.how-it-works {
+  padding: rem(40) 0;
+
+  @media (min-width: $breakpoint-md) {
+    padding: rem(60) 0;
+  }
+
+  &__title {
+    font-size: rem(24);
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 rem(24);
+    text-align: center;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(32);
+      margin-bottom: rem(36);
+    }
+  }
+
+  &__steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: rem(16);
+    counter-reset: step;
+
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: rem(24);
+    }
+  }
+
+  &__step {
+    position: relative;
+    background: $color-gray;
+    border-radius: rem(14);
+    padding: rem(24) rem(20);
+    text-align: center;
+
+    @media (min-width: $breakpoint-md) {
+      padding: rem(32) rem(24);
+    }
+  }
+
+  &__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(48);
+    height: rem(48);
+    border-radius: 50%;
+    background: $color-gradient;
+    color: white;
+    font-size: rem(18);
+    font-weight: 700;
+    margin-bottom: rem(16);
+
+    @media (min-width: $breakpoint-md) {
+      width: rem(56);
+      height: rem(56);
+      font-size: rem(20);
+    }
+  }
+
+  &__step-title {
+    font-size: rem(18);
+    font-weight: 600;
+    color: $color-text;
+    margin: 0 0 rem(8);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(20);
+      margin-bottom: rem(12);
+    }
+  }
+
+  &__step-description {
+    font-size: rem(14);
+    color: $color-text-secondary;
+    line-height: 1.5;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(16);
+    }
+  }
+
+  &__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(28);
+
+    @media (min-width: $breakpoint-md) {
+      margin-top: rem(40);
+    }
+  }
+
+  &__button {
+    @include gradient-button;
+    padding: rem(14) rem(40);
+    font-size: rem(16);
+    border-radius: rem(12);
+    text-decoration: none;
+
+    @media (min-width: $breakpoint-md) {
+      padding: rem(16) rem(48);
+      font-size: rem(18);
+    }
+  }
+}
