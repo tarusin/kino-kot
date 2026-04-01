@@ -1,5 +1,6 @@
 import Header from '@/components/Header/Header';
 import HeroBanner from '@/components/HeroBanner/HeroBanner';
+import SearchBlock from '@/components/SearchBlock/SearchBlock';
 import WhyKinoKot from '@/components/WhyKinoKot/WhyKinoKot';
 import HowItWorks from '@/components/HowItWorks/HowItWorks';
 import ReviewsMarquee from '@/components/ReviewsMarquee/ReviewsMarquee';
@@ -98,10 +99,11 @@ export default async function Home() {
       <main>
         <section className={styles['home']}>
           <div className={styles['home__wrap']}>
+            <SearchBlock />
             <HeroBanner />
-            <WhyKinoKot />
-            <HowItWorks />
             {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} noContainer />}
+            <HowItWorks />
+            <WhyKinoKot />
             <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />
             <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} noContainer />
             <QuizBanner />

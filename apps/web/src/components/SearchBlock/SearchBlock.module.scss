@@ -1,0 +1,242 @@
+@use '../../styles/variables' as *;
+
+.search-block {
+  display: none;
+
+  @media (min-width: $breakpoint-sm) {
+    display: block;
+    padding: 0 0 rem(32) 0;
+  }
+
+  &__wrap {
+    position: relative;
+  }
+
+  &__input-wrap {
+    display: flex;
+    align-items: center;
+    background: $color-gray;
+    border-radius: rem(14);
+    padding: 0 rem(16);
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: $color-primary;
+    }
+  }
+
+  &__icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: rem(16);
+    padding: rem(16) rem(12);
+    outline: none;
+    color: $color-text;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(18);
+      padding: rem(18) rem(14);
+    }
+  }
+
+  &__clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: rem(4);
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__spinner {
+    width: rem(20);
+    height: rem(20);
+    border: 2px solid $color-gray-dark;
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    flex-shrink: 0;
+  }
+
+  // Dropdown
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + #{rem(4)});
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: rem(14);
+    box-shadow: 0 rem(8) rem(32) rgba(0, 0, 0, 0.12);
+    z-index: 50;
+    overflow: hidden;
+  }
+
+  &__result {
+    display: flex;
+    align-items: center;
+    gap: rem(12);
+    padding: rem(10) rem(16);
+    text-decoration: none;
+    color: $color-text;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba($color-primary, 0.06);
+    }
+  }
+
+  &__poster {
+    width: rem(40);
+    height: rem(60);
+    border-radius: rem(4);
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__poster-placeholder {
+    width: 100%;
+    height: 100%;
+    background: $color-gray-dark;
+    border-radius: rem(4);
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: rem(14);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-size: rem(12);
+    color: $color-text-secondary;
+  }
+
+  &__ratings {
+    display: flex;
+    gap: rem(8);
+    margin-top: rem(2);
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: rem(4);
+    font-size: rem(12);
+    font-weight: 500;
+  }
+
+  &__all {
+    display: block;
+    text-align: center;
+    padding: rem(12);
+    font-size: rem(14);
+    font-weight: 500;
+    color: $color-primary;
+    text-decoration: none;
+    border-top: 1px solid $color-gray;
+    transition: background 0.15s;
+
+    &:hover {
+      background: $color-gray;
+    }
+  }
+
+  &__empty {
+    padding: rem(20);
+    text-align: center;
+    font-size: rem(14);
+    color: $color-text-secondary;
+  }
+
+  // Mood chips
+
+  &__moods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(8);
+    margin-top: rem(16);
+    justify-content: center;
+
+    @media (min-width: $breakpoint-md) {
+      gap: rem(10);
+      margin-top: rem(20);
+    }
+  }
+
+  &__mood {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(6);
+    padding: rem(8) rem(16);
+    background: $color-gray;
+    border-radius: rem(20);
+    font-size: rem(13);
+    font-weight: 500;
+    color: $color-text;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      background: $color-gray-dark;
+      transform: translateY(rem(-1));
+    }
+
+    @media (min-width: $breakpoint-md) {
+      padding: rem(10) rem(20);
+      font-size: rem(14);
+    }
+  }
+
+  &__mood-icon {
+    font-size: rem(16);
+
+    @media (min-width: $breakpoint-md) {
+      font-size: rem(18);
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,11 +1,11 @@
 @use '../../styles/variables' as *;
 
 .reviews-marquee {
-  padding: rem(24) 0;
+  padding: rem(32) 0 0 0;
   overflow: hidden;
 
   @media (min-width: $breakpoint-sm) {
-    padding: rem(40) 0;
+    padding: rem(40) 0 0 0;
   }
 
   &__wrap {
