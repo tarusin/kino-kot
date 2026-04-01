@@ -26,9 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const movie = await getMovie(id);
   if (!movie) return { title: 'Фильм не найден' };
 
+  const ogImage = movie.backdropPath
+    ? `https://image.tmdb.org/t/p/w1280${movie.backdropPath}`
+    : movie.posterPath
+      ? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
+      : undefined;
+
   return {
     title: `${movie.title} — КиноКот`,
     description: movie.overview?.slice(0, 160),
+    openGraph: {
+      title: `${movie.title} — КиноКот`,
+      description: movie.overview?.slice(0, 160),
+      ...(ogImage && { images: [{ url: ogImage, width: 1280, height: 720 }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${movie.title} — КиноКот`,
+      description: movie.overview?.slice(0, 160),
+      ...(ogImage && { images: [ogImage] }),
+    },
   };
 }
 

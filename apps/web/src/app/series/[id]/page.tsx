@@ -26,9 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const series = await getSeries(id);
   if (!series) return { title: 'Сериал не найден' };
 
+  const ogImage = series.backdropPath
+    ? `https://image.tmdb.org/t/p/w1280${series.backdropPath}`
+    : series.posterPath
+      ? `https://image.tmdb.org/t/p/w780${series.posterPath}`
+      : undefined;
+
   return {
     title: `${series.title} — КиноКот`,
     description: series.overview?.slice(0, 160),
+    openGraph: {
+      title: `${series.title} — КиноКот`,
+      description: series.overview?.slice(0, 160),
+      ...(ogImage && { images: [{ url: ogImage, width: 1280, height: 720 }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${series.title} — КиноКот`,
+      description: series.overview?.slice(0, 160),
+      ...(ogImage && { images: [ogImage] }),
+    },
   };
 }
 

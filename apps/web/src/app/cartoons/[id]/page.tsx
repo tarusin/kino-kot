@@ -26,9 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cartoon = await getCartoon(id);
   if (!cartoon) return { title: 'Мультфильм не найден' };
 
+  const ogImage = cartoon.backdropPath
+    ? `https://image.tmdb.org/t/p/w1280${cartoon.backdropPath}`
+    : cartoon.posterPath
+      ? `https://image.tmdb.org/t/p/w780${cartoon.posterPath}`
+      : undefined;
+
   return {
     title: `${cartoon.title} — КиноКот`,
     description: cartoon.overview?.slice(0, 160),
+    openGraph: {
+      title: `${cartoon.title} — КиноКот`,
+      description: cartoon.overview?.slice(0, 160),
+      ...(ogImage && { images: [{ url: ogImage, width: 1280, height: 720 }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${cartoon.title} — КиноКот`,
+      description: cartoon.overview?.slice(0, 160),
+      ...(ogImage && { images: [ogImage] }),
+    },
   };
 }
 
