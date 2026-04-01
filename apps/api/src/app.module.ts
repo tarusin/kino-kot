@@ -9,6 +9,7 @@ import { ReviewsModule } from './reviews/reviews.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
 import { ReportsModule } from './reports/reports.module.js';
 import { EmailModule } from './email/email.module.js';
+import { HealthModule } from './health/health.module.js';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { EmailModule } from './email/email.module.js';
     ReviewsModule,
     ModerationModule,
     ReportsModule,
+    HealthModule,
   ],
   providers: [
     {
