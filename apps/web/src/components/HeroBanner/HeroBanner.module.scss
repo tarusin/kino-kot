@@ -88,7 +88,7 @@
     @include gradient-button;
     padding: rem(14) rem(32);
     font-size: rem(16);
-    width: rem(220);
+    width: auto;
     display: block;
     text-align: center;
   }
@@ -134,24 +134,25 @@
   }
 }
 
-.title-stats {
-  font-size: rem(14);
-  font-weight: 500;
-  margin: rem(8) 0 0;
+.title-subtitle {
+  font-size: rem(13);
+  font-weight: 400;
+  line-height: 1.5;
+  margin: rem(10) 0 0;
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
   text-shadow: 0 rem(1) rem(4) rgba(0, 0, 0, 0.5);
 
   @media (min-width: $breakpoint-md) {
-    font-size: rem(16);
+    font-size: rem(15);
     color: $color-text-secondary;
     text-align: left;
     text-shadow: none;
-    margin-top: rem(12);
+    margin-top: rem(14);
   }
 
   @media (min-width: $breakpoint-lg) {
-    font-size: rem(18);
+    font-size: rem(17);
   }
 }
 
