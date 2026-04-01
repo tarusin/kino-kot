@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: space-between;
   padding: rem(24) rem(24) 0;
-  margin-bottom: rem(24);
+  margin: rem(32) 0 0 0;
   position: relative;
   overflow: hidden;
   min-height: rem(200);
@@ -17,7 +17,7 @@
   @media (min-width: $breakpoint-md) {
     flex-direction: row;
     padding: 0 rem(48) 0 0;
-    margin-bottom: rem(40);
+    margin: rem(40) 0 0 0;
     text-align: left;
   }
 

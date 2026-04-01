@@ -1,11 +1,11 @@
 @use '../../styles/variables' as *;
 
 .movie-slider {
-  padding-bottom: rem(24);
+  padding: rem(32) 0 0 0;
   overflow: hidden;
 
   @media (min-width: $breakpoint-sm) {
-    padding-bottom: rem(40);
+    padding: rem(40) 0 0 0;
   }
 
   &__wrap {
