@@ -6,23 +6,27 @@ import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const isCrossDomain = !!process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost');
 
 function setTokenCookies(
   res: express.Response,
   accessToken: string,
   refreshToken: string,
 ) {
+  const sameSite = isCrossDomain ? 'none' as const : 'lax' as const;
+  const secure = isCrossDomain || isProduction;
+
   res.cookie('access_token', accessToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure,
+    sameSite,
     path: '/',
     maxAge: 15 * 60 * 1000,
   });
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure,
+    sameSite,
     path: '/api/auth/refresh',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -90,8 +94,10 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: express.Response) {
-    res.clearCookie('access_token', { path: '/' });
-    res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+    const sameSite = isCrossDomain ? 'none' as const : 'lax' as const;
+    const secure = isCrossDomain || isProduction;
+    res.clearCookie('access_token', { path: '/', sameSite, secure });
+    res.clearCookie('refresh_token', { path: '/api/auth/refresh', sameSite, secure });
     return { success: true };
   }
 

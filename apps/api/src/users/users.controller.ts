@@ -51,8 +51,11 @@ export class UsersController {
   ) {
     await this.usersService.deleteAccount(req.user.id);
 
-    res.clearCookie('access_token', { path: '/' });
-    res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+    const isCrossDomain = !!process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost');
+    const sameSite = isCrossDomain ? 'none' as const : 'lax' as const;
+    const secure = isCrossDomain || process.env.NODE_ENV === 'production';
+    res.clearCookie('access_token', { path: '/', sameSite, secure });
+    res.clearCookie('refresh_token', { path: '/api/auth/refresh', sameSite, secure });
 
     return { message: 'Аккаунт удалён' };
   }
