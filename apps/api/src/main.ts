@@ -11,15 +11,14 @@ async function bootstrap() {
     'http://localhost:3000',
     process.env.FRONTEND_URL,
   ].filter(Boolean) as string[];
-  console.log('CORS allowed origins:', allowedOrigins);
   app.enableCors({
     origin: allowedOrigins,
     credentials: true,
   });
-  // app.use(helmet({
-  //   crossOriginResourcePolicy: { policy: 'cross-origin' },
-  //   crossOriginOpenerPolicy: false,
-  // }));
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: false,
+  }));
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(process.env.PORT ?? 3001);
