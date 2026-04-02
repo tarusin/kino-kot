@@ -11,11 +11,11 @@
     font-size: rem(24);
     font-weight: 700;
     color: $color-text;
-    margin: 0 0 rem(8);
-    flex: 1;
+    width: 100%;
 
     @media (min-width: $breakpoint-md) {
       font-size: rem(32);
+      flex: 1;
     }
   }
 
@@ -101,6 +101,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: rem(16);
+    margin: 0 0 rem(8);
 
     @media (min-width: $breakpoint-md) {
       gap: rem(24);

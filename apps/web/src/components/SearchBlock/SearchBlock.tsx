@@ -41,7 +41,7 @@ export default function SearchBlock() {
     const controller = new AbortController();
     setIsLoading(true);
 
-    fetch(`${API_URL}/movies/search?query=${encodeURIComponent(debouncedQuery)}&limit=5`, {
+    fetch(`${API_URL}/movies/search?query=${encodeURIComponent(debouncedQuery)}&limit=6`, {
       signal: controller.signal,
     })
       .then((res) => res.json())

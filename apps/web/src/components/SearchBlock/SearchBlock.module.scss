@@ -195,7 +195,7 @@
     flex-wrap: wrap;
     gap: rem(8);
     margin-top: rem(16);
-    justify-content: center;
+    justify-content: space-between;
 
     @media (min-width: $breakpoint-md) {
       gap: rem(10);

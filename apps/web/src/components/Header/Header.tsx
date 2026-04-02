@@ -28,6 +28,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 600);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function Header() {
     const controller = new AbortController();
     setIsLoading(true);
 
-    fetch(`${API_URL}/movies/search?query=${encodeURIComponent(debouncedQuery)}&limit=5`, {
+    fetch(`${API_URL}/movies/search?query=${encodeURIComponent(debouncedQuery)}&limit=6`, {
       signal: controller.signal,
     })
       .then((res) => res.json())
@@ -79,7 +80,11 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        searchRef.current && !searchRef.current.contains(target) &&
+        (!mobileSearchRef.current || !mobileSearchRef.current.contains(target))
+      ) {
         setIsOpen(false);
       }
     };
@@ -343,7 +348,7 @@ export default function Header() {
       </div>
 
       {isMobileSearchOpen && createPortal(
-        <div className={styles['header__mobile-search-overlay']}>
+        <div className={styles['header__mobile-search-overlay']} ref={mobileSearchRef}>
           <div className={styles['header__mobile-search']}>
             <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
               <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
