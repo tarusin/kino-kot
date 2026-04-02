@@ -17,7 +17,10 @@ export class EmailService {
 
     if (gmailUser && gmailAppPassword) {
       this.transporter = createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        family: 4,
         auth: {
           user: gmailUser,
           pass: gmailAppPassword,
