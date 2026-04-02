@@ -99,13 +99,15 @@ export default function QuizPage() {
     const topGenres = getTopGenres(scores, 5);
 
     try {
-      const requests = topGenres.map((genre, index) =>
-        fetch(`${API_URL}/movies?genre=${encodeURIComponent(genre)}&limit=${index < 2 ? 10 : 6}`)
-          .then((res) => (res.ok ? res.json() : { movies: [] }))
-          .catch(() => ({ movies: [] }))
-      );
-
-      const results = await Promise.all(requests);
+      const results = [];
+      for (let i = 0; i < topGenres.length; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 300));
+        const limit = i < 2 ? 10 : 6;
+        const res = await fetch(`${API_URL}/movies?genre=${encodeURIComponent(topGenres[i])}&limit=${limit}`)
+          .then((r) => (r.ok ? r.json() : { movies: [] }))
+          .catch(() => ({ movies: [] }));
+        results.push(res);
+      }
 
       const seenTmdbId = new Set<number>();
       const allMovies: Movie[] = [];

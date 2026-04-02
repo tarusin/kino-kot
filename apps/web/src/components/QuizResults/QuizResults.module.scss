@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../styles/variables' as *;
 
 .quiz-results {
@@ -78,7 +79,7 @@
     }
 
     &:hover {
-      background: darken($color-gray, 4%);
+      background: color.adjust($color-gray, $lightness: -4%);
     }
   }
 
