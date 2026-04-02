@@ -7,11 +7,13 @@ import { AppModule } from './app.module.js';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean) as string[];
+  console.log('CORS allowed origins:', allowedOrigins);
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      process.env.FRONTEND_URL,
-    ].filter(Boolean) as string[],
+    origin: allowedOrigins,
     credentials: true,
   });
   // app.use(helmet({
