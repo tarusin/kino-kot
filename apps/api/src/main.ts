@@ -14,10 +14,10 @@ async function bootstrap() {
     ].filter(Boolean) as string[],
     credentials: true,
   });
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-    crossOriginOpenerPolicy: false,
-  }));
+  // app.use(helmet({
+  //   crossOriginResourcePolicy: { policy: 'cross-origin' },
+  //   crossOriginOpenerPolicy: false,
+  // }));
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(process.env.PORT ?? 3001);
