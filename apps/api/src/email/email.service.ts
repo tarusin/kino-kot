@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class EmailService {
@@ -25,7 +26,7 @@ export class EmailService {
           user: gmailUser,
           pass: gmailAppPassword,
         },
-      });
+      } as SMTPTransport.Options);
       this.fromEmail = `КиноКот <${gmailUser}>`;
     } else {
       this.fromEmail = 'КиноКот <noreply@kinokot.ru>';
