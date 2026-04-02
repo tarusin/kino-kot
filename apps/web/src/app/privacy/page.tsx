@@ -14,7 +14,7 @@ export default function PrivacyPage() {
       <main className={styles['privacy']}>
         <div className={styles['privacy__container']}>
           <h1 className={styles['privacy__title']}>Политика конфиденциальности</h1>
-        <p className={styles['privacy__updated']}>Последнее обновление: 25 марта 2026 г.</p>
+        <p className={styles['privacy__updated']}>Последнее обновление: 2 апреля 2026 г.</p>
 
         <section className={styles['privacy__section']}>
           <h2>1. Общие положения</h2>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
           <p>При использовании Сервиса мы можем собирать следующие данные:</p>
           <ul>
             <li><strong>Регистрационные данные:</strong> имя, адрес электронной почты, пароль (хранится в зашифрованном виде)</li>
-            <li><strong>Пользовательский контент:</strong> отзывы, оценки фильмов и сериалов</li>
+            <li><strong>Пользовательский контент:</strong> отзывы, оценки, комментарии к отзывам, реакции (лайки/дизлайки), жалобы на контент</li>
             <li><strong>Технические данные:</strong> файлы cookie для поддержания сессии авторизации</li>
           </ul>
         </section>
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
           <ul>
             <li>Получить доступ к своим персональным данным</li>
             <li>Изменить свои данные (имя, email) в настройках профиля</li>
-            <li>Запросить удаление вашей учётной записи и связанных данных</li>
+            <li>Самостоятельно удалить свою учётную запись через настройки профиля — при этом каскадно удаляются все ваши отзывы, комментарии и реакции</li>
           </ul>
         </section>
 

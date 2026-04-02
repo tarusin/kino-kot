@@ -34,8 +34,8 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Env-файлы
 
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `RESEND_API_KEY`, `FRONTEND_URL` (шаблон: `.env.example`)
-- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `FRONTEND_URL` (шаблон: `.env.example`)
+- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_SITE_URL=https://kinokot.com`
 
 ## Backend (apps/api/)
 
@@ -43,16 +43,16 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **CORS**: разрешён `http://localhost:3000` + `FRONTEND_URL` env с `credentials: true`
 - **Middleware**: `cookie-parser`, `ValidationPipe` (whitelist)
 - **MoviesModule**: гибридный подход — TMDB API как основной источник для списков/поиска/фильтров, MongoDB только для фильмов с отзывами. Схема Movie (Mongoose, поля `compositeId` unique, `tmdbId`, `title`, `genres`, `originCountries`, `releaseYear`, `runtime`, `mediaType`). TmdbService проксирует discover/list/search эндпоинты TMDB. Составные ID: `movie-{tmdbId}`, `series-{tmdbId}`, `cartoon-{tmdbId}`. `ensureMovieInDb(compositeId)` сохраняет фильм в MongoDB при создании отзыва
-- **UsersModule**: схема User (name, email unique, password bcrypt-хеш, role enum user/admin default user, isEmailVerified bool default false, emailVerificationToken string optional), UsersService, UsersController
+- **UsersModule**: схема User (name, email unique, password bcrypt-хеш, role enum user/admin default user, isEmailVerified bool default false, emailVerificationToken string optional, passwordResetToken string optional, passwordResetExpires Date optional), UsersService, UsersController
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **Удаление аккаунта**: `DELETE /api/users/account` (JwtAuthGuard) — каскадное удаление: отзывы пользователя, реакции (свои + на свои отзывы), комментарии (свои + на свои отзывы), учётная запись; очистка cookies
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Resend. Fallback на console.log в dev (если RESEND_API_KEY не задан). Метод `sendVerificationEmail(to, token)`
+- **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Nodemailer (Gmail SMTP). Fallback на console.log в dev (если GMAIL_USER/GMAIL_APP_PASSWORD не заданы). Методы: `sendVerificationEmail(to, token)`, `sendPasswordResetEmail(to, token)`
 - **Email Verification**: при регистрации отправляется письмо с ссылкой подтверждения. Логин разрешён без подтверждения, но `POST /api/reviews`, `POST /api/reviews/reactions` и `POST /api/reviews/comments` требуют `VerifiedEmailGuard`. На фронте неподтверждённые пользователи видят баннер вместо формы отзыва/комментария
-- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=` (возвращает `{ code, name }[]` — топ-10 популярных стран вверху, затем остальные по алфавиту; названия из TMDB на русском, SU → «СССР»), `GET /api/movies/years?mediaType=`
+- **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/search?query=&page=&limit=` (поиск по названию через TMDB), `GET /api/movies/random` (случайный фильм для «Мне повезёт»), `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=` (возвращает `{ code, name }[]` — топ-10 популярных стран вверху, затем остальные по алфавиту; названия из TMDB на русском, SU → «СССР»), `GET /api/movies/years?mediaType=`
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
 - **Фильм недели** (`GET /api/movies/film-of-the-week?mediaType=movie|series|cartoon`): алгоритм — AVG(rating) по reviews за 7 дней (порог >= 3 отзывов), fallback на лучший top_rated по voteAverage; возвращает данные + backdropPath + runtime + kinoKotRating
-- **Эндпоинты авторизации**: `POST /api/auth/register` (не выдаёт JWT, возвращает message), `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/auth/verify-email?token=`, `POST /api/auth/resend-verification` (body: email)
+- **Эндпоинты авторизации**: `POST /api/auth/register` (не выдаёт JWT, возвращает message), `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/auth/verify-email?token=`, `POST /api/auth/resend-verification` (body: email), `POST /api/auth/forgot-password` (body: email, rate-limit 2/min, безопасный ответ независимо от существования email), `POST /api/auth/reset-password` (body: token + password, rate-limit 3/min, токен действует 1 час)
 - **ReviewsModule**: схема Review (userId, movieId строка (compositeId формат), rating 1-10, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; уникальный индекс userId+movieId), схема ReviewReaction (userId, reviewId, type like/dislike; уникальный индекс userId+reviewId), схема ReviewComment (userId, reviewId, text, userName, status enum approved/pending/rejected default approved, moderationReason, createdAt; индекс reviewId)
 - **ModerationModule** (`apps/api/src/moderation/`): гибридная модерация контента — автомодерация через словарный фильтр (regex-паттерны: мат, оскорбления, разжигание ненависти, спам/реклама) + ручная модерация через админ-панель. ModerationService: `moderateText(text)` → `{status, reason?}` (синхронный, без внешних API). Паттерны расширяемы: `PROFANITY_PATTERNS`, `SPAM_PATTERNS`. ModerationController: эндпоинты под AdminGuard
 - **ReportsModule** (`apps/api/src/reports/`): система жалоб пользователей на отзывы/комментарии. Схема Report (userId, targetId ObjectId, targetType enum review/comment, reason enum spam/offensive/spoilers/other, description optional max 500, status enum pending/resolved default pending, createdAt; уникальный индекс userId+targetId). ReportsService: create (с проверкой существования контента, ConflictException при повторной жалобе), findPending (агрегация с lookup в reviews/comments/users), resolve (dismiss — закрывает жалобу, delete-content — удаляет контент + закрывает все жалобы на него), getPendingCount
@@ -61,7 +61,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **AdminGuard** (`apps/api/src/auth/admin.guard.ts`): проверяет `req.user.role === 'admin'`, используется в связке с JwtAuthGuard
 - **Флоу модерации**: при создании отзыва/комментария текст проверяется словарным фильтром → чистый контент получает `status: approved` (сразу виден), подозрительный → `status: pending` (ждёт ручной модерации). Публичные запросы фильтруют по `status: approved`, авторы видят свои `pending` отзывы с бейджем. При отклонении отзыва модератором — отзыв удаляется, пользователь может написать новый
 - **Назначение админа**: вручную в MongoDB: `db.users.updateOne({email: '...'}, {$set: {role: 'admin'}})`
-- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard + VerifiedEmailGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction/commentsCount), `POST /api/reviews/reactions` (JwtAuthGuard + VerifiedEmailGuard, toggle like/dislike)
+- **Эндпоинты отзывов**: `POST /api/reviews` (JwtAuthGuard + VerifiedEmailGuard), `GET /api/reviews/latest` (публичный, последние отзывы с $lookup в movies), `GET /api/reviews/movie/:movieId` (OptionalJwtAuthGuard, возвращает likesCount/dislikesCount/userReaction/commentsCount), `GET /api/reviews/ratings?movieIds=id1,id2` (публичный, средние рейтинги КиноКот для списка фильмов), `POST /api/reviews/reactions` (JwtAuthGuard + VerifiedEmailGuard, toggle like/dislike)
 - **Эндпоинты комментариев**: `POST /api/reviews/comments` (JwtAuthGuard + VerifiedEmailGuard, создание комментария к отзыву), `GET /api/reviews/comments/:reviewId` (публичный, комментарии к отзыву отсортированные хронологически), `DELETE /api/reviews/comments/:commentId` (JwtAuthGuard, удаление своего комментария)
 - **OptionalJwtAuthGuard**: расширяет JwtAuthGuard, не бросает ошибку при отсутствии токена (req.user = null)
 - **Составные ID**: формат `{mediaType}-{tmdbId}` (например `movie-550`, `series-1396`, `cartoon-508947`). Используются в URL, API ответах, отзывах. Обратная совместимость: `findById` поддерживает и legacy MongoDB ObjectId
@@ -80,9 +80,12 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Компоненты (apps/web/src/components/)
 
-- **Header** — client-компонент, логотип, навигация, поиск, кнопка "Войти"/"Выйти" (зависит от авторизации)
+- **Header** — client-компонент, логотип, навигация, поиск, кнопка "Мне повезёт" (RandomMovieButton), кнопка "Войти"/"Выйти" (зависит от авторизации)
 - **AuthForm** — переиспользуемая обёртка для форм авторизации (карточка, заголовок, submit, footer-ссылка)
 - **FormInput** — поле ввода с иконкой слева, toggle видимости пароля, состояние ошибки
+- **SearchBlock** — client-компонент на главной: поисковое поле с debounce (600ms), dropdown-саджесты (до 5 результатов с постерами/рейтингами + ссылка «Все результаты»), чипсы настроения — 6 кнопок-ссылок на `/films?genre=` (Посмеяться→Комедия, Поплакать→Драма, Пощекотать нервы→Ужасы, Подумать→Документальный, Приключение→Приключения, Для всей семьи→Семейный)
+- **LuckyBanner** — client-компонент на главной, секция «Мне повезёт»: кнопка → `GET /api/movies/random`, fullscreen-оверлей с анимацией кота (5 сек), редирект на случайный фильм
+- **RandomMovieButton** — client-компонент, кнопка-кубик в Header, тот же функционал что LuckyBanner (random + оверлей + редирект)
 - **HeroBanner** — заголовок + CTA (Link на /quiz) + изображение кота
 - **CategoryCards** — сетка карточек категорий (заглушки)
 - **MovieSlider** — client-компонент, горизонтальный слайдер с навигацией стрелками (props: `title`, `movies?`)
@@ -106,6 +109,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **AdminReviewCard** — client-компонент, карточка отзыва на модерации: данные автора, рейтинг, текст, фильм, причина флага, кнопки "Одобрить"/"Отклонить" (с формой причины отклонения)
 - **AdminCommentCard** — client-компонент, карточка комментария на модерации: аналогично AdminReviewCard
 - **AdminReportCard** — client-компонент, карточка жалобы: бейдж типа (отзыв/комментарий), причина, описание, превью контента с автором, кнопки "Отклонить жалобу"/"Удалить контент"
+- **Pagination** — компонент пагинации (currentPage, totalPages, onPageChange)
 - **Footer** — логотип, копирайт, навигация
 
 ## Данные теста (apps/web/src/data/)
@@ -119,11 +123,18 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/films` — фильмы (mediaType=movie) с табами списков (Популярные, Сейчас в кино, Лучшие, Скоро) + фильтры (жанр, год, страна) batch-apply по кнопке "Применить", пагинация сохраняет все параметры в URL
 - `/series` — сериалы (mediaType=series) по образу /films, табы: Популярные, Лучшие, Сейчас на экранах, Сегодня в эфире
 - `/cartoons` — мультфильмы (mediaType=cartoon) по образу /films, табы: Популярные, Лучшие, Сейчас в кино, Скоро
+- `/search` — результаты поиска (client component, query из URL params, грид MovieCard с пагинацией, минимум 2 символа для запроса, подгрузка рейтингов КиноКот)
 - `/login` — страница входа (client component, AuthForm + FormInput)
 - `/register` — страница регистрации (client component, AuthForm + FormInput), после успешной регистрации показывает экран "Проверьте почту" с кнопкой повторной отправки
+- `/forgot-password` — запрос сброса пароля (client component, AuthForm + FormInput, email → POST /api/auth/forgot-password, экран подтверждения отправки)
+- `/reset-password` — установка нового пароля (client component, token из query params, валидация пароля min 6 + подтверждение, POST /api/auth/reset-password)
 - `/verify-email` — подтверждение email по ссылке из письма (читает token из query params, вызывает GET /api/auth/verify-email)
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования, модалка удаления аккаунта)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
+- `/about` — о проекте (серверный компонент, описание платформы, FAQ, ссылка на TMDB как источник данных)
+- `/support` — поддержка (серверный компонент, карточки: вопросы/баги/идеи, email support@kinokot.com, FAQ с details/summary)
+- `/privacy` — политика конфиденциальности
+- `/terms` — пользовательское соглашение
 - `/admin` — панель модерации (client component, защищён role === 'admin', статистика pending отзывов/комментариев)
 - `/admin/reviews` — очередь отзывов на модерации (пагинация, одобрение/отклонение)
 - `/admin/comments` — очередь комментариев на модерации
@@ -143,3 +154,4 @@ npm run build --workspace=web          # Production-билд фронтенда
 - Шрифт Montserrat Alternates (weights: 400, 500, 600, 700; latin + cyrillic) через `next/font/google`
 - Ассеты: `public/images/logo.svg`, `public/images/main-banner.webp`
 - npm install требует `--cache /tmp/npm-cache` из-за проблем с правами в дефолтном кеше
+- **SEO**: глобальные OpenGraph + Twitter Card метаданные в `layout.tsx` (`metadataBase` из `NEXT_PUBLIC_SITE_URL`). Динамические OG-теги на detail-страницах фильмов (`generateMetadata` с backdrop/poster из TMDB). Статические metadata на страницах `/about`, `/support`
