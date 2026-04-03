@@ -34,7 +34,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 
 ## Env-файлы
 
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `FRONTEND_URL` (шаблон: `.env.example`)
+- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `RESEND_API_KEY`, `FRONTEND_URL` (шаблон: `.env.example`)
 - `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_SITE_URL=https://kino-kot.com`
 
 ## Backend (apps/api/)
@@ -47,7 +47,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - **Эндпоинт профиля**: `PATCH /api/users/profile` (JwtAuthGuard) — обновление name/email с проверкой уникальности email
 - **Удаление аккаунта**: `DELETE /api/users/account` (JwtAuthGuard) — каскадное удаление: отзывы пользователя, реакции (свои + на свои отзывы), комментарии (свои + на свои отзывы), учётная запись; очистка cookies
 - **AuthModule**: JWT-авторизация (access 15min + refresh 7d в httpOnly cookies), Passport JWT strategy
-- **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Nodemailer (Gmail SMTP). Fallback на console.log в dev (если GMAIL_USER/GMAIL_APP_PASSWORD не заданы). Методы: `sendVerificationEmail(to, token)`, `sendPasswordResetEmail(to, token)`
+- **EmailModule** (`apps/api/src/email/`): глобальный модуль, отправка email через Resend API (домен kino-kot.com, отправитель info@kino-kot.com). Fallback на console.log в dev (если RESEND_API_KEY не задан). Методы: `sendVerificationEmail(to, token)`, `sendPasswordResetEmail(to, token)`
 - **Email Verification**: при регистрации отправляется письмо с ссылкой подтверждения. Логин разрешён без подтверждения, но `POST /api/reviews`, `POST /api/reviews/reactions` и `POST /api/reviews/comments` требуют `VerifiedEmailGuard`. На фронте неподтверждённые пользователи видят баннер вместо формы отзыва/комментария
 - **Эндпоинты фильмов**: `GET /api/movies` (query: genre, year, country, page, limit, list, mediaType), `GET /api/movies/popular`, `GET /api/movies/top-rated`, `GET /api/movies/search?query=&page=&limit=` (поиск по названию через TMDB), `GET /api/movies/random` (случайный фильм для «Мне повезёт»), `GET /api/movies/film-of-the-week?mediaType=`, `GET /api/movies/genres?mediaType=`, `GET /api/movies/countries?mediaType=` (возвращает `{ code, name }[]` — топ-10 популярных стран вверху, затем остальные по алфавиту; названия из TMDB на русском, SU → «СССР»), `GET /api/movies/years?mediaType=`
 - **mediaType**: `movie` | `series` | `cartoon` — фильтрация контента по типу медиа во всех эндпоинтах
@@ -132,7 +132,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования, модалка удаления аккаунта)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
 - `/about` — о проекте (серверный компонент, описание платформы, FAQ, ссылка на TMDB как источник данных)
-- `/support` — поддержка (серверный компонент, карточки: вопросы/баги/идеи, email support@kino-kot.com, FAQ с details/summary)
+- `/support` — поддержка (серверный компонент, карточки: вопросы/баги/идеи, email info@kino-kot.com, FAQ с details/summary)
 - `/privacy` — политика конфиденциальности
 - `/terms` — пользовательское соглашение
 - `/admin` — панель модерации (client component, защищён role === 'admin', статистика pending отзывов/комментариев)

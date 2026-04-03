@@ -52,8 +52,8 @@ export default function SupportPage() {
             <p>
               Напишите нам на электронную почту — мы стараемся отвечать в течение 24 часов.
             </p>
-            <a href="mailto:support@kino-kot.com" className={styles['support__email']}>
-              support@kino-kot.com
+            <a href="mailto:info@kino-kot.com" className={styles['support__email']}>
+              Написать
             </a>
           </section>
 
