@@ -1,37 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createTransport, Transporter } from 'nodemailer';
-import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { Resend } from 'resend';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private transporter: Transporter | null = null;
+  private resend: Resend | null = null;
   private readonly fromEmail: string;
   private readonly frontendUrl: string;
 
   constructor(private configService: ConfigService) {
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
-    const privateEmail = this.configService.get<string>('PRIVATE_EMAIL_USER');     // например: info@kino-kot.com
-    const privatePassword = this.configService.get<string>('PRIVATE_EMAIL_PASSWORD');
+    const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
 
-    if (privateEmail && privatePassword) {
-      this.transporter = createTransport({
-        host: 'mail.privateemail.com',
-        port: 587,                    // или 587 — попробуй оба
-        secure: false,                 // true для 465, false для 587 + STARTTLS
-        family: 4,                    // ← важно! заставляем использовать только IPv4
-        auth: {
-          user: privateEmail,
-          pass: privatePassword,
-        },
-      } as SMTPTransport.Options);
-
-      this.fromEmail = `КиноКот <${privateEmail}>`;
+    if (resendApiKey) {
+      this.resend = new Resend(resendApiKey);
+      this.fromEmail = 'КиноКот <info@kino-kot.com>';
+      this.logger.log('Resend инициализирован');
     } else {
       this.fromEmail = 'КиноКот <noreply@kino-kot.com>';
-      this.logger.warn('PRIVATE_EMAIL_USER / PRIVATE_EMAIL_PASSWORD не заданы — письма только в консоль');
+      this.logger.warn('RESEND_API_KEY не задан — письма только в консоль');
     }
   }
 
@@ -58,9 +47,9 @@ export class EmailService {
     this.logger.log(`Link: ${verifyUrl}`);
     this.logger.log('==========================');
 
-    if (this.transporter) {
+    if (this.resend) {
       try {
-        await this.transporter.sendMail({
+        await this.resend.emails.send({
           from: this.fromEmail,
           to,
           subject,
@@ -96,9 +85,9 @@ export class EmailService {
     this.logger.log(`Link: ${resetUrl}`);
     this.logger.log('============================');
 
-    if (this.transporter) {
+    if (this.resend) {
       try {
-        await this.transporter.sendMail({
+        await this.resend.emails.send({
           from: this.fromEmail,
           to,
           subject,
