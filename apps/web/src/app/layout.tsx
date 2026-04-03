@@ -9,7 +9,7 @@ const montserrat = Montserrat_Alternates({
   subsets: ['latin', 'cyrillic'],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://kinokot.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://kino-kot.com';
 
 export const metadata: Metadata = {
   title: 'КиноКот — фильмы, сериалы, отзывы',

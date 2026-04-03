@@ -35,7 +35,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 ## Env-файлы
 
 - `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `FRONTEND_URL` (шаблон: `.env.example`)
-- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_SITE_URL=https://kinokot.com`
+- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_SITE_URL=https://kino-kot.com`
 
 ## Backend (apps/api/)
 
@@ -132,7 +132,7 @@ npm run build --workspace=web          # Production-билд фронтенда
 - `/profile` — страница профиля (client component, табы "Личная информация"/"Мои отзывы", модалка редактирования, модалка удаления аккаунта)
 - `/quiz` — тест кинематографического вкуса (client component, 10 рандомных вопросов из 28, подсчёт жанровых весов, определение типа, рекомендации фильмов из API)
 - `/about` — о проекте (серверный компонент, описание платформы, FAQ, ссылка на TMDB как источник данных)
-- `/support` — поддержка (серверный компонент, карточки: вопросы/баги/идеи, email support@kinokot.com, FAQ с details/summary)
+- `/support` — поддержка (серверный компонент, карточки: вопросы/баги/идеи, email support@kino-kot.com, FAQ с details/summary)
 - `/privacy` — политика конфиденциальности
 - `/terms` — пользовательское соглашение
 - `/admin` — панель модерации (client component, защищён role === 'admin', статистика pending отзывов/комментариев)

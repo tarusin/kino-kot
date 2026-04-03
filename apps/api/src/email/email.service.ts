@@ -29,7 +29,7 @@ export class EmailService {
       } as SMTPTransport.Options);
       this.fromEmail = `КиноКот <${gmailUser}>`;
     } else {
-      this.fromEmail = 'КиноКот <noreply@kinokot.ru>';
+      this.fromEmail = 'КиноКот <noreply@kino-kot.com>';
       this.logger.warn(
         'GMAIL_USER / GMAIL_APP_PASSWORD не заданы — письма будут выводиться только в консоль',
       );

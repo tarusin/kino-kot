@@ -9,6 +9,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   const allowedOrigins = [
     'http://localhost:3000',
+    'https://kino-kot.com',
     process.env.FRONTEND_URL,
   ].filter(Boolean) as string[];
   app.enableCors({
