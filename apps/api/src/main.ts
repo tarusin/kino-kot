@@ -10,6 +10,7 @@ async function bootstrap() {
   const allowedOrigins = [
     'http://localhost:3000',
     'https://kino-kot.com',
+    'https://www.kino-kot.com',
     process.env.FRONTEND_URL,
   ].filter(Boolean) as string[];
   app.enableCors({
@@ -24,4 +25,5 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(process.env.PORT ?? 3001);
 }
+
 bootstrap();
