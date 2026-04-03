@@ -15,14 +15,15 @@
   }
 
   &__header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: start;
-    gap: rem(12);
     margin-bottom: rem(32);
 
     @media (min-width: $breakpoint-sm) {
       margin-bottom: rem(48);
+    }
+
+    &-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
   }
 

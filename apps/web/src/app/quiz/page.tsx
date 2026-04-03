@@ -196,32 +196,35 @@ export default function QuizPage() {
           {phase === 'quiz' && (
           <>
             <div className={styles['quiz__header']}>
-              {currentIndex > 0 ? (
-                <button
-                  className={styles['quiz__back']}
-                  onClick={handleBack}
-                  type="button"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M19 12H5M5 12L12 19M5 12L12 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span>Назад</span>
-                </button>
-              ) : (
-                <div />
-              )}
+              <div className={styles['quiz__header-top']}>
+                {currentIndex > 0 ? (
+                  <button
+                    className={styles['quiz__back']}
+                    onClick={handleBack}
+                    type="button"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M19 12H5M5 12L12 19M5 12L12 5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span>Назад</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+                <span className={styles['quiz__progress']}>
+                  {currentIndex + 1}/{QUESTIONS_PER_QUIZ}
+                </span>
+              </div>
+
               <h1 className={styles['quiz__title']}>
                 Ваш <br /> кинематографический вкус
               </h1>
-              <span className={styles['quiz__progress']}>
-                {currentIndex + 1}/{QUESTIONS_PER_QUIZ}
-              </span>
             </div>
             <QuizCard
               key={questions[currentIndex].id}
