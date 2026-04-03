@@ -11,28 +11,27 @@ export class EmailService {
   private readonly frontendUrl: string;
 
   constructor(private configService: ConfigService) {
-    const gmailUser = this.configService.get<string>('GMAIL_USER');
-    const gmailAppPassword = this.configService.get<string>('GMAIL_APP_PASSWORD');
-    this.frontendUrl =
-      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
-    if (gmailUser && gmailAppPassword) {
+    const privateEmail = this.configService.get<string>('PRIVATE_EMAIL_USER');     // например: info@kino-kot.com
+    const privatePassword = this.configService.get<string>('PRIVATE_EMAIL_PASSWORD');
+
+    if (privateEmail && privatePassword) {
       this.transporter = createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        family: 4,
+        host: 'mail.privateemail.com',
+        port: 465,                    // или 587 — попробуй оба
+        secure: true,                 // true для 465, false для 587 + STARTTLS
+        family: 4,                    // ← важно! заставляем использовать только IPv4
         auth: {
-          user: gmailUser,
-          pass: gmailAppPassword,
+          user: privateEmail,
+          pass: privatePassword,
         },
       } as SMTPTransport.Options);
-      this.fromEmail = `КиноКот <${gmailUser}>`;
+
+      this.fromEmail = `КиноКот <${privateEmail}>`;
     } else {
       this.fromEmail = 'КиноКот <noreply@kino-kot.com>';
-      this.logger.warn(
-        'GMAIL_USER / GMAIL_APP_PASSWORD не заданы — письма будут выводиться только в консоль',
-      );
+      this.logger.warn('PRIVATE_EMAIL_USER / PRIVATE_EMAIL_PASSWORD не заданы — письма только в консоль');
     }
   }
 
