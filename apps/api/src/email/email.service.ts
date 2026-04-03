@@ -19,8 +19,8 @@ export class EmailService {
     if (privateEmail && privatePassword) {
       this.transporter = createTransport({
         host: 'mail.privateemail.com',
-        port: 465,                    // или 587 — попробуй оба
-        secure: true,                 // true для 465, false для 587 + STARTTLS
+        port: 587,                    // или 587 — попробуй оба
+        secure: false,                 // true для 465, false для 587 + STARTTLS
         family: 4,                    // ← важно! заставляем использовать только IPv4
         auth: {
           user: privateEmail,
