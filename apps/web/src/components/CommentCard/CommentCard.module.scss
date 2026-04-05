@@ -34,12 +34,22 @@
     align-items: center;
     gap: rem(8);
     margin-bottom: rem(4);
+    flex-wrap: wrap;
   }
 
   &__name {
     font-size: rem(14);
     font-weight: 600;
     color: $color-text;
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+
+    @media (min-width: $breakpoint-sm) {
+      width: auto;
+    }
   }
 
   &__date {

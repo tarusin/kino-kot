@@ -138,7 +138,7 @@
     width: max-content;
 
     img {
-      filter: brightness(10);
+      filter: brightness(0) invert(1);
     }
 
     > span {

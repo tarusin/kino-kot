@@ -295,9 +295,14 @@ export default function ReviewCard({
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span>
-                { commentsCount > 0
-                  ? `Комментарии (${ commentsCount })`
-                  : 'Комментировать' }
+                <span className={ styles['review-card__comments-toggle-desktop'] }>
+                  { commentsCount > 0
+                    ? `Комментарии (${ commentsCount })`
+                    : 'Комментировать' }
+                </span>
+                <span className={ styles['review-card__comments-toggle-mobile'] }>
+                  { commentsCount > 0 ? `(${ commentsCount })` : '' }
+                </span>
               </span>
             </button>
           </div>

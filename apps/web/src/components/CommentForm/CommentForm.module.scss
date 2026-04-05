@@ -4,7 +4,12 @@
   display: flex;
   gap: rem(8);
   align-items: flex-end;
+  flex-direction: column;
   padding-top: rem(12);
+
+  @media (min-width: $breakpoint-sm) {
+    flex-direction: row;
+  }
 
   &__textarea {
     flex: 1;
@@ -13,9 +18,14 @@
     padding: rem(8) rem(12);
     font-size: rem(14);
     font-family: $font-family;
+    width: 100%;
     resize: none;
     outline: none;
     transition: border-color 0.2s;
+
+    @media (min-width: $breakpoint-sm) {
+      width: auto;
+    }
 
     &:focus {
       border-color: $color-primary;

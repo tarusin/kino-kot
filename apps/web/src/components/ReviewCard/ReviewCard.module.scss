@@ -83,6 +83,10 @@
     font-size: rem(16);
     font-weight: 600;
     color: $color-text;
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     @media (min-width: $breakpoint-sm) {
       font-size: rem(18);
@@ -112,7 +116,7 @@
     box-shadow: 0 rem(2) rem(8) rgba($color-primary, 0.35);
 
     img {
-      filter: brightness(10);
+      filter: brightness(0) invert(1);
     }
 
     > span {
@@ -228,11 +232,19 @@
       background: rgba($color-text, 0.05);
     }
 
-    span {
+    &-desktop {
       display: none;
 
       @media (min-width: $breakpoint-sm) {
         display: inline;
+      }
+    }
+
+    &-mobile {
+      display: inline;
+
+      @media (min-width: $breakpoint-sm) {
+        display: none;
       }
     }
   }
@@ -248,9 +260,13 @@
   }
 
   &__comments-auth {
-    font-size: rem(13);
+    font-size: rem(12);
     color: $color-text-secondary;
     margin: rem(8) 0 0;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: rem(13);
+    }
 
     a {
       color: $color-primary;
