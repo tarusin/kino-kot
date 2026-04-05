@@ -64,11 +64,11 @@ export default function ReviewCard({
 
   const initials = getInitials(userName);
   const d = new Date(createdAt);
-  const date = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+  const date = `${ String(d.getDate()).padStart(2, '0') }.${ String(d.getMonth() + 1).padStart(2, '0') }.${ d.getFullYear() }`;
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`${API_URL}/reviews/comments/${reviewId}`);
+      const res = await fetch(`${ API_URL }/reviews/comments/${ reviewId }`);
       if (res.ok) {
         const data = await res.json();
         setComments(data);
@@ -164,15 +164,18 @@ export default function ReviewCard({
   };
 
   return (
-    <div className={`${styles['review-card']}${status === 'pending' ? ` ${styles['review-card--pending']}` : ''}${status === 'rejected' ? ` ${styles['review-card--rejected']}` : ''}`}>
-      {status === 'pending' && (
-        <div className={styles['review-card__status-badge']}>На модерации</div>
-      )}
-      {status === 'rejected' && (
-        <div className={`${styles['review-card__status-badge']} ${styles['review-card__status-badge--rejected']}`}>Отклонено</div>
-      )}
+    <div className={ `${ styles['review-card'] }${ status === 'pending' ? ` ${ styles['review-card--pending'] }` : '' }${ status === 'rejected' ? ` ${ styles['review-card--rejected'] }` : '' }` }>
+      { status === 'pending' && (
+        <div className={ styles['review-card__status-badge'] }>На модерации</div>
+      ) }
+      { status === 'rejected' && (
+        <div className={ `${ styles['review-card__status-badge'] } ${ styles['review-card__status-badge--rejected'] }` }>Отклонено</div>
+      ) }
       <div className={ styles['review-card__left'] }>
-        <div className={ styles['review-card__avatar'] } style={{ backgroundColor: getAvatarColor(userName) }}>{ initials }</div>
+        <div
+          className={ styles['review-card__avatar'] }
+          style={ { backgroundColor: getAvatarColor(userName) } }
+        >{ initials }</div>
         <div className={ styles['review-card__rating-badge'] }>
           <Image
             src="/icons/rating-paw-full.svg"
@@ -180,7 +183,7 @@ export default function ReviewCard({
             width={ 16 }
             height={ 16 }
           />
-          <span>{ rating.toFixed(1) }/10</span>
+          <span>{ rating.toFixed(1) }<span>/10</span></span>
         </div>
       </div>
 
@@ -245,81 +248,104 @@ export default function ReviewCard({
             </button>
           </div>
 
-          <div className={styles['review-card__right-actions']}>
-            {user && !isOwnReview && (
+          <div className={ styles['review-card__right-actions'] }>
+            { user && !isOwnReview && (
               <button
-                className={styles['review-card__report-btn']}
-                onClick={() => setReportOpen(true)}
+                className={ styles['review-card__report-btn'] }
+                onClick={ () => setReportOpen(true) }
                 type="button"
                 title="Пожаловаться"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
-                  <line x1="4" y1="22" x2="4" y2="15"/>
+                  <line
+                    x1="4"
+                    y1="22"
+                    x2="4"
+                    y2="15"
+                  />
                 </svg>
               </button>
-            )}
+            ) }
 
             <button
-              className={styles['review-card__comments-toggle']}
-              onClick={handleToggleComments}
+              className={ styles['review-card__comments-toggle'] }
+              onClick={ handleToggleComments }
               type="button"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span>
-                {commentsCount > 0
-                  ? `Комментарии (${commentsCount})`
-                  : 'Комментировать'}
+                { commentsCount > 0
+                  ? `Комментарии (${ commentsCount })`
+                  : 'Комментировать' }
               </span>
             </button>
           </div>
         </div>
 
-        {showComments && (
-          <div className={styles['review-card__comments-section']}>
-            {comments.length > 0 && (
-              <div className={styles['review-card__comments-list']}>
-                {comments.map((comment) => (
+        { showComments && (
+          <div className={ styles['review-card__comments-section'] }>
+            { comments.length > 0 && (
+              <div className={ styles['review-card__comments-list'] }>
+                { comments.map((comment) => (
                   <CommentCard
-                    key={comment._id}
-                    commentId={comment._id}
-                    userId={comment.userId}
-                    userName={comment.userName}
-                    text={comment.text}
-                    createdAt={comment.createdAt}
-                    isOwn={user?.id === comment.userId}
-                    onDeleted={handleCommentDeleted}
+                    key={ comment._id }
+                    commentId={ comment._id }
+                    userId={ comment.userId }
+                    userName={ comment.userName }
+                    text={ comment.text }
+                    createdAt={ comment.createdAt }
+                    isOwn={ user?.id === comment.userId }
+                    onDeleted={ handleCommentDeleted }
                   />
-                ))}
+                )) }
               </div>
-            )}
+            ) }
 
-            {user ? (
+            { user ? (
               user.isEmailVerified ? (
                 <CommentForm
-                  reviewId={reviewId}
-                  onCommentSubmitted={handleCommentSubmitted}
+                  reviewId={ reviewId }
+                  onCommentSubmitted={ handleCommentSubmitted }
                 />
               ) : (
-                <p className={styles['review-card__comments-auth']}>
+                <p className={ styles['review-card__comments-auth'] }>
                   Подтвердите email, чтобы комментировать
                 </p>
               )
             ) : (
-              <p className={styles['review-card__comments-auth']}>
+              <p className={ styles['review-card__comments-auth'] }>
                 <Link href="/login">Войдите</Link>, чтобы комментировать
               </p>
-            )}
+            ) }
           </div>
-        )}
+        ) }
       </div>
 
       <ReportModal
-        isOpen={reportOpen}
-        onClose={() => setReportOpen(false)}
-        targetId={reviewId}
+        isOpen={ reportOpen }
+        onClose={ () => setReportOpen(false) }
+        targetId={ reviewId }
         targetType="review"
       />
     </div>
