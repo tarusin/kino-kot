@@ -62,6 +62,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
+  const [showMobileTrailer, setShowMobileTrailer] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { user, loading } = useAuth();
 
@@ -202,14 +203,38 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
           </div>
 
           {movie.trailerKey ? (
-            <div className={styles['movie-detail__trailer']}>
-              <iframe
-                src={`https://www.youtube.com/embed/${movie.trailerKey}`}
-                title={`${movie.title} — трейлер`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+            <>
+              <div className={styles['movie-detail__trailer']}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${movie.trailerKey}`}
+                  title={`${movie.title} — трейлер`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              {!showMobileTrailer ? (
+                <button
+                  className={styles['movie-detail__trailer-btn']}
+                  onClick={() => setShowMobileTrailer(true)}
+                  type="button"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 3l14 9-14 9V3z" fill="currentColor"/>
+                  </svg>
+                  Смотреть трейлер
+                </button>
+              ) : (
+                <div className={styles['movie-detail__trailer-mobile']}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${movie.trailerKey}?autoplay=1`}
+                    title={`${movie.title} — трейлер`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+            </>
           ) : (
             movie.backdropPath && (
               <div className={styles['movie-detail__backdrop']}>

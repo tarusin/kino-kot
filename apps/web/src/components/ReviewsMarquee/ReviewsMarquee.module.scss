@@ -82,8 +82,8 @@
     }
 
     :global(.profile-review-card) {
-      box-shadow: none;
-      border: 1px solid #eee;
+      border: 1px solid rgba(#E0E0E0, 0.5);
+      height: 100%;
     }
 
     // Ограничиваем текст отзыва 3 строками

@@ -95,23 +95,14 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
         )}
       </div>
 
-      <div className={styles['review-form__input-row']}>
-        <textarea
-          className={styles['review-form__textarea']}
-          placeholder="Твой отзыв"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          maxLength={2000}
-          rows={3}
-        />
-        <button
-          className={styles['review-form__submit']}
-          onClick={handleSubmit}
-          disabled={submitting || !rating || !text.trim() || !agreed}
-        >
-          {submitting ? 'Отправка...' : 'Отправить'}
-        </button>
-      </div>
+      <textarea
+        className={styles['review-form__textarea']}
+        placeholder="Твой отзыв"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        maxLength={2000}
+        rows={3}
+      />
 
       <label className={styles['review-form__agreement']}>
         <input
@@ -126,6 +117,14 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
           </a>
         </span>
       </label>
+
+      <button
+        className={styles['review-form__submit']}
+        onClick={handleSubmit}
+        disabled={submitting || !rating || !text.trim() || !agreed}
+      >
+        {submitting ? 'Отправка...' : 'Отправить'}
+      </button>
     </div>
   );
 }

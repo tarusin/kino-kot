@@ -39,54 +39,66 @@ export default function ProfileReviewCard({
       {status === 'rejected' && (
         <div className={`${styles['profile-review-card__status-badge']} ${styles['profile-review-card__status-badge--rejected']}`}>Отклонено</div>
       )}
-      <div className={ styles['profile-review-card__left'] }>
+
+      <div className={styles['profile-review-card__poster-col']}>
         <Link
-          href={ getMoviePath(movieId) }
-          className={ styles['profile-review-card__poster-link'] }
+          href={getMoviePath(movieId)}
+          className={styles['profile-review-card__poster-link']}
         >
-          { moviePosterPath ? (
+          {moviePosterPath ? (
             <Image
-              src={ `https://image.tmdb.org/t/p/w185${ moviePosterPath }` }
-              alt={ movieTitle }
-              width={ 120 }
-              height={ 180 }
-              className={ styles['profile-review-card__poster'] }
+              src={`https://image.tmdb.org/t/p/w185${moviePosterPath}`}
+              alt={movieTitle}
+              width={120}
+              height={180}
+              className={styles['profile-review-card__poster']}
               unoptimized
             />
           ) : (
-            <div className={ styles['profile-review-card__poster-placeholder'] }>
+            <div className={styles['profile-review-card__poster-placeholder']}>
               <span>Нет постера</span>
             </div>
-          ) }
+          )}
         </Link>
-        <div className={ styles['profile-review-card__rating-badge'] }>
+
+        <div className={styles['profile-review-card__rating-stamp']}>
           <Image
             src="/icons/rating-paw-full.svg"
             alt=""
-            width={ 16 }
-            height={ 16 }
+            width={14}
+            height={14}
           />
-          <span>{ rating.toFixed(1) }/10</span>
+          <span className={styles['profile-review-card__rating-value']}>{rating.toFixed(1)}<span>/10</span></span>
         </div>
       </div>
 
-      <div className={ styles['profile-review-card__right'] }>
-        <div className={ styles['profile-review-card__right-top'] }>
+      <div className={styles['profile-review-card__content']}>
+        <div className={styles['profile-review-card__top']}>
           <Link
-            href={ getMoviePath(movieId) }
-            className={ styles['profile-review-card__movie-title'] }
+            href={getMoviePath(movieId)}
+            className={styles['profile-review-card__movie-title']}
           >
-            { movieTitle }
+            {movieTitle}
           </Link>
-          <span className={ styles['profile-review-card__date'] }>{ date }</span>
         </div>
 
-        <div className={ styles['profile-review-card__author'] }>
-          <div className={ styles['profile-review-card__avatar'] } style={{ backgroundColor: getAvatarColor(userName) }}>{ initials }</div>
-          <span className={ styles['profile-review-card__name'] }>{ userName }</span>
+        <div className={styles['profile-review-card__review']}>
+          <span className={styles['profile-review-card__quote-mark']}>&laquo;</span>
+          <p className={styles['profile-review-card__text']}>{text}</p>
         </div>
 
-        <p className={ styles['profile-review-card__text'] }>{ text }</p>
+        <div className={styles['profile-review-card__footer']}>
+          <div className={styles['profile-review-card__author']}>
+            <div
+              className={styles['profile-review-card__avatar']}
+              style={{ backgroundColor: getAvatarColor(userName) }}
+            >
+              {initials}
+            </div>
+            <span className={styles['profile-review-card__name']}>{userName}</span>
+          </div>
+          <span className={styles['profile-review-card__date']}>{date}</span>
+        </div>
       </div>
     </div>
   );

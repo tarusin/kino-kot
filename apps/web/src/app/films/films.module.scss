@@ -2,7 +2,7 @@
 
 .films {
   padding: rem(40) 0;
-  min-height: calc(100vh - 12rem);
+  min-height: calc(100vh - 13rem);
 
   &__wrap {
     @include container;

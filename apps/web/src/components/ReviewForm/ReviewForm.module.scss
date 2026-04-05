@@ -9,6 +9,11 @@
     gap: rem(12);
     margin-bottom: rem(16);
     flex-wrap: wrap;
+
+    @media (max-width: #{$breakpoint-sm - 1}) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   &__avatar {
@@ -53,14 +58,8 @@
     }
   }
 
-  &__input-row {
-    display: flex;
-    gap: rem(12);
-    margin-bottom: rem(12);
-  }
-
   &__textarea {
-    flex: 1;
+    width: 100%;
     padding: rem(12) rem(16);
     font-size: rem(14);
     font-family: inherit;
@@ -69,6 +68,7 @@
     resize: vertical;
     outline: none;
     transition: border-color 0.2s;
+    margin-bottom: rem(12);
 
     &::placeholder {
       color: $color-text-secondary;
@@ -79,19 +79,6 @@
     }
   }
 
-  &__submit {
-    @include gradient-button;
-    padding: rem(12) rem(28);
-    font-size: rem(14);
-    flex-shrink: 0;
-    align-self: flex-start;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
   &__agreement {
     display: flex;
     align-items: center;
@@ -99,11 +86,23 @@
     font-size: rem(13);
     color: $color-text-secondary;
     cursor: pointer;
+    margin-bottom: rem(12);
 
     input[type='checkbox'] {
       width: rem(16);
       height: rem(16);
       accent-color: $color-primary;
+    }
+  }
+
+  &__submit {
+    @include gradient-button;
+    padding: rem(12) rem(28);
+    font-size: rem(14);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 
