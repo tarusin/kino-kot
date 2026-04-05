@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getInitials } from '@/utils/getInitials';
 import { getAvatarColor } from '@/utils/getAvatarColor';
 import ReportModal from '@/components/ReportModal/ReportModal';
+import Modal from '@/components/Modal/Modal';
 import styles from './CommentCard.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -31,6 +32,7 @@ export default function CommentCard({
 }: CommentCardProps) {
   const { user } = useAuth();
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
   const initials = getInitials(userName);
@@ -80,7 +82,7 @@ export default function CommentCard({
           {isOwn && (
             <button
               className={styles['comment-card__delete']}
-              onClick={handleDelete}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
               type="button"
             >
@@ -97,6 +99,31 @@ export default function CommentCard({
         targetId={commentId}
         targetType="comment"
       />
+
+      <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} title="Подтверждение">
+        <div className={styles['comment-card__confirm']}>
+          <p className={styles['comment-card__confirm-text']}>Удалить комментарий?</p>
+          <div className={styles['comment-card__confirm-actions']}>
+            <button
+              className={styles['comment-card__confirm-cancel']}
+              onClick={() => setConfirmOpen(false)}
+              type="button"
+            >
+              Отмена
+            </button>
+            <button
+              className={styles['comment-card__confirm-delete']}
+              onClick={async () => {
+                setConfirmOpen(false);
+                await handleDelete();
+              }}
+              type="button"
+            >
+              Удалить
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

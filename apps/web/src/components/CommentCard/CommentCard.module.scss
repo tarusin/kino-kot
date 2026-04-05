@@ -103,4 +103,56 @@
     margin: 0;
     word-break: break-word;
   }
+
+  &__confirm {
+    padding: rem(8);
+    text-align: center;
+  }
+
+  &__confirm-text {
+    font-size: rem(16);
+    font-weight: 600;
+    color: $color-text;
+    margin: 0 0 rem(20);
+  }
+
+  &__confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: rem(12);
+  }
+
+  &__confirm-cancel {
+    padding: rem(10) rem(24);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: inherit;
+    border: 1px solid $color-gray-dark;
+    border-radius: rem(8);
+    background: $color-bg;
+    color: $color-text;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $color-text-secondary;
+    }
+  }
+
+  &__confirm-delete {
+    padding: rem(10) rem(24);
+    font-size: rem(14);
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: rem(8);
+    background: $color-primary;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }

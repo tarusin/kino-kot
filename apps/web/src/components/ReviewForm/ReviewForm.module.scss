@@ -68,7 +68,7 @@
     resize: vertical;
     outline: none;
     transition: border-color 0.2s;
-    margin-bottom: rem(12);
+    margin-bottom: rem(4);
 
     &::placeholder {
       color: $color-text-secondary;
@@ -76,6 +76,21 @@
 
     &:focus {
       border-color: $color-primary;
+    }
+  }
+
+  &__char-count {
+    font-size: rem(12);
+    color: $color-light-gray;
+    text-align: right;
+    margin-bottom: rem(8);
+
+    @media (min-width: $breakpoint-sm) {
+      margin-bottom: 0;
+    }
+
+    &--error {
+      color: $color-primary;
     }
   }
 

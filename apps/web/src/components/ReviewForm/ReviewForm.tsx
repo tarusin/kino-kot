@@ -26,7 +26,7 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
   const initials = getInitials(user.name || user.email);
 
   const handleSubmit = async () => {
-    if (!rating || !text.trim() || !agreed) return;
+    if (!rating || text.trim().length < 5 || !agreed) return;
 
     setSubmitting(true);
     try {
@@ -97,12 +97,19 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
 
       <textarea
         className={styles['review-form__textarea']}
-        placeholder="Твой отзыв"
+        placeholder="Твой отзыв (минимум 5 символов)"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        minLength={5}
         maxLength={2000}
         rows={3}
       />
+      <div className={styles['review-form__char-count']}>
+        <span className={text.trim().length > 0 && text.trim().length < 5 ? styles['review-form__char-count--error'] : ''}>
+          {text.trim().length}
+        </span>
+        /2000
+      </div>
 
       <label className={styles['review-form__agreement']}>
         <input
@@ -121,7 +128,7 @@ export default function ReviewForm({ movieId, user, onReviewSubmitted }: ReviewF
       <button
         className={styles['review-form__submit']}
         onClick={handleSubmit}
-        disabled={submitting || !rating || !text.trim() || !agreed}
+        disabled={submitting || !rating || text.trim().length < 5 || !agreed}
       >
         {submitting ? 'Отправка...' : 'Отправить'}
       </button>
