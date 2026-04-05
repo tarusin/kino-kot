@@ -51,6 +51,7 @@ export default function ProfileReviewCard({
               width={ 120 }
               height={ 180 }
               className={ styles['profile-review-card__poster'] }
+              unoptimized
             />
           ) : (
             <div className={ styles['profile-review-card__poster-placeholder'] }>

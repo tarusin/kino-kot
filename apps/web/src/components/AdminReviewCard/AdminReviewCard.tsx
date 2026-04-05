@@ -88,6 +88,7 @@ export default function AdminReviewCard({
               width={40}
               height={60}
               className={styles['admin-review-card__poster']}
+              unoptimized
             />
           )}
           <span className={styles['admin-review-card__movie-title']}>{movieTitle}</span>

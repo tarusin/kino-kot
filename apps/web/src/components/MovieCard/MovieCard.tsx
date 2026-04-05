@@ -49,6 +49,7 @@ export default function MovieCard({ id, title, posterPath, voteAverage, kinoKotR
             alt={title}
             fill
             sizes="(max-width: 576px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+            unoptimized
           />
         )}
         {showMediaType && id && (() => {

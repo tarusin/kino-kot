@@ -170,6 +170,7 @@ export default function SearchBlock() {
                           alt={movie.title}
                           width={40}
                           height={60}
+                          unoptimized
                         />
                       ) : (
                         <div className={styles['search-block__poster-placeholder']} />

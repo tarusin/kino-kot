@@ -40,6 +40,7 @@ export default function FilmOfTheWeek({
             fill
             sizes="100vw"
             priority
+            unoptimized
           />
         </div>
       )}

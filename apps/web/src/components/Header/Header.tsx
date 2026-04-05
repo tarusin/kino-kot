@@ -167,6 +167,7 @@ export default function Header() {
                   alt={movie.title}
                   width={40}
                   height={60}
+                  unoptimized
                 />
               ) : (
                 <div className={styles['header__search-poster-placeholder']} />

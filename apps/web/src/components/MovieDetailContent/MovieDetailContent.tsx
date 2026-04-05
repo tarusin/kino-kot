@@ -196,6 +196,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
                 fill
                 sizes="(max-width: 768px) 40vw, 300px"
                 priority
+                unoptimized
               />
             )}
           </div>
@@ -217,6 +218,7 @@ export default function MovieDetailContent({ movie }: MovieDetailContentProps) {
                   alt={movie.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 60vw"
+                  unoptimized
                 />
               </div>
             )
@@ -426,6 +428,7 @@ function CastMemberCard({
             alt={name}
             fill
             sizes="60px"
+            unoptimized
           />
         ) : (
           <div className={styles['cast-tab__placeholder']} />
@@ -575,6 +578,7 @@ function StillsTab({ stills }: { stills: string[] }) {
             alt="Кадр из фильма"
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            unoptimized
           />
         </div>
       ))}
