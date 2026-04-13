@@ -44,6 +44,7 @@ npm run dev:web
 API_URL=http://localhost:3001/api
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 NEXT_PUBLIC_SITE_URL=https://kino-kot.com
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 ```
 
 ### `apps/api/.env`
@@ -64,6 +65,7 @@ RESEND_API_KEY=...
 - `NEXT_PUBLIC_SITE_URL`: публичный URL сайта, используется для `canonical`, Open Graph, `robots`, `sitemap`
 - `API_URL`: server-side запросы из Next.js к backend API
 - `NEXT_PUBLIC_API_URL`: client-side запросы из браузера к backend API
+- `NEXT_PUBLIC_GA_ID`: Google Analytics 4 Measurement ID для подключения `gtag`
 
 Если страница рендерится на сервере Next.js и ей нужны данные, почти всегда нужен `API_URL`.
 Если код выполняется в браузере, почти всегда нужен `NEXT_PUBLIC_API_URL`.

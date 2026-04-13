@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Montserrat_Alternates } from 'next/font/google';
+import { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
+import GoogleAnalytics from '@/components/GoogleAnalytics/GoogleAnalytics';
 import { AuthProvider } from '../context/AuthContext';
 import {
   DEFAULT_DESCRIPTION,
@@ -73,6 +75,9 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={montserrat.className}>
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
