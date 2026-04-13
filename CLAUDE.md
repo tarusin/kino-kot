@@ -2,6 +2,16 @@
 
 Платформа для поиска фильмов/сериалов/мультфильмов и написания отзывов. Главный персонаж — кот.
 
+## Документация
+
+- `CLAUDE.md` — подробная справка по продукту, архитектуре, backend/frontend-модулям, страницам и компонентам
+- `AGENTS.md` — короткая operational-документация для Codex: запуск, env, роли URL-переменных, типовые проблемы и рабочие соглашения
+
+Если информация дублируется:
+
+- архитектуру и доменную логику считать source of truth в `CLAUDE.md`
+- operational-детали и runbook держать в `AGENTS.md`
+
 ## Структура монорепо
 
 ```
@@ -11,7 +21,8 @@ kino-kot/
 │   └── api/          # NestJS (REST API)
 ├── docker-compose.yml # MongoDB
 ├── package.json      # npm workspaces
-└── CLAUDE.md
+├── CLAUDE.md
+└── AGENTS.md
 ```
 
 ## Стек
@@ -23,19 +34,9 @@ kino-kot/
 - **API фильмов**: TMDB API (гибридный прокси — TMDB как основной источник, MongoDB для отзывов)
 - **Монорепо**: npm workspaces
 
-## Команды
+## Запуск и env
 
-```bash
-docker compose up -d                   # Запустить MongoDB
-npm run dev:api                        # NestJS API (http://localhost:3001)
-npm run dev:web                        # Next.js (http://localhost:3000)
-npm run build --workspace=web          # Production-билд фронтенда
-```
-
-## Env-файлы
-
-- `apps/api/.env` — `TMDB_API_KEY`, `MONGODB_URI`, `PORT`, `JWT_SECRET`, `RESEND_API_KEY`, `FRONTEND_URL` (шаблон: `.env.example`)
-- `apps/web/.env.local` — `API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_API_URL=http://localhost:3001/api`, `NEXT_PUBLIC_SITE_URL=https://kino-kot.com`
+Команды запуска, обязательные env-переменные, роли `API_URL` / `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_SITE_URL` и типовые dev-проблемы вынесены в `AGENTS.md`, чтобы не дублировать runbook в двух файлах.
 
 ## Backend (apps/api/)
 
@@ -154,4 +155,10 @@ npm run build --workspace=web          # Production-билд фронтенда
 - Шрифт Montserrat Alternates (weights: 400, 500, 600, 700; latin + cyrillic) через `next/font/google`
 - Ассеты: `public/images/logo.svg`, `public/images/main-banner.webp`
 - npm install требует `--cache /tmp/npm-cache` из-за проблем с правами в дефолтном кеше
-- **SEO**: глобальные OpenGraph + Twitter Card метаданные в `layout.tsx` (`metadataBase` из `NEXT_PUBLIC_SITE_URL`). Динамические OG-теги на detail-страницах фильмов (`generateMetadata` с backdrop/poster из TMDB). Статические metadata на страницах `/about`, `/support`
+- **SEO**:
+  - базовые helper'ы лежат в `apps/web/src/lib/seo.ts` и `apps/web/src/lib/movie-page.ts`
+  - глобальные metadata, Open Graph, Twitter Card и JSON-LD сайта задаются в `apps/web/src/app/layout.tsx`
+  - листинги `/films`, `/series`, `/cartoons` генерируют metadata динамически с учетом фильтров/пагинации
+  - detail-страницы фильмов, сериалов и мультфильмов генерируют metadata и JSON-LD через общие helper'ы
+  - служебные маршруты (`/login`, `/register`, `/profile`, `/search`, `/admin` и т.д.) закрыты от индексации через route-level metadata
+  - `robots` и `sitemap` генерируются через `apps/web/src/app/robots.ts` и `apps/web/src/app/sitemap.ts`
