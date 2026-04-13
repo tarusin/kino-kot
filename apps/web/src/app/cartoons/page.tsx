@@ -1,11 +1,13 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import CatalogSeoBlock from '@/components/CatalogSeoBlock/CatalogSeoBlock';
 import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import type { Metadata } from 'next';
-import { buildCollectionMetadata } from '@/lib/seo';
+import { CATALOG_TABS, buildCatalogHref } from '@/lib/catalog';
+import { buildBreadcrumbJsonLd, buildCollectionMetadata, buildItemListJsonLd } from '@/lib/seo';
 import CartoonsPagination from './CartoonsPagination';
 import styles from './cartoons.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
@@ -13,6 +15,46 @@ import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const ITEMS_PER_PAGE = 20;
 type CartoonsSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+function getCartoonsSeoContent(list: string) {
+  if (list === 'top_rated') {
+    return {
+      title: 'Лучшие мультфильмы с отзывами и рейтингами',
+      intro:
+        'Раздел лучших мультфильмов помогает быстро найти сильные анимационные проекты для семейного просмотра, выходных или вечернего расслабления.',
+      details:
+        'Сравнивайте оценки, открывайте карточки мультфильмов и выбирайте между признанной классикой, свежими хитами и картинами, которые советуют другие зрители.',
+    };
+  }
+
+  if (list === 'now_playing') {
+    return {
+      title: 'Мультфильмы, которые сейчас идут в кино',
+      intro:
+        'Здесь собраны актуальные анимационные релизы из проката, чтобы проще было выбрать мультфильм для похода в кинотеатр.',
+      details:
+        'Используйте страницу, чтобы быстро проверить, какие мультфильмы сейчас доступны, сравнить рейтинги и перейти к подробным карточкам с отзывами и описанием.',
+    };
+  }
+
+  if (list === 'upcoming') {
+    return {
+      title: 'Скоро выходящие мультфильмы и анимационные премьеры',
+      intro:
+        'Подборка ожидаемых мультфильмов помогает следить за будущими анимационными релизами и заранее выбирать интересные премьеры.',
+      details:
+        'Это удобный раздел для родителей, семейных зрителей и поклонников анимации, которые хотят не пропускать новые релизы и быстро переходить к карточкам проектов.',
+    };
+  }
+
+  return {
+    title: 'Отзывы на мультфильмы и семейные подборки',
+    intro:
+      'На странице мультфильмов КиноКота собраны популярные анимационные релизы, рейтинги и отзывы, которые помогают подобрать просмотр для детей и взрослых.',
+    details:
+      'Здесь можно перейти к лучшим мультфильмам, текущим релизам в кино и ожидаемым премьерам, а затем открыть карточку с описанием, жанрами и оценками.',
+  };
+}
 
 export async function generateMetadata({
   searchParams,
@@ -131,6 +173,8 @@ export default async function CartoonsPage({
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
+  const hasFilters = Boolean(genre || year || country);
+  const shouldRenderSeoBlock = !hasFilters && currentPage === 1;
 
   const [genres, years, countriesData, data, cartoonOfTheWeek] = await Promise.all([
     getGenres(),
@@ -148,6 +192,22 @@ export default async function CartoonsPage({
     ...m,
     kinoKotRating: ratings[m._id],
   }));
+  const seoContent = getCartoonsSeoContent(activeList);
+  const tabLinks = CATALOG_TABS['/cartoons'].map((tab) => ({
+    href: buildCatalogHref('/cartoons', tab.key),
+    label: tab.label,
+  }));
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Мультфильмы', path: buildCatalogHref('/cartoons', activeList) },
+  ]);
+  const itemListJsonLd =
+    shouldRenderSeoBlock && data.movies.length > 0
+      ? buildItemListJsonLd(
+          data.movies.map((movie) => ({ id: movie._id, name: movie.title })),
+          '/cartoons',
+        )
+      : null;
 
   return (
     <>
@@ -155,6 +215,20 @@ export default async function CartoonsPage({
       <main>
         <section className={styles['cartoons']}>
           <div className={styles['cartoons__wrap']}>
+            {shouldRenderSeoBlock && (
+              <>
+                <script
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+                />
+                {itemListJsonLd && (
+                  <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+                  />
+                )}
+              </>
+            )}
             {cartoonOfTheWeek && (
               <FilmOfTheWeek
                 film={cartoonOfTheWeek}
@@ -203,6 +277,32 @@ export default async function CartoonsPage({
               country={country}
               list={list}
             />
+            {shouldRenderSeoBlock && (
+              <CatalogSeoBlock
+                sectionName="Мультфильмы"
+                title={seoContent.title}
+                intro={seoContent.intro}
+                details={seoContent.details}
+                tabLinks={tabLinks}
+                relatedLinks={[
+                  {
+                    href: '/films',
+                    label: 'Фильмы',
+                    description: 'Полнометражное кино с рейтингами, обзорами и подборками по настроению.',
+                  },
+                  {
+                    href: '/series',
+                    label: 'Сериалы',
+                    description: 'Каталог сериалов с отзывами зрителей и актуальными релизами.',
+                  },
+                  {
+                    href: '/quiz',
+                    label: 'Квиз',
+                    description: 'Подберите мультфильм, фильм или сериал с помощью короткого теста.',
+                  },
+                ]}
+              />
+            )}
           </div>
         </section>
       </main>

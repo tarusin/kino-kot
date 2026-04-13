@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { COLLECTION_LIST_META } from '@/lib/catalog';
 import type { MovieDetail } from '@/types/movie';
 
 export const SITE_NAME = 'КиноКот';
@@ -53,21 +54,6 @@ const NO_INDEX_ROBOTS: NonNullable<Metadata['robots']> = {
     'max-image-preview': 'large',
     'max-snippet': -1,
     'max-video-preview': -1,
-  },
-};
-
-const LIST_LABELS: Record<string, { title: string; description: string }> = {
-  popular: {
-    title: 'Популярные',
-    description: 'популярные',
-  },
-  top_rated: {
-    title: 'Лучшие',
-    description: 'лучшие',
-  },
-  upcoming: {
-    title: 'Скоро выходят',
-    description: 'ожидаемые',
   },
 };
 
@@ -207,7 +193,7 @@ export function buildCollectionMetadata({
     country ? `страна ${country}` : null,
   ].filter(Boolean) as string[];
 
-  const listMeta = LIST_LABELS[list] || LIST_LABELS.popular;
+  const listMeta = COLLECTION_LIST_META[list] || COLLECTION_LIST_META.popular;
   const hasFilters = filters.length > 0;
   const isPaginated = page > 1;
   const noIndex = hasFilters || isPaginated;
@@ -352,6 +338,22 @@ export function buildMovieJsonLd(
             worstRating: 1,
           }
         : undefined,
+  };
+}
+
+export function buildItemListJsonLd(
+  items: Array<{ id: string; name: string }>,
+  basePath: string,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: absoluteUrl(`${basePath}/${item.id}`),
+      name: item.name,
+    })),
   };
 }
 

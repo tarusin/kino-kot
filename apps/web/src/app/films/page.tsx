@@ -1,11 +1,13 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import CatalogSeoBlock from '@/components/CatalogSeoBlock/CatalogSeoBlock';
 import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import type { Metadata } from 'next';
-import { buildCollectionMetadata } from '@/lib/seo';
+import { CATALOG_TABS, buildCatalogHref } from '@/lib/catalog';
+import { buildBreadcrumbJsonLd, buildCollectionMetadata, buildItemListJsonLd } from '@/lib/seo';
 import FilmsPagination from './FilmsPagination';
 import styles from './films.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
@@ -13,6 +15,46 @@ import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const MOVIES_PER_PAGE = 20;
 type FilmsSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+function getFilmsSeoContent(list: string) {
+  if (list === 'top_rated') {
+    return {
+      title: 'Лучшие фильмы с отзывами и рейтингами',
+      intro:
+        'Здесь собраны лучшие фильмы по рейтингам и отзывам, чтобы можно было быстрее найти сильное кино без долгих поисков.',
+      details:
+        'Сравнивайте пользовательские оценки КиноКота и рейтинг TMDB, переходите в карточки фильмов и выбирайте, что посмотреть сегодня вечером или сохранить в список на потом.',
+    };
+  }
+
+  if (list === 'now_playing') {
+    return {
+      title: 'Фильмы, которые сейчас идут в кино',
+      intro:
+        'Раздел помогает быстро посмотреть актуальные фильмы в прокате, сравнить ожидания и мнения зрителей перед походом в кинотеатр.',
+      details:
+        'Если нужен выбор между новинками, откройте карточки фильмов, изучите описание, рейтинг и отзывы, а затем переходите к лучшим или популярным подборкам для сравнения.',
+    };
+  }
+
+  if (list === 'upcoming') {
+    return {
+      title: 'Ожидаемые премьеры и скоро выходящие фильмы',
+      intro:
+        'В этой подборке собраны фильмы, которые скоро выйдут и уже вызывают интерес у зрителей, следящих за новыми релизами.',
+      details:
+        'Используйте страницу, чтобы заранее отметить ожидаемые премьеры, следить за обновлениями и переходить в карточки фильмов, когда появятся отзывы и первые оценки.',
+    };
+  }
+
+  return {
+    title: 'Отзывы на фильмы и подборки для выбора',
+    intro:
+      'На странице фильмов КиноКота собраны популярные релизы, пользовательские отзывы и рейтинги, которые помогают быстрее выбрать кино под настроение.',
+    details:
+      'Здесь можно перейти к лучшим фильмам, текущим релизам в кино и ожидаемым премьерам, а затем открыть подробную карточку фильма с описанием, актёрами и оценками.',
+  };
+}
 
 export async function generateMetadata({
   searchParams,
@@ -138,6 +180,8 @@ export default async function FilmsPage({
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
+  const hasFilters = Boolean(genre || year || country);
+  const shouldRenderSeoBlock = !hasFilters && currentPage === 1;
 
   const [genres, years, countriesData, data, filmOfTheWeek] = await Promise.all([
     getGenres(),
@@ -155,6 +199,22 @@ export default async function FilmsPage({
     ...m,
     kinoKotRating: ratings[m._id],
   }));
+  const seoContent = getFilmsSeoContent(activeList);
+  const tabLinks = CATALOG_TABS['/films'].map((tab) => ({
+    href: buildCatalogHref('/films', tab.key),
+    label: tab.label,
+  }));
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Фильмы', path: buildCatalogHref('/films', activeList) },
+  ]);
+  const itemListJsonLd =
+    shouldRenderSeoBlock && data.movies.length > 0
+      ? buildItemListJsonLd(
+          data.movies.map((movie) => ({ id: movie._id, name: movie.title })),
+          '/films',
+        )
+      : null;
 
   return (
     <>
@@ -162,6 +222,20 @@ export default async function FilmsPage({
       <main>
         <section className={ styles['films'] }>
           <div className={ styles['films__wrap'] }>
+            {shouldRenderSeoBlock && (
+              <>
+                <script
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+                />
+                {itemListJsonLd && (
+                  <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+                  />
+                )}
+              </>
+            )}
             {filmOfTheWeek && <FilmOfTheWeek film={filmOfTheWeek} />}
             <div className={ styles['films__head'] }>
               <h1 className={ styles['films__title'] }>Фильмы</h1>
@@ -201,6 +275,32 @@ export default async function FilmsPage({
               country={ country }
               list={ list }
             />
+            {shouldRenderSeoBlock && (
+              <CatalogSeoBlock
+                sectionName="Фильмы"
+                title={seoContent.title}
+                intro={seoContent.intro}
+                details={seoContent.details}
+                tabLinks={tabLinks}
+                relatedLinks={[
+                  {
+                    href: '/series',
+                    label: 'Сериалы',
+                    description: 'Подборки сериалов с отзывами, рейтингами и новыми эпизодами.',
+                  },
+                  {
+                    href: '/cartoons',
+                    label: 'Мультфильмы',
+                    description: 'Каталог мультфильмов для семейного просмотра и анимационных премьер.',
+                  },
+                  {
+                    href: '/quiz',
+                    label: 'Квиз',
+                    description: 'Подберите фильм или сериал под настроение с помощью короткого теста.',
+                  },
+                ]}
+              />
+            )}
           </div>
         </section>
       </main>

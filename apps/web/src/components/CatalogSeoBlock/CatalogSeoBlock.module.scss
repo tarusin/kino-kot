@@ -1,0 +1,113 @@
+@use '../../styles/variables' as *;
+
+.catalog-seo {
+  margin-top: rem(40);
+  padding: rem(24);
+  border: 1px solid $color-gray-dark;
+  border-radius: rem(20);
+  background: linear-gradient(180deg, rgba(255, 59, 47, 0.04) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.catalog-seo__breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: rem(8);
+  margin-bottom: rem(16);
+  color: $color-text-secondary;
+  font-size: rem(13);
+}
+
+.catalog-seo__breadcrumb-link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.catalog-seo__title {
+  margin: 0 0 rem(12);
+  color: $color-text;
+  font-size: rem(22);
+  line-height: 1.2;
+}
+
+.catalog-seo__text {
+  margin: 0 0 rem(12);
+  color: $color-text;
+  line-height: 1.7;
+}
+
+.catalog-seo__grid {
+  display: grid;
+  gap: rem(20);
+  margin-top: rem(24);
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.catalog-seo__group-title {
+  margin: 0 0 rem(12);
+  color: $color-text;
+  font-size: rem(16);
+}
+
+.catalog-seo__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10);
+}
+
+.catalog-seo__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: rem(40);
+  padding: rem(10) rem(14);
+  border-radius: rem(999);
+  background: $color-gray;
+  color: $color-text;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+
+  &:hover {
+    background: rgba(255, 59, 47, 0.12);
+    color: $color-primary;
+  }
+}
+
+.catalog-seo__related {
+  display: grid;
+  gap: rem(12);
+}
+
+.catalog-seo__related-link {
+  display: block;
+  padding: rem(14);
+  border-radius: rem(16);
+  background: $color-gray;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+
+  &:hover {
+    transform: translateY(rem(-1));
+    background: rgba(255, 59, 47, 0.08);
+  }
+}
+
+.catalog-seo__related-name {
+  display: block;
+  margin-bottom: rem(6);
+  color: $color-text;
+  font-weight: 700;
+}
+
+.catalog-seo__related-description {
+  display: block;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}

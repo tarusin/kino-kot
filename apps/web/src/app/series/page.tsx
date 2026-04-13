@@ -1,11 +1,13 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import CatalogSeoBlock from '@/components/CatalogSeoBlock/CatalogSeoBlock';
 import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
 import type { Metadata } from 'next';
-import { buildCollectionMetadata } from '@/lib/seo';
+import { CATALOG_TABS, buildCatalogHref } from '@/lib/catalog';
+import { buildBreadcrumbJsonLd, buildCollectionMetadata, buildItemListJsonLd } from '@/lib/seo';
 import SeriesPagination from './SeriesPagination';
 import styles from './series.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
@@ -13,6 +15,46 @@ import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const ITEMS_PER_PAGE = 20;
 type SeriesSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+function getSeriesSeoContent(list: string) {
+  if (list === 'top_rated') {
+    return {
+      title: 'Лучшие сериалы с отзывами и рейтингами',
+      intro:
+        'Раздел лучших сериалов помогает быстро выйти на проекты, которые зрители оценивают выше остальных и чаще рекомендуют к просмотру.',
+      details:
+        'Сравнивайте рейтинги, переходите в карточки сериалов, изучайте описание и отзывы, а затем добавляйте в планы на вечер или длинный марафон.',
+    };
+  }
+
+  if (list === 'on_the_air') {
+    return {
+      title: 'Сериалы, которые сейчас выходят',
+      intro:
+        'На этой странице собраны сериалы, у которых продолжается выход новых эпизодов и сезонов, чтобы удобнее следить за актуальными релизами.',
+      details:
+        'Если хочется быть в курсе текущих премьер, откройте карточки сериалов, проверьте рейтинг и читайте отзывы пользователей, уже следящих за новыми сериями.',
+    };
+  }
+
+  if (list === 'airing_today') {
+    return {
+      title: 'Сериалы, которые выходят сегодня',
+      intro:
+        'Подборка сегодняшних эфиров помогает быстро проверить, какие сериалы получили новые эпизоды именно сегодня.',
+      details:
+        'Это удобный вход для зрителей, которые следят за онгоингами, хотят не пропускать релизы и сравнивать свежие отзывы сразу после выхода серии.',
+    };
+  }
+
+  return {
+    title: 'Отзывы на сериалы и подборки для просмотра',
+    intro:
+      'В каталоге сериалов КиноКота собраны популярные проекты, рейтинги и отзывы, которые помогают выбрать следующий сериал без долгого скролла.',
+    details:
+      'Здесь можно перейти к лучшим сериалам, актуальным онгоингам и сегодняшним эпизодам, а затем открыть подробную карточку с сезонами, описанием и оценками.',
+  };
+}
 
 export async function generateMetadata({
   searchParams,
@@ -131,6 +173,8 @@ export default async function SeriesPage({
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
   const activeList = list || 'popular';
+  const hasFilters = Boolean(genre || year || country);
+  const shouldRenderSeoBlock = !hasFilters && currentPage === 1;
 
   const [genres, years, countriesData, data, seriesOfTheWeek] = await Promise.all([
     getGenres(),
@@ -148,6 +192,22 @@ export default async function SeriesPage({
     ...m,
     kinoKotRating: ratings[m._id],
   }));
+  const seoContent = getSeriesSeoContent(activeList);
+  const tabLinks = CATALOG_TABS['/series'].map((tab) => ({
+    href: buildCatalogHref('/series', tab.key),
+    label: tab.label,
+  }));
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Сериалы', path: buildCatalogHref('/series', activeList) },
+  ]);
+  const itemListJsonLd =
+    shouldRenderSeoBlock && data.movies.length > 0
+      ? buildItemListJsonLd(
+          data.movies.map((movie) => ({ id: movie._id, name: movie.title })),
+          '/series',
+        )
+      : null;
 
   return (
     <>
@@ -155,6 +215,20 @@ export default async function SeriesPage({
       <main>
         <section className={styles['series']}>
           <div className={styles['series__wrap']}>
+            {shouldRenderSeoBlock && (
+              <>
+                <script
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+                />
+                {itemListJsonLd && (
+                  <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+                  />
+                )}
+              </>
+            )}
             {seriesOfTheWeek && (
               <FilmOfTheWeek
                 film={seriesOfTheWeek}
@@ -203,6 +277,32 @@ export default async function SeriesPage({
               country={country}
               list={list}
             />
+            {shouldRenderSeoBlock && (
+              <CatalogSeoBlock
+                sectionName="Сериалы"
+                title={seoContent.title}
+                intro={seoContent.intro}
+                details={seoContent.details}
+                tabLinks={tabLinks}
+                relatedLinks={[
+                  {
+                    href: '/films',
+                    label: 'Фильмы',
+                    description: 'Подборки фильмов с рейтингами, отзывами и премьерами в кино.',
+                  },
+                  {
+                    href: '/cartoons',
+                    label: 'Мультфильмы',
+                    description: 'Анимация для детей и взрослых с отзывами и оценками зрителей.',
+                  },
+                  {
+                    href: '/quiz',
+                    label: 'Квиз',
+                    description: 'Быстрый способ подобрать, что посмотреть, по вашему настроению.',
+                  },
+                ]}
+              />
+            )}
           </div>
         </section>
       </main>
