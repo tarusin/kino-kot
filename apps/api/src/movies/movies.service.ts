@@ -3,6 +3,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Movie, MovieDocument } from './schemas/movie.schema.js';
@@ -136,23 +137,74 @@ export class MoviesService {
     throw new NotFoundException('Не найдено');
   }
 
+  private logTmdbFailure(level: 'warn' | 'error', label: string, tmdbId: number, error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const method = error.config?.method?.toUpperCase();
+      const url = error.config?.url;
+      const parts = [
+        `TMDB ${label} request failed for ${tmdbId}`,
+        status ? `status=${status}` : null,
+        method ? `method=${method}` : null,
+        url ? `url=${url}` : null,
+      ].filter(Boolean);
+      this.logger[level](parts.join(' '));
+      return;
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    this.logger[level](`TMDB ${label} request failed for ${tmdbId}: ${message}`);
+  }
+
+  private async fetchOptionalTmdbResource<T>(
+    tmdbId: number,
+    label: string,
+    fallback: T,
+    fetcher: () => Promise<T>,
+  ): Promise<T> {
+    try {
+      return await fetcher();
+    } catch (error) {
+      this.logTmdbFailure('warn', label, tmdbId, error);
+      return fallback;
+    }
+  }
+
   private async fetchDetailFromTmdb(tmdbId: number, mediaType: string, compositeId: string) {
     const isSeries = mediaType === 'series';
 
     try {
-      const [details, credits, trailerKey, stills] = await Promise.all([
+      const details = await (
         isSeries
           ? this.tmdbService.fetchTVDetails(tmdbId)
-          : this.tmdbService.fetchMovieDetails(tmdbId),
-        isSeries
-          ? this.tmdbService.fetchTVCredits(tmdbId)
-          : this.tmdbService.fetchMovieCredits(tmdbId),
-        isSeries
-          ? this.tmdbService.fetchTVVideos(tmdbId)
-          : this.tmdbService.fetchMovieVideos(tmdbId),
-        isSeries
-          ? this.tmdbService.fetchTVImages(tmdbId)
-          : this.tmdbService.fetchMovieImages(tmdbId),
+          : this.tmdbService.fetchMovieDetails(tmdbId)
+      );
+
+      const [credits, trailerKey, stills] = await Promise.all([
+        this.fetchOptionalTmdbResource(
+          tmdbId,
+          isSeries ? 'tv credits' : 'movie credits',
+          { cast: [], crew: [] },
+          () => (isSeries
+            ? this.tmdbService.fetchTVCredits(tmdbId)
+            : this.tmdbService.fetchMovieCredits(tmdbId)),
+        ),
+        this.fetchOptionalTmdbResource(
+          tmdbId,
+          isSeries ? 'tv videos' : 'movie videos',
+          null,
+          () => (isSeries
+            ? this.tmdbService.fetchTVVideos(tmdbId)
+            : this.tmdbService.fetchMovieVideos(tmdbId)),
+        ),
+        this.fetchOptionalTmdbResource(
+          tmdbId,
+          isSeries ? 'tv images' : 'movie images',
+          [],
+          () => (isSeries
+            ? this.tmdbService.fetchTVImages(tmdbId)
+            : this.tmdbService.fetchMovieImages(tmdbId)),
+        ),
       ]);
 
       const movieDetails = details as any;
@@ -186,7 +238,7 @@ export class MoviesService {
         stills,
       };
     } catch (error) {
-      this.logger.error(`Failed to fetch TMDB details for ${tmdbId}`, error);
+      this.logTmdbFailure('error', isSeries ? 'tv details' : 'movie details', tmdbId, error);
       throw new NotFoundException('Не удалось загрузить данные фильма');
     }
   }
