@@ -1,0 +1,25 @@
+@use '../../styles/variables' as *;
+
+.page-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: rem(8);
+  margin-bottom: rem(20);
+  color: $color-text-secondary;
+  font-size: rem(13);
+
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: rem(24);
+    font-size: rem(14);
+  }
+}
+
+.page-breadcrumbs__link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-primary;
+  }
+}

@@ -1,6 +1,8 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
-import { createMetadata } from '@/lib/seo';
+import PageBreadcrumbs from '@/components/PageBreadcrumbs/PageBreadcrumbs';
+import RelatedLinksBlock from '@/components/RelatedLinksBlock/RelatedLinksBlock';
+import { buildBreadcrumbJsonLd, createMetadata } from '@/lib/seo';
 import styles from './about.module.scss';
 
 export const metadata = createMetadata({
@@ -12,11 +14,21 @@ export const metadata = createMetadata({
 });
 
 export default function AboutPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'О проекте', path: '/about' },
+  ]);
+
   return (
     <>
       <Header />
       <main className={styles['about']}>
         <div className={styles['about__container']}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+          />
+          <PageBreadcrumbs items={[{ name: 'Главная', href: '/' }, { name: 'О проекте' }]} />
           <h1 className={styles['about__title']}>О проекте</h1>
           <p className={styles['about__subtitle']}>
             КиноКот — это уютная платформа для настоящих любителей кино
@@ -72,6 +84,31 @@ export default function AboutPage() {
               Напишите нам через страницу <a href="/support">Поддержки</a>.
             </p>
           </section>
+
+          <RelatedLinksBlock
+            links={[
+              {
+                href: '/films',
+                name: 'Фильмы',
+                description: 'Каталог фильмов с отзывами, рейтингами и подборками по популярности.',
+              },
+              {
+                href: '/series',
+                name: 'Сериалы',
+                description: 'Лучшие сериалы, онгоинги и отзывы зрителей в одном разделе.',
+              },
+              {
+                href: '/quiz',
+                name: 'Квиз по настроению',
+                description: 'Быстрый способ подобрать фильм или сериал под текущее настроение.',
+              },
+              {
+                href: '/support',
+                name: 'Поддержка',
+                description: 'Частые вопросы, помощь по аккаунту и способы связаться с командой.',
+              },
+            ]}
+          />
         </div>
       </main>
       <Footer />

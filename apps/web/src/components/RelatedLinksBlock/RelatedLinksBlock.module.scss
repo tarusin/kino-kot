@@ -1,0 +1,53 @@
+@use '../../styles/variables' as *;
+
+.related-links {
+  margin-top: rem(40);
+  padding: rem(24);
+  border-radius: rem(20);
+  border: 1px solid $color-gray-dark;
+  background: $color-gray;
+}
+
+.related-links__title {
+  margin: 0 0 rem(16);
+  color: $color-text;
+  font-size: rem(20);
+}
+
+.related-links__grid {
+  display: grid;
+  gap: rem(12);
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.related-links__item {
+  display: block;
+  padding: rem(16);
+  border-radius: rem(16);
+  background: $color-bg;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s, border-color 0.2s;
+  border: 1px solid transparent;
+
+  &:hover {
+    transform: translateY(rem(-1));
+    border-color: rgba(255, 59, 47, 0.2);
+  }
+}
+
+.related-links__name {
+  display: block;
+  margin-bottom: rem(6);
+  color: $color-text;
+  font-weight: 700;
+}
+
+.related-links__description {
+  display: block;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}

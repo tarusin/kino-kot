@@ -1,5 +1,7 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import PageBreadcrumbs from '@/components/PageBreadcrumbs/PageBreadcrumbs';
+import RelatedLinksBlock from '@/components/RelatedLinksBlock/RelatedLinksBlock';
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, createMetadata } from '@/lib/seo';
 import styles from './support.module.scss';
 
@@ -54,6 +56,7 @@ export default function SupportPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
         <div className={styles['support__container']}>
+          <PageBreadcrumbs items={[{ name: 'Главная', href: '/' }, { name: 'Поддержка' }]} />
           <h1 className={styles['support__title']}>Поддержка</h1>
           <p className={styles['support__subtitle']}>
             Мы всегда рады помочь и услышать ваше мнение
@@ -138,6 +141,31 @@ export default function SupportPage() {
               </p>
             </details>
           </section>
+
+          <RelatedLinksBlock
+            links={[
+              {
+                href: '/about',
+                name: 'О проекте',
+                description: 'Как работает КиноКот, чем полезен сервис и откуда берутся данные.',
+              },
+              {
+                href: '/privacy',
+                name: 'Политика конфиденциальности',
+                description: 'Как сервис обрабатывает и защищает персональные данные пользователей.',
+              },
+              {
+                href: '/terms',
+                name: 'Пользовательское соглашение',
+                description: 'Правила использования сервиса, отзывов, комментариев и модерации.',
+              },
+              {
+                href: '/quiz',
+                name: 'Квиз по настроению',
+                description: 'Подберите фильм, сериал или мультфильм, если не знаете, что посмотреть.',
+              },
+            ]}
+          />
         </div>
       </main>
       <Footer />

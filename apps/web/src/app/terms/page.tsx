@@ -1,20 +1,35 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
-import { createMetadata } from '@/lib/seo';
+import PageBreadcrumbs from '@/components/PageBreadcrumbs/PageBreadcrumbs';
+import RelatedLinksBlock from '@/components/RelatedLinksBlock/RelatedLinksBlock';
+import { buildBreadcrumbJsonLd, createMetadata } from '@/lib/seo';
 import styles from './terms.module.scss';
 
 export const metadata = createMetadata({
   title: 'Пользовательское соглашение',
   description: 'Условия использования сервиса КиноКот для чтения и публикации отзывов.',
   path: '/terms',
+  keywords: ['пользовательское соглашение КиноКот', 'условия использования', 'правила сервиса'],
 });
 
 export default function TermsPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Пользовательское соглашение', path: '/terms' },
+  ]);
+
   return (
     <>
       <Header />
       <main className={styles['terms']}>
         <div className={styles['terms__container']}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+          />
+          <PageBreadcrumbs
+            items={[{ name: 'Главная', href: '/' }, { name: 'Пользовательское соглашение' }]}
+          />
           <h1 className={styles['terms__title']}>Пользовательское соглашение</h1>
           <p className={styles['terms__updated']}>Последнее обновление: 2 апреля 2026 г.</p>
 
@@ -134,6 +149,31 @@ export default function TermsPage() {
               страницу <a href="/support">Поддержки</a>.
             </p>
           </section>
+          <RelatedLinksBlock
+            title="Связанные страницы"
+            links={[
+              {
+                href: '/privacy',
+                name: 'Политика конфиденциальности',
+                description: 'Порядок обработки персональных данных, cookie и хранения информации.',
+              },
+              {
+                href: '/support',
+                name: 'Поддержка',
+                description: 'Ответы на вопросы по аккаунту, отзывам, жалобам и обратной связи.',
+              },
+              {
+                href: '/about',
+                name: 'О проекте',
+                description: 'Описание сервиса, его логики и источников данных о фильмах.',
+              },
+              {
+                href: '/films',
+                name: 'Фильмы',
+                description: 'Каталог фильмов с отзывами пользователей и рейтингами КиноКота.',
+              },
+            ]}
+          />
         </div>
       </main>
       <Footer />
