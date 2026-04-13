@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { ReviewsService } from './reviews.service.js';
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
@@ -35,11 +36,13 @@ export class ReviewsController {
   }
 
   @Get('stats')
+  @SkipThrottle()
   getPublicStats() {
     return this.reviewsService.getPublicStats();
   }
 
   @Get('ratings')
+  @SkipThrottle()
   getAverageRatings(@Query('movieIds') movieIds: string) {
     const ids = movieIds ? movieIds.split(',').filter(Boolean) : [];
     if (ids.length === 0) return {};
@@ -47,6 +50,7 @@ export class ReviewsController {
   }
 
   @Get('latest')
+  @SkipThrottle()
   findLatest(@Query('limit') limit?: string) {
     return this.reviewsService.findLatest(limit ? parseInt(limit, 10) : 20);
   }
@@ -64,6 +68,7 @@ export class ReviewsController {
   }
 
   @Get('comments/:reviewId')
+  @SkipThrottle()
   getCommentsByReview(@Param('reviewId') reviewId: string) {
     return this.reviewsService.getCommentsByReview(reviewId);
   }
@@ -75,6 +80,7 @@ export class ReviewsController {
   }
 
   @Get('movie/:movieId')
+  @SkipThrottle()
   @UseGuards(OptionalJwtAuthGuard)
   findByMovie(@Req() req: any, @Param('movieId') movieId: string) {
     return this.reviewsService.findByMovie(movieId, req.user?.id);

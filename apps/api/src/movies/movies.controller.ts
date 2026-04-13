@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { MoviesService } from './movies.service.js';
 
 @Controller('movies')
@@ -6,16 +7,19 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Get('popular')
+  @SkipThrottle()
   findPopular(@Query('mediaType') mediaType?: string) {
     return this.moviesService.findByCategory('popular', mediaType);
   }
 
   @Get('top-rated')
+  @SkipThrottle()
   findTopRated(@Query('mediaType') mediaType?: string) {
     return this.moviesService.findByCategory('top_rated', mediaType);
   }
 
   @Get('upcoming')
+  @SkipThrottle()
   findUpcoming(@Query('mediaType') mediaType?: string) {
     return this.moviesService.findByCategory('upcoming', mediaType);
   }
@@ -34,41 +38,49 @@ export class MoviesController {
   }
 
   @Get('genres')
+  @SkipThrottle()
   getGenres(@Query('mediaType') mediaType?: string) {
     return this.moviesService.getGenres(mediaType);
   }
 
   @Get('countries')
+  @SkipThrottle()
   getCountries(@Query('mediaType') mediaType?: string) {
     return this.moviesService.getCountries(mediaType);
   }
 
   @Get('years')
+  @SkipThrottle()
   getYears() {
     return this.moviesService.getYears();
   }
 
   @Get('random')
+  @SkipThrottle()
   getRandom(@Query('mediaType') mediaType?: string) {
     return this.moviesService.getRandomMovie(mediaType);
   }
 
   @Get('film-of-the-week')
+  @SkipThrottle()
   getFilmOfTheWeek(@Query('mediaType') mediaType?: string) {
     return this.moviesService.findFilmOfTheWeek(mediaType || 'movie');
   }
 
   @Get(':id/recommendations')
+  @SkipThrottle()
   getRecommendations(@Param('id') id: string) {
     return this.moviesService.getRecommendations(id);
   }
 
   @Get(':id')
+  @SkipThrottle()
   findOne(@Param('id') id: string) {
     return this.moviesService.findById(id);
   }
 
   @Get()
+  @SkipThrottle()
   findAll(
     @Query('genre') genre?: string,
     @Query('year') year?: string,

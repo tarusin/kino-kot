@@ -16,6 +16,20 @@ import type { LatestReview } from '@/types/review';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 
+async function fetchHomeData<T>(url: string, label: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) {
+      console.error(`[home] ${label} fetch failed: ${res.status} ${res.statusText}`);
+      return null;
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`[home] ${label} fetch threw`, error);
+    return null;
+  }
+}
+
 export const metadata = createMetadata({
   title: 'Отзывы на фильмы, сериалы и мультфильмы',
   description:
@@ -32,53 +46,38 @@ export const metadata = createMetadata({
 });
 
 async function getPopularMovies(): Promise<Movie[]> {
-  try {
-    const res = await fetch(`${API_URL}/movies/popular`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (await fetchHomeData<Movie[]>(`${API_URL}/movies/popular`, 'popular movies')) ?? [];
 }
 
 async function getTopRatedMovies(): Promise<Movie[]> {
-  try {
-    const res = await fetch(`${API_URL}/movies/top-rated`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (await fetchHomeData<Movie[]>(`${API_URL}/movies/top-rated`, 'top rated movies')) ?? [];
 }
 
 async function getPopularSeries(): Promise<Movie[]> {
-  try {
-    const res = await fetch(`${API_URL}/movies/popular?mediaType=series`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (
+    (await fetchHomeData<Movie[]>(
+      `${API_URL}/movies/popular?mediaType=series`,
+      'popular series',
+    )) ?? []
+  );
 }
 
 async function getUpcomingMovies(): Promise<Movie[]> {
-  try {
-    const res = await fetch(`${API_URL}/movies/upcoming?mediaType=movie`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (
+    (await fetchHomeData<Movie[]>(
+      `${API_URL}/movies/upcoming?mediaType=movie`,
+      'upcoming movies',
+    )) ?? []
+  );
 }
 
 async function getLatestReviews(): Promise<LatestReview[]> {
-  try {
-    const res = await fetch(`${API_URL}/reviews/latest?limit=20`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (
+    (await fetchHomeData<LatestReview[]>(
+      `${API_URL}/reviews/latest?limit=20`,
+      'latest reviews',
+    )) ?? []
+  );
 }
 
 async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
