@@ -1,13 +1,12 @@
 import type { MetadataRoute } from 'next';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://kino-kot.com';
+import { SITE_URL } from '@/lib/seo';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/', '/profile'],
+      disallow: ['/admin/', '/api/', '/profile', '/search'],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

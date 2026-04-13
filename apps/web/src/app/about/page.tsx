@@ -1,11 +1,15 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import { createMetadata } from '@/lib/seo';
 import styles from './about.module.scss';
 
-export const metadata = {
-  title: 'О проекте — КиноКот',
-  description: 'Узнайте больше о проекте КиноКот — платформе для поиска фильмов, сериалов и мультфильмов',
-};
+export const metadata = createMetadata({
+  title: 'О проекте',
+  description:
+    'Узнайте, как работает КиноКот: отзывы на фильмы, сериалы и мультфильмы, рейтинги зрителей и рекомендации по вкусу.',
+  path: '/about',
+  keywords: ['о проекте КиноКот', 'отзывы на фильмы', 'отзывы на сериалы'],
+});
 
 export default function AboutPage() {
   return (

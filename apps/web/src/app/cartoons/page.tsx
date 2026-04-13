@@ -4,12 +4,35 @@ import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
+import type { Metadata } from 'next';
+import { buildCollectionMetadata } from '@/lib/seo';
 import CartoonsPagination from './CartoonsPagination';
 import styles from './cartoons.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const ITEMS_PER_PAGE = 20;
+type CartoonsSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<CartoonsSearchParams>;
+}): Promise<Metadata> {
+  const { genre, year, country, page, list } = await searchParams;
+  const currentPage = page ? parseInt(page, 10) || 1 : 1;
+
+  return buildCollectionMetadata({
+    sectionName: 'Мультфильмы',
+    sectionLabel: 'мультфильмы',
+    path: '/cartoons',
+    genre,
+    year,
+    country,
+    page: currentPage,
+    list,
+  });
+}
 
 async function getGenres(): Promise<string[]> {
   try {
@@ -103,7 +126,7 @@ async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 export default async function CartoonsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string; list?: string }>;
+  searchParams: Promise<CartoonsSearchParams>;
 }) {
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -141,7 +164,7 @@ export default async function CartoonsPage({
               />
             )}
             <div className={styles['cartoons__head']}>
-              <h2 className={styles['cartoons__title']}>Мультфильмы</h2>
+              <h1 className={styles['cartoons__title']}>Мультфильмы</h1>
             </div>
             <FilmsTabs activeTab={activeList} basePath="/cartoons" />
             <div className="cartoons__filters">

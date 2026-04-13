@@ -4,12 +4,35 @@ import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
+import type { Metadata } from 'next';
+import { buildCollectionMetadata } from '@/lib/seo';
 import SeriesPagination from './SeriesPagination';
 import styles from './series.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const ITEMS_PER_PAGE = 20;
+type SeriesSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SeriesSearchParams>;
+}): Promise<Metadata> {
+  const { genre, year, country, page, list } = await searchParams;
+  const currentPage = page ? parseInt(page, 10) || 1 : 1;
+
+  return buildCollectionMetadata({
+    sectionName: 'Сериалы',
+    sectionLabel: 'сериалы',
+    path: '/series',
+    genre,
+    year,
+    country,
+    page: currentPage,
+    list,
+  });
+}
 
 async function getGenres(): Promise<string[]> {
   try {
@@ -103,7 +126,7 @@ async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 export default async function SeriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string; list?: string }>;
+  searchParams: Promise<SeriesSearchParams>;
 }) {
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -141,7 +164,7 @@ export default async function SeriesPage({
               />
             )}
             <div className={styles['series__head']}>
-              <h2 className={styles['series__title']}>Сериалы</h2>
+              <h1 className={styles['series__title']}>Сериалы</h1>
             </div>
             <FilmsTabs activeTab={activeList} basePath="/series" />
             <div className="series__filters">

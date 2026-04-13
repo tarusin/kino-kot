@@ -44,6 +44,7 @@ export interface MovieDetail {
   _id: string;
   tmdbId: number;
   category: string;
+  mediaType: string;
   title: string;
   overview: string;
   posterPath: string;

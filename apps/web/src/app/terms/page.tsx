@@ -1,11 +1,13 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import { createMetadata } from '@/lib/seo';
 import styles from './terms.module.scss';
 
-export const metadata = {
-  title: 'Пользовательское соглашение — КиноКот',
-  description: 'Пользовательское соглашение сервиса КиноКот',
-};
+export const metadata = createMetadata({
+  title: 'Пользовательское соглашение',
+  description: 'Условия использования сервиса КиноКот для чтения и публикации отзывов.',
+  path: '/terms',
+});
 
 export default function TermsPage() {
   return (

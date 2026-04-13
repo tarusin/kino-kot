@@ -2,6 +2,14 @@ import type { Metadata } from 'next';
 import { Montserrat_Alternates } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '../context/AuthContext';
+import {
+  DEFAULT_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  absoluteUrl,
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+} from '@/lib/seo';
 import './globals.scss';
 
 const montserrat = Montserrat_Alternates({
@@ -9,27 +17,48 @@ const montserrat = Montserrat_Alternates({
   subsets: ['latin', 'cyrillic'],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://kino-kot.com';
-
 export const metadata: Metadata = {
-  title: 'КиноКот — честные отзывы на фильмы и сериалы',
-  description: 'Читайте и пишите отзывы на фильмы, сериалы и мультфильмы. Оценивайте, обсуждайте и находите что посмотреть вместе с КиноКотом.',
+  title: `${SITE_NAME} | отзывы на фильмы, сериалы и мультфильмы`,
+  description: DEFAULT_DESCRIPTION,
   icons: {
     icon: '/images/favicon.ico',
   },
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: SITE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
-    siteName: 'КиноКот',
-    title: 'КиноКот — честные отзывы на фильмы и сериалы',
-    description: 'Читайте и пишите отзывы на фильмы, сериалы и мультфильмы. Оценивайте, обсуждайте и находите что посмотреть вместе с КиноКотом.',
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | отзывы на фильмы, сериалы и мультфильмы`,
+    description: DEFAULT_DESCRIPTION,
     url: SITE_URL,
+    images: [
+      {
+        url: absoluteUrl('/images/main-banner.webp'),
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'КиноКот — честные отзывы на фильмы и сериалы',
-    description: 'Читайте и пишите отзывы на фильмы, сериалы и мультфильмы. Оценивайте, обсуждайте и находите что посмотреть вместе с КиноКотом.',
+    title: `${SITE_NAME} | отзывы на фильмы, сериалы и мультфильмы`,
+    description: DEFAULT_DESCRIPTION,
+    images: [absoluteUrl('/images/main-banner.webp')],
   },
 };
 
@@ -38,9 +67,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const websiteJsonLd = buildWebsiteJsonLd();
+  const organizationJsonLd = buildOrganizationJsonLd();
+
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={montserrat.className}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <AuthProvider>
           {children}
           <Toaster position="top-right" />

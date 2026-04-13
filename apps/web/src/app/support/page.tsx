@@ -1,17 +1,58 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import { buildBreadcrumbJsonLd, buildFaqJsonLd, createMetadata } from '@/lib/seo';
 import styles from './support.module.scss';
 
-export const metadata = {
-  title: 'Поддержка — КиноКот',
-  description: 'Свяжитесь с командой КиноКот — помощь, обратная связь, сообщения об ошибках',
-};
+export const metadata = createMetadata({
+  title: 'Поддержка',
+  description:
+    'Свяжитесь с командой КиноКота, задайте вопрос, сообщите об ошибке или предложите идею для развития сервиса.',
+  path: '/support',
+  keywords: ['поддержка КиноКот', 'помощь КиноКот', 'обратная связь'],
+});
+
+const faqItems = [
+  {
+    question: 'Как оставить отзыв?',
+    answer:
+      'Для публикации отзывов нужно зарегистрироваться или войти в аккаунт, затем открыть страницу фильма и заполнить форму отзыва.',
+  },
+  {
+    question: 'Можно ли изменить или удалить свой отзыв?',
+    answer:
+      'Самостоятельное редактирование и удаление отзывов пока недоступно. Для удаления отзыва можно связаться с поддержкой по электронной почте.',
+  },
+  {
+    question: 'Как удалить учётную запись?',
+    answer:
+      'Учётную запись можно удалить в настройках профиля. Вместе с аккаунтом будут удалены отзывы, комментарии и реакции.',
+  },
+  {
+    question: 'Откуда берутся данные о фильмах?',
+    answer:
+      'Информация о фильмах, сериалах и мультфильмах загружается из The Movie Database (TMDB), а рейтинг КиноКот строится по отзывам пользователей.',
+  },
+];
 
 export default function SupportPage() {
+  const faqJsonLd = buildFaqJsonLd(faqItems);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Главная', path: '/' },
+    { name: 'Поддержка', path: '/support' },
+  ]);
+
   return (
     <>
       <Header />
       <main className={styles['support']}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
         <div className={styles['support__container']}>
           <h1 className={styles['support__title']}>Поддержка</h1>
           <p className={styles['support__subtitle']}>
@@ -61,7 +102,7 @@ export default function SupportPage() {
             <h2>Частые вопросы</h2>
 
             <details className={styles['support__faq-item']}>
-              <summary>Как оставить отзыв?</summary>
+              <summary>{faqItems[0].question}</summary>
               <p>
                 Для публикации отзывов необходимо зарегистрироваться или войти в свою учётную запись.
                 После этого перейдите на страницу фильма и заполните форму отзыва — выберите оценку
@@ -70,7 +111,7 @@ export default function SupportPage() {
             </details>
 
             <details className={styles['support__faq-item']}>
-              <summary>Можно ли изменить или удалить свой отзыв?</summary>
+              <summary>{faqItems[1].question}</summary>
               <p>
                 На данный момент редактирование и удаление опубликованных отзывов недоступно
                 самостоятельно. Если вам нужно удалить отзыв, свяжитесь с нами по электронной
@@ -80,7 +121,7 @@ export default function SupportPage() {
             </details>
 
             <details className={styles['support__faq-item']}>
-              <summary>Как удалить учётную запись?</summary>
+              <summary>{faqItems[2].question}</summary>
               <p>
                 Вы можете самостоятельно удалить свою учётную запись в настройках профиля.
                 При удалении будут каскадно удалены все ваши отзывы, комментарии и реакции.
@@ -89,7 +130,7 @@ export default function SupportPage() {
             </details>
 
             <details className={styles['support__faq-item']}>
-              <summary>Откуда берутся данные о фильмах?</summary>
+              <summary>{faqItems[3].question}</summary>
               <p>
                 Информация о фильмах, сериалах и мультфильмах предоставляется
                 сервисом The Movie Database (TMDB). Рейтинг КиноКот формируется

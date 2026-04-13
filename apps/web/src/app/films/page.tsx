@@ -4,12 +4,35 @@ import MovieCard from '@/components/MovieCard/MovieCard';
 import FilmOfTheWeek from '@/components/FilmOfTheWeek/FilmOfTheWeek';
 import FilmsTabs from '@/components/FilmsTabs/FilmsTabs';
 import FilmsFilters from '@/components/FilmsFilters/FilmsFilters';
+import type { Metadata } from 'next';
+import { buildCollectionMetadata } from '@/lib/seo';
 import FilmsPagination from './FilmsPagination';
 import styles from './films.module.scss';
 import type { Movie, FilmOfTheWeek as FilmOfTheWeekType } from '@/types/movie';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
 const MOVIES_PER_PAGE = 20;
+type FilmsSearchParams = { genre?: string; year?: string; country?: string; page?: string; list?: string };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<FilmsSearchParams>;
+}): Promise<Metadata> {
+  const { genre, year, country, page, list } = await searchParams;
+  const currentPage = page ? parseInt(page, 10) || 1 : 1;
+
+  return buildCollectionMetadata({
+    sectionName: 'Фильмы',
+    sectionLabel: 'фильмы',
+    path: '/films',
+    genre,
+    year,
+    country,
+    page: currentPage,
+    list,
+  });
+}
 
 async function getGenres(): Promise<string[]> {
   try {
@@ -110,7 +133,7 @@ async function getRatings(movieIds: string[]): Promise<Record<string, number>> {
 export default async function FilmsPage({
                                           searchParams,
                                         }: {
-  searchParams: Promise<{ genre?: string; year?: string; country?: string; page?: string; list?: string }>;
+  searchParams: Promise<FilmsSearchParams>;
 }) {
   const { genre, year, country, page: pageParam, list } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -141,7 +164,7 @@ export default async function FilmsPage({
           <div className={ styles['films__wrap'] }>
             {filmOfTheWeek && <FilmOfTheWeek film={filmOfTheWeek} />}
             <div className={ styles['films__head'] }>
-              <h2 className={ styles['films__title'] }>Фильмы</h2>
+              <h1 className={ styles['films__title'] }>Фильмы</h1>
             </div>
             <FilmsTabs activeTab={activeList} />
             <div className="films__filters">

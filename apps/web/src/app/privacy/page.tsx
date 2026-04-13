@@ -1,11 +1,13 @@
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import { createMetadata } from '@/lib/seo';
 import styles from './privacy.module.scss';
 
-export const metadata = {
-  title: 'Политика конфиденциальности — КиноКот',
-  description: 'Политика конфиденциальности сервиса КиноКот',
-};
+export const metadata = createMetadata({
+  title: 'Политика конфиденциальности',
+  description: 'Политика конфиденциальности сервиса КиноКот и порядок обработки персональных данных.',
+  path: '/privacy',
+});
 
 export default function PrivacyPage() {
   return (
