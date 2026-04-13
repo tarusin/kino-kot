@@ -1,4 +1,5 @@
 import Header from '@/components/Header/Header';
+import HomeSeoBlock from '@/components/HomeSeoBlock/HomeSeoBlock';
 import HeroBanner from '@/components/HeroBanner/HeroBanner';
 import SearchBlock from '@/components/SearchBlock/SearchBlock';
 import WhyKinoKot from '@/components/WhyKinoKot/WhyKinoKot';
@@ -8,11 +9,27 @@ import MovieSlider from '@/components/MovieSlider/MovieSlider';
 import QuizBanner from '@/components/QuizBanner/QuizBanner';
 import LuckyBanner from '@/components/LuckyBanner/LuckyBanner';
 import Footer from '@/components/Footer/Footer';
+import { buildItemListJsonLd, createMetadata } from '@/lib/seo';
 import styles from './page.module.scss';
 import type { Movie } from '@/types/movie';
 import type { LatestReview } from '@/types/review';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001/api';
+
+export const metadata = createMetadata({
+  title: 'Отзывы на фильмы, сериалы и мультфильмы',
+  description:
+    'КиноКот помогает выбирать, что посмотреть: читайте отзывы на фильмы, сериалы и мультфильмы, сравнивайте рейтинги и находите лучшие подборки.',
+  path: '/',
+  keywords: [
+    'отзывы на фильмы',
+    'отзывы на сериалы',
+    'отзывы на мультфильмы',
+    'рейтинг фильмов',
+    'что посмотреть',
+    'КиноКот',
+  ],
+});
 
 async function getPopularMovies(): Promise<Movie[]> {
   try {
@@ -92,6 +109,18 @@ export default async function Home() {
 
   const allIds = [...popular, ...topRated, ...popularSeries, ...upcoming].map((m) => m._id);
   const ratings = await getRatings(allIds);
+  const topRatedJsonLd = topRated.length
+    ? buildItemListJsonLd(
+        topRated.slice(0, 10).map((movie) => ({ id: movie._id, name: movie.title })),
+        '/films',
+      )
+    : null;
+  const popularSeriesJsonLd = popularSeries.length
+    ? buildItemListJsonLd(
+        popularSeries.slice(0, 10).map((movie) => ({ id: movie._id, name: movie.title })),
+        '/series',
+      )
+    : null;
 
   return (
     <>
@@ -99,17 +128,50 @@ export default async function Home() {
       <main>
         <section className={styles['home']}>
           <div className={styles['home__wrap']}>
+            {topRatedJsonLd && (
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(topRatedJsonLd) }}
+              />
+            )}
+            {popularSeriesJsonLd && (
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(popularSeriesJsonLd) }}
+              />
+            )}
             <SearchBlock />
             <HeroBanner />
             {latestReviews.length >= 4 && <ReviewsMarquee reviews={latestReviews} noContainer />}
             <HowItWorks />
             <WhyKinoKot />
-            <MovieSlider title="Топ фильмов" movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined} noContainer />
-            <MovieSlider title="Популярные" movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined} noContainer />
+            <MovieSlider
+              title="Топ фильмов"
+              movies={topRated.length > 0 ? mergeRatings(topRated, ratings) : undefined}
+              noContainer
+              moreHref="/films?list=top_rated"
+            />
+            <MovieSlider
+              title="Популярные"
+              movies={popular.length > 0 ? mergeRatings(popular, ratings) : undefined}
+              noContainer
+              moreHref="/films"
+            />
             <QuizBanner />
-            <MovieSlider title="Популярные сериалы" movies={popularSeries.length > 0 ? mergeRatings(popularSeries, ratings) : undefined} noContainer />
-            <MovieSlider title="Скоро выходят" movies={upcoming.length > 0 ? mergeRatings(upcoming, ratings) : undefined} noContainer />
+            <MovieSlider
+              title="Популярные сериалы"
+              movies={popularSeries.length > 0 ? mergeRatings(popularSeries, ratings) : undefined}
+              noContainer
+              moreHref="/series"
+            />
+            <MovieSlider
+              title="Скоро выходят"
+              movies={upcoming.length > 0 ? mergeRatings(upcoming, ratings) : undefined}
+              noContainer
+              moreHref="/films?list=upcoming"
+            />
             <LuckyBanner />
+            <HomeSeoBlock />
           </div>
         </section>
       </main>

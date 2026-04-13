@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import Link from 'next/link';
 import MovieCard from '../MovieCard/MovieCard';
 import styles from './MovieSlider.module.scss';
 import type { Movie } from '@/types/movie';
@@ -9,9 +10,17 @@ interface MovieSliderProps {
   title: string;
   movies?: Movie[];
   noContainer?: boolean;
+  moreHref?: string;
+  moreLabel?: string;
 }
 
-export default function MovieSlider({ title, movies, noContainer }: MovieSliderProps) {
+export default function MovieSlider({
+  title,
+  movies,
+  noContainer,
+  moreHref,
+  moreLabel = 'Смотреть все',
+}: MovieSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -33,6 +42,11 @@ export default function MovieSlider({ title, movies, noContainer }: MovieSliderP
       <div className={styles['movie-slider__header']}>
         <h2 className={styles['movie-slider__title']}>{title}</h2>
         <div className={styles['movie-slider__controls']}>
+          {moreHref && (
+            <Link href={moreHref} className={styles['movie-slider__more']}>
+              {moreLabel}
+            </Link>
+          )}
           <button
             className={`${styles['movie-slider__arrow']} ${styles['movie-slider__arrow--left']}`}
             onClick={() => scroll('left')}

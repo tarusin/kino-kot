@@ -1,0 +1,71 @@
+@use '../../styles/variables' as *;
+
+.home-seo {
+  margin-top: rem(48);
+  padding: rem(28);
+  border-radius: rem(24);
+  background: linear-gradient(180deg, rgba(16, 32, 49, 0.03) 0%, rgba(255, 255, 255, 1) 100%);
+  border: 1px solid $color-gray-dark;
+}
+
+.home-seo__title {
+  margin: 0 0 rem(14);
+  color: $color-text;
+  font-size: rem(24);
+  line-height: 1.2;
+}
+
+.home-seo__text {
+  margin: 0 0 rem(12);
+  color: $color-text;
+  line-height: 1.75;
+}
+
+.home-seo__grid {
+  display: grid;
+  gap: rem(20);
+  margin-top: rem(24);
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.home-seo__card {
+  padding: rem(18);
+  border-radius: rem(18);
+  background: $color-gray;
+}
+
+.home-seo__card-title {
+  margin: 0 0 rem(12);
+  color: $color-text;
+  font-size: rem(16);
+}
+
+.home-seo__links {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10);
+}
+
+.home-seo__link {
+  color: $color-text;
+  text-decoration: none;
+  line-height: 1.5;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.home-seo__link-title {
+  display: block;
+  font-weight: 700;
+}
+
+.home-seo__link-description {
+  display: block;
+  margin-top: rem(2);
+  color: $color-text-secondary;
+}
